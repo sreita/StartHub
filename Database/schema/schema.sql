@@ -1,5 +1,6 @@
 -- schema.sql
 -- DDL: tablas e índices (sin datos de ejemplo ni vistas)
+DROP TABLE IF EXISTS ConfirmationToken;
 DROP TABLE IF EXISTS Vote;
 DROP TABLE IF EXISTS Comment;
 DROP TABLE IF EXISTS UserStartupPartnership;
@@ -16,6 +17,8 @@ CREATE TABLE `User` (
     registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_admin BOOLEAN DEFAULT FALSE,
     profile_info TEXT,
+    is_enabled BOOLEAN NOT NULL DEFAULT FALSE, 
+    is_locked BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT chk_email CHECK (email LIKE '%@%')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -54,6 +57,25 @@ CREATE INDEX idx_startup_name ON Startup(name);
 CREATE INDEX idx_startup_owner ON Startup(owner_user_id);
 CREATE INDEX idx_startup_category ON Startup(category_id);
 CREATE INDEX idx_startup_created ON Startup(created_date);
+
+
+
+CREATE TABLE ConfirmationToken (
+    token_id INT PRIMARY KEY AUTO_INCREMENT,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL,
+    expires_at DATETIME NOT NULL,
+    confirmed_at DATETIME,
+    app_user_id INT NOT NULL,
+    
+    CONSTRAINT fk_token_user 
+        FOREIGN KEY (app_user_id) 
+        REFERENCES `User`(user_id)
+        ON DELETE CASCADE 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_token_user ON ConfirmationToken(app_user_id);
+
 
 CREATE TABLE Comment (
     comment_id INT PRIMARY KEY AUTO_INCREMENT,
