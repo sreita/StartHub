@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout_base(title, content)">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Mi Aplicación Web'"></title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <span>Mi Logo</span> |
+        <a th:href="@{/dashboard}">Dashboard</a>
+    </nav>
+</header>
+
+<main>
+    <div th:replace="${content}"></div>
+</main>
+
+<footer>
+    &copy; 2025 Mi Aplicación
+</footer>
+
+</body>
+</html>

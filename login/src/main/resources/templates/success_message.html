@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout_base :: layout_base(
+            title='Registro Exitoso',
+            content=~{::content}
+      )}">
+
+<div th:fragment="content" class="content-wrapper">
+
+  <div class="login-container">
+    <h1 style="color: #4CAF50;">¡Registro Exitoso!</h1>
+
+    <p style="font-size: 1.1em; margin-top: 20px;">
+      Tu cuenta ha sido creada. Para activarla, por favor **revisa tu correo electrónico** y haz clic en el enlace de confirmación que te hemos enviado.
+    </p>
+
+    <p style="font-size: 0.9em; margin-top: 30px;">
+      (El correo puede tardar unos minutos en llegar y podría estar en la carpeta de spam.)
+    </p>
+
+    <div class="footer" style="margin-top: 40px;">
+      <a th:href="@{/req/login}" class="text-blue-400 hover:text-blue-300">Ir a la página de inicio de sesión</a>
+    </div>
+  </div>
+
+</div>
+
+</html>
