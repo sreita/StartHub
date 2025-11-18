@@ -1,72 +1,73 @@
-# 🌟 StarHub Database
+# StarHub Database
 
-Relational Database Model for the **StarHub Startup Management System** — a platform designed to manage startups, user interactions, votes, and collaborations.
-
----
-
-## 🧩 Project Overview
-
-This repository contains the full SQL structure, sample data, and utility scripts for the StarHub relational database.  
-It is built to support startup registration, user interaction (comments and votes), and partnership relationships between users and startups.
+Relational model for the StartHub system: startups, users, comments, and votes, with supporting views and seed data.
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
-starthub-database/
-│
-├── schema/ # Database structure and constraints
-│ ├── schema.sql # Table creation scripts (DDL)
-│ ├── views.sql # View definitions
-│ └── starthub_model.mwb # MySQL Workbench diagram (optional)
-│
-├── seeds/ # Sample data (DML)
-│ ├── seed_categories.sql
-│ ├── seed_users.sql
-│ ├── seed_startups.sql
-│ ├── seed_comments.sql
-│ ├── seed_votes.sql
-│ ├── seed_partnerships.sql
-│ └── seed_all.sql
-│
-├── queries/ # Example and validation queries
-│ └── queries.sql
-│
-└── utils/ # Maintenance and automation scripts
-├── reload_all.sql # Rebuilds the database from scratch
-└── truncate_all.sql # Cleans all tables while keeping structure
+```
+Database/
+├─ schema/              # Structure (DDL) and views
+│  ├─ schema.sql
+│  └─ views.sql
+├─ seeds/               # Sample data (DML)
+│  ├─ seed_categories.sql
+│  ├─ seed_users.sql
+│  ├─ seed_startups.sql
+│  ├─ seed_partnerships.sql
+│  ├─ seed_comments.sql
+│  └─ seed_votes.sql
+├─ queries/
+│  └─ queries.sql
+├─ utilities/           # Maintenance scripts
+│  ├─ reload_all.sql    # Rebuild DB from scratch (schema + views + seeds)
+│  └─ truncate_all.sql  # Wipe data keeping structure
+└─ verifiers/
+	├─ verify_data.sql
+	└─ verify_views.sql
+```
+
+Note: The MySQL Workbench diagram is at `Database/schema/Relational model.mwb`.
 
 ---
 
-## ⚙️ Setup Instructions
+## Quick Setup (MySQL)
 
-### 1️⃣ Create the database
-Open MySQL Workbench or your terminal and run:
-CREATE DATABASE starthub;
-USE starthub;
+- Create/recreate the database (schema + views + seeds) with the master script:
+```bash
+mysql -u root -p < Database/utilities/reload_all.sql
+```
 
-### 2️⃣ Run the setup script
-Execute the master script to build everything automatically:
-mysql -u root -p < utils/reload_all.sql
-
-### 3️⃣ Verify successful setup
-You can check your tables with:
+- Verify:
+```sql
 SHOW TABLES;
-SELECT * FROM StartupDetails LIMIT 5;
-SELECT * FROM StartupVoteStats LIMIT 5;
+SELECT COUNT(*) FROM `User`;
+SELECT COUNT(*) FROM Startup;
+SELECT COUNT(*) FROM Comment;
+SELECT COUNT(*) FROM Vote;
+```
 
-## 🧹 Maintenance
-Reload database from scratch
-mysql -u root -p < utils/reload_all.sql
+- Clean data and keep structure:
+```bash
+mysql -u root -p starthub < Database/utilities/truncate_all.sql
+```
 
-Clean all data but keep structure
-mysql -u root -p starthub < utils/truncate_all.sql
+---
 
-## 📊 Included Features
-✅ User management with admin flag
-✅ Startup registration with categories
-✅ Commenting and voting system
-✅ Many-to-many partnerships (User ↔ Startup)
-✅ Views for analytical reporting:
-- StartupDetails
-- StartupVoteStats
+## Backend Integration (FastAPI)
+
+- The backend uses SQLAlchemy and Alembic. Ensure `backend/.env` points to this DB (`DATABASE_URL`).
+- If the DB already exists (e.g., created with these scripts), and the first migration tries to create existing tables, align Alembic history with:
+```bash
+alembic -c backend/alembic.ini stamp head
+```
+- Future model changes should be managed via Alembic revisions.
+
+---
+
+## Included Features
+- Users, categories, startups
+- Comment and vote system (up/down)
+- Collaboration relationships (User ↔ Startup)
+- Analytical views in `schema/views.sql`

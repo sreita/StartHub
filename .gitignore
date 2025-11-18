@@ -1,0 +1,44 @@
+# -------------------------
+# OS / Editor
+# -------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+pip-wheel-metadata/
+*.log
+
+# -------------------------
+# Environment files (keep only examples tracked)
+# -------------------------
+.env
+.env.*
+!backend/.env.example
+
+# Explicitly ignore backend runtime env
+backend/.env
+
+# -------------------------
+# Node / Frontend (in case added later)
+# -------------------------
+node_modules/
+dist/
+build/
