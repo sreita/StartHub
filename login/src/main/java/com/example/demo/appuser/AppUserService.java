@@ -36,15 +36,30 @@ public class AppUserService implements UserDetailsService {
 
   @Transactional
   public String signUpUser(AppUser appUser) {
-    boolean userExists = appUserRepository
+    var optionalAppUser = appUserRepository
         .findByEmail(appUser.getEmail())
-        .isPresent();
+        ;
 
-    if (userExists) {
+    if (optionalAppUser.isPresent()) {
     // TODO check of attributes are the same and
     // TODO if email not confirmed send confirmation email
+      AppUser existingAppUser = optionalAppUser.get();
 
-      throw new IllegalStateException("email already taken");
+      if (existingAppUser.getEnabled()) {
+        throw new IllegalStateException("email already taken");
+      }
+
+      String token = UUID.randomUUID().toString();
+    ConfirmationToken confirmationToken = new ConfirmationToken(
+        token,
+        LocalDateTime.now(),
+        LocalDateTime.now().plusMinutes(15),
+        existingAppUser
+    );
+    confirmationTokenService.saveConfirmationToken(confirmationToken);
+    return token;
+
+
     }
     String encodedPassword = bCryptPasswordEncoder
         .encode(appUser.getPassword());

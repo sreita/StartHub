@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .requestMatchers("/req/**").permitAll()
                 .requestMatchers("/login", "/signup").permitAll()
                 .requestMatchers("/req/success").permitAll()
+                .requestMatchers("/home").permitAll()
 
                 // RUTAS PÚBLICAS DE API (REGISTRO Y PROCESAMIENTO)
                 .requestMatchers("/api/v1/registration/**").permitAll()

@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarHub - Comunidad</title>
+    <!-- We are using the custom CSS provided by the user -->
+    <style>
+      /* ======================================================
+         VARIABLES Y RESET
+         ====================================================== */
+      :root {
+        --primary: #000000;
+        --secondary: #FFFFFF;
+        --accent: #FF5E5B; /* Rojo de acento */
+        --shadow: 8px 8px 0px var(--primary);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* ======================================================
+         ESTRUCTURA DEL LAYOUT (STICKY FOOTER) 🚀
+         ====================================================== */
+
+      html {
+          height: 100%;
+      }
+
+      body {
+        background-color: var(--secondary);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        color: var(--primary);
+        font-size: 16px;
+      }
+
+      header {
+          background-color: var(--primary);
+          color: var(--secondary);
+          padding: 15px 20px;
+          flex-shrink: 0;
+          border-bottom: 2px solid var(--primary);
+      }
+
+      header nav {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+
+      header nav a {
+          color: var(--secondary);
+          text-decoration: none;
+          font-weight: bold;
+          padding: 5px 10px;
+          border: 1px solid transparent;
+          transition: background-color 0.2s;
+      }
+
+      header nav a:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* 2. Overriding default main centering for this specific content layout */
+      main {
+        flex-grow: 1;
+        width: 100%;
+        padding: 20px;
+        /* Remove justify-content: center and align-items: center for community layout */
+        display: block;
+      }
+
+      footer {
+          padding: 20px;
+          background-color: var(--secondary);
+          text-align: center;
+          border-top: 2px solid var(--primary);
+          flex-shrink: 0;
+          color: var(--primary);
+          font-size: 14px;
+          box-shadow: 0 -4px 0px var(--accent); /* little accent shadow */
+      }
+
+
+      /* ======================================================
+         ESTILOS DE COMPONENTES BÁSICOS (de styles.css)
+         ====================================================== */
+
+      h1 {
+        /* Used for main StarHub logo */
+        color: var(--accent);
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px 10px;
+        border: 2px solid var(--primary);
+        background-color: var(--secondary);
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s;
+      }
+
+      input:focus {
+        box-shadow: 2px 2px 0px var(--primary);
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: var(--accent);
+        color: var(--secondary);
+        border: 2px solid var(--primary);
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        transition: all 0.3s;
+      }
+
+      button:hover {
+        box-shadow: 4px 4px 0px var(--primary);
+        transform: translate(-2px, -2px);
+      }
+
+      .btn-secondary {
+          background-color: var(--secondary);
+          color: var(--accent);
+          border-color: var(--accent);
+      }
+      .btn-secondary:hover {
+          box-shadow: 4px 4px 0px var(--accent);
+      }
+
+      /* ======================================================
+         ESTILOS ESPECÍFICOS DE LA COMUNIDAD
+         ====================================================== */
+
+      .community-layout {
+          max-width: 1200px;
+          margin: 30px auto;
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 30px;
+          padding: 0 20px;
+      }
+
+      @media (min-width: 768px) {
+          .community-layout {
+              grid-template-columns: 2fr 1fr;
+          }
+      }
+
+      /* Card styles for sidebar and posts */
+      .card {
+        border: 2px solid var(--primary);
+        background-color: var(--secondary);
+        box-shadow: 6px 6px 0px var(--primary);
+        padding: 20px;
+        margin-bottom: 25px;
+        transition: box-shadow 0.2s, transform 0.2s;
+      }
+      .card:hover {
+          box-shadow: 8px 8px 0px var(--accent);
+          transform: translate(-2px, -2px);
+      }
+
+      .card-header {
+          font-size: 18px;
+          font-weight: bold;
+          color: var(--accent);
+          margin-bottom: 15px;
+      }
+
+      .category-link {
+          display: block;
+          padding: 5px 0;
+          color: var(--primary);
+          text-decoration: none;
+          transition: color 0.2s;
+      }
+      .category-link:hover {
+          color: var(--accent);
+      }
+
+      /* Post Card (Article) */
+      .post-article {
+          display: flex;
+          align-items: flex-start;
+          width: 100%;
+          border: 2px solid var(--primary);
+          background-color: var(--secondary);
+          box-shadow: 8px 8px 0px var(--primary);
+          margin-bottom: 25px;
+          padding: 15px;
+          transition: box-shadow 0.2s, transform 0.2s;
+      }
+
+      .post-article:hover {
+          box-shadow: 10px 10px 0px var(--accent);
+          transform: translate(-2px, -2px);
+      }
+
+      .post-content {
+          flex-grow: 1;
+          margin-left: 15px;
+      }
+
+      .post-content h2 {
+          font-size: 20px;
+          font-weight: 700;
+          color: var(--primary);
+          cursor: pointer;
+          margin-bottom: 5px;
+          transition: color 0.2s;
+      }
+      .post-content h2:hover {
+          color: var(--accent);
+      }
+
+      .post-content p {
+          font-size: 14px;
+          color: #666;
+          margin-top: 5px;
+          margin-bottom: 10px;
+      }
+
+      .post-meta {
+          font-size: 12px;
+          color: #999;
+          display: flex;
+          gap: 10px;
+      }
+
+      .post-meta .author {
+          color: var(--accent);
+          font-weight: bold;
+      }
+
+      /* Vote Controls */
+      .vote-controls {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          color: var(--primary);
+          font-size: 14px;
+          padding-right: 15px;
+          border-right: 2px solid var(--primary);
+      }
+
+      .vote-score {
+          font-weight: bold;
+          margin: 4px 0;
+      }
+
+      .vote-button {
+          /* Overrides generic button styles */
+          all: unset;
+          cursor: pointer;
+          font-size: 22px;
+          color: var(--primary);
+          padding: 0 5px;
+          transition: color 0.15s, transform 0.15s;
+          line-height: 1;
+      }
+
+      .vote-up:hover {
+          color: #4CAF50; /* Green */
+          transform: translateY(-1px);
+      }
+      .vote-down:hover {
+          color: var(--accent); /* Red */
+          transform: translateY(1px);
+      }
+
+      /* Header specific overrides */
+      .header-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 10px;
+      }
+
+      .header-logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 20px;
+          font-weight: bold;
+      }
+
+      .header-logo .icon {
+          width: 20px;
+          height: 20px;
+          background-color: var(--accent);
+          border: 1px solid var(--secondary);
+      }
+
+      .header-search {
+          flex-grow: 1;
+          margin: 0 20px;
+          max-width: 400px;
+      }
+
+      .header-buttons {
+          display: flex;
+          gap: 10px;
+      }
+
+      .header-buttons button {
+          width: auto;
+          padding: 8px 12px;
+          margin: 0; /* Override margin from global button style */
+          font-size: 14px;
+      }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav class="header-container">
+        <div class="header-logo">
+            <div class="icon"></div>
+            <h1>StarHub</h1>
+        </div>
+
+        <div class="header-search">
+            <input type="text" placeholder="Buscar…" />
+        </div>
+
+        <div class="header-buttons">
+            <button>Login</button>
+            <button class="btn-secondary">Registro</button>
+        </div>
+    </nav>
+</header>
+
+<main class="community-layout-wrapper">
+    <!-- community-layout starts here, adapted to fit the 2-column grid -->
+    <div class="community-layout">
+
+        <!-- Main Content Column -->
+        <section class="main-content">
+
+            <article class="post-article">
+                <div class="vote-controls">
+                    <button class="vote-button vote-up">▲</button>
+                    <span class="vote-score">42</span>
+                    <button class="vote-button vote-down">▼</button>
+                </div>
+
+                <div class="post-content">
+                    <h2>¿Cómo optimizar un modelo lineal dual?</h2>
+                    <p>Necesito generar todas las ecuaciones explícitamente…</p>
+
+                    <div class="post-meta">
+                        <span>Publicado por <span class="author">@david</span></span>
+                        <span>•</span>
+                        <span>Hace 2 horas</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="post-article">
+                <div class="vote-controls">
+                    <button class="vote-button vote-up">▲</button>
+                    <span class="vote-score">15</span>
+                    <button class="vote-button vote-down">▼</button>
+                </div>
+
+                <div class="post-content">
+                    <h2>Publica tus proyectos de NS-3 aquí</h2>
+                    <p>Comparte tus simulaciones, errores y soluciones…</p>
+
+                    <div class="post-meta">
+                        <span>Publicado por <span class="author">@camelo</span></span>
+                        <span>•</span>
+                        <span>Hace 1 día</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- More Articles can be added here -->
+
+        </section>
+
+        <!-- Sidebar Column -->
+        <aside class="sidebar">
+            <div class="card">
+                <h3 class="card-header">Crear publicación</h3>
+                <button>Nuevo Post</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-header">Categorías</h3>
+                <div class="categories-list">
+                    <a href="#" class="category-link">Programación</a>
+                    <a href="#" class="category-link">DevOps</a>
+                    <a href="#" class="category-link">IA & ML</a>
+                    <a href="#" class="category-link">NS-3 Simulaciones</a>
+                    <a href="#" class="category-link">Proyectos académicos</a>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</main>
+
+<footer>
+    &copy; 2025 StartHub. Comunidad para desarrolladores.
+</footer>
+
+</body>
+</html>

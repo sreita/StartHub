@@ -1,10 +1,12 @@
 package com.example.demo.registration;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
@@ -23,15 +25,11 @@ public class RegistrationController {
     return registrationService.register(request);
   }
 
-    @GetMapping(path = "confirm")
+    @GetMapping(path = "confirm", produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
     public String confirm(@RequestParam("token") String token) {
         return registrationService.confirmToken(token);
 
     }
-    @GetMapping(path = "/req/success")
-public String registrationSuccess() {
-    // Mapea al archivo success_message.html
-    return "success_message";
-}
 
 }

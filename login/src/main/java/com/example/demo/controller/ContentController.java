@@ -7,6 +7,11 @@ package com.example.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.demo.registration.RegistrationService;
+
+import lombok.AllArgsConstructor;
 
 /**
  *
@@ -14,8 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 
 @Controller
+@AllArgsConstructor
 public class ContentController {
 
+    private final RegistrationService registrationService;
 
     @GetMapping("/req/login")
     public String login(){
@@ -32,4 +39,20 @@ public class ContentController {
         return "redirect:/req/login";
     }
 
+    @GetMapping("/home")
+    public String home(){
+        return "home";
+    }
+
+    @GetMapping(path = "/req/success")
+    public String registrationSuccess() {
+        return "success_message";
+    }
+
+    @GetMapping(path = "/api/v1/registration/confirm")
+    public String confirm(@RequestParam("token") String token) {
+        // Llama al servicio, que contiene la lógica de validación y habilitación.
+        // El servicio DEBE retornar "redirect:/req/success" (o la ruta que desees)
+        return registrationService.confirmToken(token);
+    }
 }
