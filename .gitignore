@@ -42,3 +42,4 @@ backend/.env
 node_modules/
 dist/
 build/
+\n# JWT RSA Keys\n/login/src/main/resources/certs/

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - StartHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md">
+        <!-- Enlace para volver al home -->
+        <div class="text-center mb-4">
+            <a href="./home.html" class="text-blue-500 hover:text-blue-700">← Volver al inicio</a>
+        </div>
+
+        <div class="login-container">
+            <h1>REGISTRO</h1>
+
+            <form id="registrationForm">
+                <div class="input-group">
+                    <label for="firstname">NOMBRE</label>
+                    <input type="text" id="firstname" name="firstName" placeholder="Tu nombre" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="lastname">APELLIDO</label>
+                    <input type="text" id="lastname" name="lastName" placeholder="Tu apellido" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="email">EMAIL</label>
+                    <input type="email" id="email" name="email" placeholder="tu@email.com" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="password">CONTRASEÑA</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">CONFIRMAR CONTRASEÑA</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" id="submit">CREAR CUENTA</button>
+            </form>
+
+            <div class="footer">
+                ¿Ya tienes una cuenta?
+                <a href="./login.html">Iniciar Sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { AuthService } from './js/auth.js';
+        import { showNotification, validateEmail } from './js/utils.js';
+
+        const registrationForm = document.getElementById("registrationForm");
+
+        if (registrationForm) {
+            registrationForm.addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                const firstName = document.getElementById("firstname").value;
+                const lastName = document.getElementById("lastname").value;
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                // Validaciones
+                if (password !== confirmPassword) {
+                    showNotification("Las contraseñas no coinciden", "error");
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showNotification("La contraseña debe tener al menos 6 caracteres", "error");
+                    return;
+                }
+
+                if (!validateEmail(email)) {
+                    showNotification("Por favor ingresa un email válido", "error");
+                    return;
+                }
+
+                const userData = {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password
+                };
+
+                try {
+                    const result = await AuthService.register(userData);
+
+                    if (result.success) {
+                        showNotification("¡Cuenta creada exitosamente!", "success");
+                        setTimeout(() => {
+                            window.location.href = "./login.html";
+                        }, 1500);
+                    } else {
+                        showNotification(result.message || "Error creando la cuenta", "error");
+                    }
+                } catch (error) {
+                    console.error('Error en registro:', error);
+                    showNotification("Error de conexión. Intenta nuevamente.", "error");
+                }
+            });
+        } else {
+            console.error("Error: Elemento 'registrationForm' no encontrado.");
+        }
+    </script>
+</body>
+</html>

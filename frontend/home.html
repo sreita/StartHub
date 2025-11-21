@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StartHub - Inicio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+    <!-- Navbar -->
+    <nav class="neo-brutalist bg-red-600 text-white p-4 mb-8">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="./home.html" class="text-3xl font-extrabold text-yellow-400 nav-logo">
+                STARTHUB
+            </a>
+
+            <div class="flex space-x-4 items-center relative">
+                <a href="./home.html" class="text-lg font-bold text-white navbar-link hidden sm:block">
+                    Inicio
+                </a>
+                <a href="#" class="text-lg font-bold text-white navbar-link hidden sm:block">
+                    Servicios
+                </a>
+                <a href="#" class="text-lg font-bold text-white navbar-link hidden sm:block">
+                    Contacto
+                </a>
+
+                <div class="relative inline-block">
+                    <button id="dropdown-btn" class="icon-dropdown-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </button>
+
+                    <div id="dropdown-menu" class="dropdown-menu hidden absolute right-0 mt-2 w-48 overflow-hidden z-10">
+                        <a href="#" class="dropdown-menu-item" id="night-mode-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                            MODO NOCHE
+                        </a>
+                        <a href="./login.html" class="dropdown-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            INICIAR SESIÓN
+                        </a>
+                        <a href="./signup.html" class="dropdown-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            REGISTRARSE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto py-8 px-4 md:px-0">
+        <h1 class="text-4xl md:text-5xl mb-6 md:mb-8 text-center">
+            PUBLICACIONES RECIENTES
+        </h1>
+
+        <div id="posts-container" class="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
+            <!-- Las publicaciones se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { HomePage } from './js/home.js';
+        new HomePage();
+    </script>
+</body>
+</html>

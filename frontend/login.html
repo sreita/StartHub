@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - StartHub</title>
+    <!-- Incluir Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Si tienes estilos personalizados -->
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md">
+        <!-- Enlace para volver al home -->
+        <div class="text-center mb-4">
+            <a href="./home.html" class="text-blue-500 hover:text-blue-700">← Volver al inicio</a>
+        </div>
+
+        <form id="login-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 class="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+                    Usuario
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="username"
+                       type="text"
+                       placeholder="Tu usuario"
+                       required>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                    Contraseña
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                       id="password"
+                       type="password"
+                       placeholder="******************"
+                       required>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        type="submit">
+                    Iniciar Sesión
+                </button>
+                <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="./signup.html">
+                    ¿No tienes cuenta?
+                </a>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <p class="text-gray-600 text-sm">
+                ¿Olvidaste tu contraseña?
+                <a href="#" class="text-blue-500 hover:text-blue-700">Recupérala aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importar el servicio de autenticación
+        import { AuthService } from './js/auth.js';
+        import { showNotification } from './js/utils.js';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const result = await AuthService.login(username, password);
+
+                if (result.success) {
+                    // Guardar token y redirigir
+                    localStorage.setItem('authToken', result.token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+
+                    showNotification('Login exitoso!', 'success');
+                    setTimeout(() => {
+                        window.location.href = './home.html';
+                    }, 1000);
+                } else {
+                    showNotification(result.message || 'Error en el login', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error de conexión', 'error');
+            }
+        });
+
+        // Verificar si ya está autenticado
+        if (localStorage.getItem('authToken')) {
+            window.location.href = './home.html';
+        }
+    </script>
+</body>
+</html>
