@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StartHub - Detalles de Startup</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+    <!-- Navbar -->
+    <nav class="neo-brutalist bg-red-600 text-white p-4 mb-8">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-6">
+                <!-- Logo -->
+                <a href="./home.html" class="text-3xl font-extrabold text-yellow-400 nav-logo">
+                    STARTHUB
+                </a>
+
+                <!-- Enlace de Inicio -->
+                <a href="./home.html" class="text-lg font-bold text-white navbar-link hover:text-yellow-400 transition-colors">
+                    Inicio
+                </a>
+            </div>
+
+            <div class="flex space-x-4 items-center">
+                <!-- Barra de búsqueda desplegable -->
+                <div class="search-container relative flex items-center">
+                    <input type="text"
+                           id="search-input"
+                           placeholder="Buscar..."
+                           class="search-input py-2 px-4 pr-10 border-2 border-black text-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-300 w-0 opacity-0">
+                    <button id="search-button"
+                            class="search-toggle-btn h-full bg-[#FF5E5B] text-white border-2 border-black flex items-center justify-center px-3 hover:bg-black hover:text-white transition-all duration-200 font-bold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Dropdown de usuario -->
+                <div class="relative inline-block">
+                    <button id="dropdown-btn" class="icon-dropdown-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </button>
+
+                    <div id="dropdown-menu" class="dropdown-menu hidden absolute right-0 mt-2 w-48 overflow-hidden z-50">
+                        <a href="#" class="dropdown-menu-item" id="night-mode-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                            MODO NOCHE
+                        </a>
+                        <a href="./login.html" class="dropdown-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            INICIAR SESIÓN
+                        </a>
+                        <a href="./signup.html" class="dropdown-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            REGISTRARSE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto py-8 px-4 md:px-0 max-w-6xl">
+        <!-- Información de la Startup -->
+        <div id="startup-info" class="startup-info-container neo-brutalist p-8 mb-8">
+            <!-- Los datos se cargarán dinámicamente -->
+            <div class="flex justify-between items-start mb-6">
+                <h1 class="text-4xl md:text-5xl font-bold">TechInnovate</h1>
+                <span class="category-badge text-lg">Tecnología</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-bold mb-4">Descripción</h2>
+                    <p class="text-gray-700 text-lg leading-relaxed">Una startup dedicada a la innovación tecnológica en el campo de la inteligencia artificial y machine learning. Desarrollamos soluciones personalizadas para empresas que buscan transformar digitalmente sus operaciones.</p>
+
+                    <div class="mt-6">
+                        <h3 class="text-xl font-bold mb-3">Lo que ofrecemos</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li>Soluciones de IA personalizadas para empresas</li>
+                            <li>Plataformas de machine learning escalables</li>
+                            <li>Consultoría en transformación digital</li>
+                            <li>Análisis predictivo de datos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="contact-info p-6">
+                    <h3 class="text-xl font-bold mb-4">Información de Contacto</h3>
+                    <div class="space-y-3">
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <strong>Email:</strong>
+                            <a href="mailto:contact@techinnovate.com" class="ml-2 text-blue-600 hover:underline">contact@techinnovate.com</a>
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                            </svg>
+                            <strong>Website:</strong>
+                            <a href="https://techinnovate.com" target="_blank" class="ml-2 text-blue-600 hover:underline">techinnovate.com</a>
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                            </svg>
+                            <strong>Redes Sociales:</strong>
+                            <span class="ml-2">@techinnovate</span>
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <strong>Fundador:</strong>
+                            <span class="ml-2">Ana García</span>
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <strong>Fecha de creación:</strong>
+                            <span class="ml-2">21 de Marzo, 2024</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de votos y estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stats-card neo-brutalist p-6 text-center">
+                <h3 class="text-2xl font-bold mb-4">Votos</h3>
+                <div class="flex justify-center items-center space-x-4 mb-4">
+                    <button id="upvote-btn" class="vote-btn upvote text-2xl p-2 rounded">👍</button>
+                    <span id="vote-count" class="text-3xl font-bold">12</span>
+                    <button id="downvote-btn" class="vote-btn downvote text-2xl p-2 rounded">👎</button>
+                </div>
+                <p id="vote-status" class="text-sm text-gray-600">Inicia sesión para votar</p>
+            </div>
+
+            <div class="stats-card neo-brutalist p-6 text-center">
+                <h3 class="text-2xl font-bold mb-4">Comentarios</h3>
+                <p id="comment-count" class="text-3xl font-bold">2</p>
+                <p class="text-sm text-gray-600 mt-2">Comentarios activos</p>
+            </div>
+
+            <div class="stats-card neo-brutalist p-6 text-center">
+                <h3 class="text-2xl font-bold mb-4">Socios</h3>
+                <p id="partner-count" class="text-3xl font-bold">2</p>
+                <p class="text-sm text-gray-600 mt-2">Miembros del equipo</p>
+            </div>
+        </div>
+
+        <!-- Sección de comentarios -->
+        <div class="comment-form-container neo-brutalist p-8 mb-8">
+            <h2 class="text-3xl font-bold mb-6">Comentarios</h2>
+
+            <!-- Formulario de comentario -->
+            <form id="comment-form" class="mb-8">
+                <textarea id="comment-content"
+                         class="comment-textarea w-full p-4 mb-4 focus:outline-none"
+                         placeholder="Escribe tu comentario..."
+                         rows="4"
+                         required></textarea>
+                <button type="submit"
+                        class="comment-submit-btn px-6 py-3 font-bold">
+                    Publicar Comentario
+                </button>
+            </form>
+
+            <!-- Lista de comentarios -->
+            <div id="comments-list">
+                <div class="comment-item pb-4 mb-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <strong class="text-lg">Carlos Rodríguez</strong>
+                        <span class="text-sm text-gray-600">22 de Marzo, 2024</span>
+                    </div>
+                    <p class="text-gray-700">¡Excelente proyecto! Me encanta el enfoque en IA responsable. ¿Tienen planes de código abierto?</p>
+                </div>
+
+                <div class="comment-item pb-4 mb-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <strong class="text-lg">María López</strong>
+                        <span class="text-sm text-gray-600">21 de Marzo, 2024</span>
+                    </div>
+                    <p class="text-gray-700">Interesante propuesta de valor. ¿Tienen planes de expansión internacional en los próximos meses?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de socios -->
+        <div class="bg-white neo-brutalist p-8">
+            <h2 class="text-3xl font-bold mb-6">Equipo</h2>
+            <div id="partners-list">
+                <div class="comment-item pb-4 mb-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <strong class="text-lg">Ana García</strong>
+                            <p class="text-gray-600">Fundadora & CEO</p>
+                            <p class="text-sm text-gray-500">Se unió el 15 de Enero, 2024</p>
+                        </div>
+                        <span class="bg-green-500 text-white px-3 py-1 rounded text-sm font-bold">Fundador</span>
+                    </div>
+                </div>
+
+                <div class="comment-item pb-4 mb-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <strong class="text-lg">David Chen</strong>
+                            <p class="text-gray-600">CTO</p>
+                            <p class="text-sm text-gray-500">Se unió el 1 de Febrero, 2024</p>
+                        </div>
+                        <span class="bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold">Técnico</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./js/startup_info.js"></script>
+</body>
+</html>

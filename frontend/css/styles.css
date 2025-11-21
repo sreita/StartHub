@@ -5,7 +5,16 @@
   --primary: #000000;
   --secondary: #FFFFFF;
   --accent: #FF5E5B;
+  --accent-hover: #da2d2a;
+  --yellow-accent: #FFD166;
   --shadow: 8px 8px 0px var(--primary);
+  --night-bg: #1a1a1a;
+  --night-card: #333;
+  --night-text: #f5f5f5;
+  --night-border: #fff;
+  --gray-light: #f5f5f5;
+  --gray-medium: #ccc;
+  --gray-dark: #666;
 }
 
 * {
@@ -18,7 +27,6 @@
    ESTRUCTURA DEL LAYOUT (STICKY FOOTER) 🚀
    ====================================================== */
 
-/* 1. HTML y Body deben ocupar el 100% de la altura y usar Flex para apilar elementos */
 html {
     height: 100%;
 }
@@ -31,9 +39,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Courier New', monospace;
+  color: var(--primary);
 }
 
-/* 2. El contenido principal debe crecer y centrar el formulario */
 main {
   flex-grow: 1;
   width: 100%;
@@ -43,7 +51,6 @@ main {
   padding: 20px;
 }
 
-/* 3. Estilos de Header y Footer */
 header {
     background-color: var(--primary);
     color: var(--secondary);
@@ -59,7 +66,7 @@ header nav a {
 
 footer {
     padding: 20px;
-    background-color: #f0f0f0;
+    background-color: var(--gray-light);
     text-align: center;
     border-top: 1px solid var(--primary);
     flex-shrink: 0;
@@ -122,10 +129,15 @@ input {
   font-size: 16px;
   outline: none;
   transition: all 0.3s;
+  color: var(--primary);
 }
 
 input:focus {
   box-shadow: 4px 4px 0px var(--primary);
+}
+
+input::placeholder {
+  color: var(--gray-dark);
 }
 
 button {
@@ -145,6 +157,7 @@ button {
 button:hover {
   box-shadow: 4px 4px 0px var(--primary);
   transform: translate(-2px, -2px);
+  background-color: var(--accent-hover);
 }
 
 .divider {
@@ -173,14 +186,14 @@ button:hover {
    ====================================================== */
 
 .neo-brutalist {
-    border: 4px solid #000;
-    box-shadow: 8px 8px 0 #000;
+    border: 4px solid var(--primary);
+    box-shadow: 8px 8px 0 var(--primary);
     transition: all 0.2s ease;
     border-radius: 4px;
 }
 
 .neo-brutalist:hover {
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--primary);
     transform: translate(2px, 2px);
 }
 
@@ -195,7 +208,7 @@ button:hover {
 }
 
 .navbar-link:hover {
-    color: #FFD166;
+    color: var(--yellow-accent);
     text-decoration: underline;
 }
 
@@ -216,21 +229,21 @@ button:hover {
 }
 
 .icon-dropdown-btn svg {
-    color: white;
+    color: var(--secondary);
     width: 28px;
     height: 28px;
     transition: color 0.2s ease;
 }
 
 .icon-dropdown-btn:hover svg {
-    color: #FFD166;
+    color: var(--yellow-accent);
 }
 
 .dropdown-menu {
-    border: 4px solid #000;
-    box-shadow: 8px 8px 0 #000;
+    border: 4px solid var(--primary);
+    box-shadow: 8px 8px 0 var(--primary);
     border-radius: 4px;
-    background-color: #fff;
+    background-color: var(--secondary);
     min-width: 180px;
 }
 
@@ -239,15 +252,15 @@ button:hover {
     display: flex;
     align-items: center;
     font-weight: 700;
-    border-bottom: 2px solid #000;
-    background-color: #fff;
-    color: #1a1a1a;
+    border-bottom: 2px solid var(--primary);
+    background-color: var(--secondary);
+    color: var(--primary);
     transition: background-color 0.1s, color 0.1s;
 }
 
 .dropdown-menu-item:hover {
-    background-color: #f5f5f5;
-    color: #000;
+    background-color: var(--gray-light);
+    color: var(--primary);
 }
 
 .dropdown-menu-item:last-child {
@@ -258,85 +271,210 @@ button:hover {
     margin-right: 10px;
     width: 20px;
     height: 20px;
-    color: #1a1a1a;
+    color: var(--primary);
 }
 
 /* Sistema de Votos */
 .vote-btn {
     background-color: transparent;
-    border: 2px solid #000;
+    border: 2px solid var(--primary);
     padding: 4px;
     transition: background-color 0.1s, transform 0.1s;
+    color: var(--primary);
 }
 
 .vote-btn:hover {
-    background-color: #FFD166;
+    background-color: var(--yellow-accent);
     transform: translateY(-1px);
+    color: var(--primary);
 }
 
 .vote-btn.upvote.active {
     background-color: #ef4444;
-    color: white;
+    color: var(--secondary);
     border-color: #ef4444;
 }
 
 .vote-btn.downvote.active {
     background-color: #3b82f6;
-    color: white;
+    color: var(--secondary);
     border-color: #3b82f6;
 }
 
 .vote-container {
-    border: 2px solid #000;
-    background-color: #fff;
-    box-shadow: 3px 3px 0 #000;
+    border: 2px solid var(--primary);
+    background-color: var(--secondary);
+    box-shadow: 3px 3px 0 var(--primary);
     padding: 1rem 0.75rem;
 }
 
-/* 🔥 MODO NOCHE CORREGIDO - FONDO COMPLETO 🔥 */
+/* Botón Leer Más/Ver Detalles */
+.read-more {
+    background-color: var(--yellow-accent);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    transition: all 0.2s ease;
+}
+
+.read-more:hover {
+    background-color: var(--primary);
+    color: var(--yellow-accent);
+    border-color: var(--primary);
+}
+
+/* ======================================================
+   BADGE DE CATEGORÍA - COLORES CONSTANTES
+   ====================================================== */
+
+.category-badge {
+    background-color: #FFD166 !important; /* Amarillo fijo */
+    color: #000000 !important; /* Negro fijo */
+    border: 1px solid #000000 !important; /* Borde negro fijo */
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+/* ======================================================
+   ESTILOS ESPECÍFICOS PARA STARTUP_INFO.HTML
+   ====================================================== */
+
+/* Contenedor de información de startup */
+.startup-info-container {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+/* Estadísticas de startup */
+.stats-card {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+/* Formulario de comentarios */
+.comment-form-container {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+.comment-textarea {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.comment-textarea:focus {
+    box-shadow: 2px 2px 0 var(--primary);
+    outline: none;
+}
+
+.comment-textarea::placeholder {
+    color: var(--gray-dark);
+}
+
+/* Lista de comentarios */
+.comment-item {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+/* Botón de comentario */
+.comment-submit-btn {
+    background-color: var(--accent);
+    color: var(--secondary);
+    border: 2px solid var(--primary);
+    transition: all 0.3s;
+}
+
+.comment-submit-btn:hover {
+    box-shadow: 4px 4px 0px var(--primary);
+    transform: translate(-2px, -2px);
+    background-color: var(--accent-hover);
+}
+
+/* Información de contacto */
+.contact-info {
+    background-color: var(--gray-light);
+    border: 2px solid var(--primary);
+}
+
+/* ======================================================
+   MODO NOCHE
+   ====================================================== */
+
 body.night-mode-active {
-    background-color: #1a1a1a !important;
-    color: #f5f5f5 !important;
+    background-color: var(--night-bg) !important;
+    color: var(--night-text) !important;
 }
 
-/* Título principal "PUBLICACIONES RECIENTES" */
-.night-mode-active h1 {
-    color: #f5f5f5 !important;
+/* Textos */
+.night-mode-active h1,
+.night-mode-active h2,
+.night-mode-active h3,
+.night-mode-active .text-gray-700,
+.night-mode-active .text-gray-600 {
+    color: var(--night-text) !important;
 }
 
+.night-mode-active .text-black {
+    color: var(--night-text) !important;
+}
+
+/* Elementos de fondo */
 .night-mode-active .blog-post,
+.night-mode-active .startup-card,
 .night-mode-active .dropdown-menu,
-.night-mode-active .vote-container {
-    background-color: #333 !important;
-    color: #f5f5f5 !important;
+.night-mode-active .vote-container,
+.night-mode-active .bg-white {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
 }
 
-.night-mode-active .border-l-4 {
-    border-color: #fff !important;
+.night-mode-active .bg-gray-50,
+.night-mode-active .bg-gray-100 {
+    background-color: var(--night-card) !important;
 }
 
-.night-mode-active .text-gray-700 {
-    color: #ccc !important;
+.night-mode-active .bg-gray-300 {
+    background-color: var(--night-card) !important;
 }
 
-/* CORREGIDO: Cambiar .neo-brutalisto por .neo-brutalist */
+/* Bordes */
 .night-mode-active .neo-brutalist {
-    border-color: #fff !important;
-    box-shadow: 8px 8px 0 #fff !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 8px 8px 0 var(--night-border) !important;
 }
 
 .night-mode-active .neo-brutalist:hover {
-    box-shadow: 6px 6px 0 #fff !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
 }
 
+.night-mode-active .border-l-4,
+.night-mode-active .border-black,
+.night-mode-active .border-b-2 {
+    border-color: var(--night-border) !important;
+}
+
+/* Navbar y enlaces */
 .night-mode-active .navbar-link:hover {
-    color: #FFD166 !important;
+    color: var(--yellow-accent) !important;
 }
 
 .night-mode-active .dropdown-menu-item {
-    background-color: #333 !important;
-    color: #f5f5f5 !important;
-    border-color: #f5f5f5 !important;
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
 }
 
 .night-mode-active .dropdown-menu-item:hover {
@@ -344,84 +482,144 @@ body.night-mode-active {
 }
 
 .night-mode-active .dropdown-menu-item svg {
-    color: #f5f5f5 !important;
+    color: var(--night-text) !important;
 }
 
+/* Botones y elementos interactivos */
 .night-mode-active .read-more {
-    background-color: #FFD166 !important;
-    color: #000 !important;
-    border-color: #f5f5f5 !important;
+    background-color: var(--yellow-accent) !important;
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
 }
 
 .night-mode-active .read-more:hover {
-    background-color: #f5f5f5 !important;
-    color: #FFD166 !important;
-    border-color: #FFD166 !important;
+    background-color: var(--primary) !important;
+    color: var(--yellow-accent) !important;
+    border-color: var(--yellow-accent) !important;
 }
 
+/* ELIMINAMOS cualquier override en modo noche para el category-badge */
+/* El badge mantendrá los mismos colores en ambos modos */
+
 .night-mode-active .vote-btn {
-    border-color: #fff !important;
-    color: #fff !important;
+    border-color: var(--night-border) !important;
+    color: var(--night-text) !important;
 }
 
 .night-mode-active .vote-btn:hover {
-    background-color: #FFD166 !important;
-    color: #000 !important;
+    background-color: var(--yellow-accent) !important;
+    color: var(--primary) !important;
 }
 
 .night-mode-active .vote-btn.upvote.active {
     background-color: #ef4444 !important;
-    color: white !important;
+    color: var(--secondary) !important;
     border-color: #ef4444 !important;
 }
 
 .night-mode-active .vote-btn.downvote.active {
     background-color: #3b82f6 !important;
-    color: white !important;
+    color: var(--secondary) !important;
     border-color: #3b82f6 !important;
+}
+
+/* ======================================================
+   MODO NOCHE PARA STARTUP_INFO.HTML
+   ====================================================== */
+
+.night-mode-active .startup-info-container,
+.night-mode-active .stats-card,
+.night-mode-active .comment-form-container,
+.night-mode-active .contact-info {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+/* Textarea de comentarios en modo noche */
+.night-mode-active .comment-textarea {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .comment-textarea:focus {
+    box-shadow: 2px 2px 0 var(--night-border) !important;
+}
+
+.night-mode-active .comment-textarea::placeholder {
+    color: var(--gray-medium) !important;
+}
+
+/* Items de comentarios en modo noche */
+.night-mode-active .comment-item {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-bottom-color: var(--night-border) !important;
+}
+
+/* Botón de enviar comentario en modo noche */
+.night-mode-active .comment-submit-btn {
+    background-color: var(--accent) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .comment-submit-btn:hover {
+    background-color: var(--accent-hover) !important;
+    box-shadow: 4px 4px 0px var(--night-border) !important;
+}
+
+/* Información de contacto en modo noche */
+.night-mode-active .contact-info {
+    background-color: #444 !important; /* Un gris más oscuro para contraste */
 }
 
 /* ======================================================
    ESTILOS ESPECÍFICOS PARA LOGIN Y SIGNUP
    ====================================================== */
 
-/* Inputs con estilo neo-brutalista */
 .input-neo {
-    border: 2px solid #000;
-    background-color: #fff;
+    border: 2px solid var(--primary);
+    background-color: var(--secondary);
     padding: 0.75rem 1rem;
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
     transition: all 0.2s ease;
+    color: var(--primary);
 }
 
 .input-neo:focus {
-    box-shadow: 2px 2px 0 #000;
+    box-shadow: 2px 2px 0 var(--primary);
     transform: translate(-1px, -1px);
     outline: none;
 }
 
-/* Botones de formulario */
+.input-neo::placeholder {
+    color: var(--gray-dark);
+}
+
 .btn-neo {
-    background-color: #FFD166;
-    border: 2px solid #000;
+    background-color: var(--yellow-accent);
+    border: 2px solid var(--primary);
     padding: 0.75rem 1.5rem;
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
     transition: all 0.2s ease;
-    box-shadow: 4px 4px 0 #000;
+    box-shadow: 4px 4px 0 var(--primary);
+    color: var(--primary);
 }
 
 .btn-neo:hover {
-    background-color: #000;
-    color: #FFD166;
+    background-color: var(--primary);
+    color: var(--yellow-accent);
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--primary);
 }
 
 .btn-neo:active {
     transform: translate(0, 0);
-    box-shadow: 2px 2px 0 #000;
+    box-shadow: 2px 2px 0 var(--primary);
 }
 
 /* ======================================================
@@ -429,55 +627,45 @@ body.night-mode-active {
    ====================================================== */
 
 .night-mode-active .input-neo {
-    background-color: #333;
-    border-color: #fff;
-    color: #fff;
+    background-color: var(--night-card);
+    border-color: var(--night-border);
+    color: var(--night-text);
 }
 
 .night-mode-active .input-neo:focus {
-    box-shadow: 2px 2px 0 #fff;
+    box-shadow: 2px 2px 0 var(--night-border);
 }
 
 .night-mode-active .input-neo::placeholder {
-    color: #ccc;
+    color: var(--gray-medium);
 }
 
 .night-mode-active .btn-neo {
-    background-color: #FFD166;
-    color: #000;
-    border-color: #fff;
-    box-shadow: 4px 4px 0 #fff;
+    background-color: var(--yellow-accent);
+    color: var(--primary);
+    border-color: var(--night-border);
+    box-shadow: 4px 4px 0 var(--night-border);
 }
 
 .night-mode-active .btn-neo:hover {
-    background-color: #fff;
-    color: #FFD166;
-    box-shadow: 6px 6px 0 #fff;
-}
-
-/* Textos en modo oscuro */
-.night-mode-active .text-gray-700 {
-    color: #ccc !important;
-}
-
-.night-mode-active .text-gray-600 {
-    color: #ccc !important;
+    background-color: var(--night-border);
+    color: var(--yellow-accent);
+    box-shadow: 6px 6px 0 var(--night-border);
 }
 
 /* Enlaces en modo oscuro */
 .night-mode-active a {
-    color: #fff;
+    color: var(--night-text);
 }
 
 .night-mode-active a:hover {
-    color: #FFD166;
+    color: var(--yellow-accent);
 }
 
 /* ======================================================
-   ESTILOS PARA LA BARRA DE BÚSQUEDA DESPLEGABLE - ACTUALIZADOS
+   ESTILOS PARA LA BARRA DE BÚSQUEDA DESPLEGABLE
    ====================================================== */
 
-/* Contenedor de búsqueda */
 .search-container {
     position: relative;
     display: flex;
@@ -485,171 +673,300 @@ body.night-mode-active {
     height: 2.5rem;
 }
 
-/* Input de búsqueda */
 .search-input {
     position: absolute;
     right: 0;
     top: 0;
     height: 100%;
-    border: 2px solid #000;
-    background-color: #fff;
+    border: 2px solid var(--primary);
+    background-color: var(--secondary);
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
-    color: #000;
+    color: var(--primary);
     transition: all 0.3s ease;
     z-index: 10;
 }
 
 .search-input:focus {
-    box-shadow: 2px 2px 0 #000;
+    box-shadow: 2px 2px 0 var(--primary);
     outline: none;
 }
 
 .search-input::placeholder {
-    color: #666;
+    color: var(--gray-dark);
     font-weight: 400;
 }
 
-/* Botón de búsqueda - Estilo similar a inicio de sesión */
 .search-toggle-btn {
     position: relative;
     height: 100%;
+    background-color: var(--accent);
+    color: var(--secondary);
+    border: 2px solid var(--primary);
+    padding: 0 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    font-weight: bold;
+}
+
+.search-toggle-btn:hover {
+    box-shadow: 4px 4px 0px var(--primary);
+    transform: translate(-2px, -2px);
+    background-color: var(--accent-hover);
+    color: var(--secondary);
+}
+
+/* ======================================================
+   MODO OSCURO PARA BARRA DE BÚSQUEDA
+   ====================================================== */
+
+.night-mode-active .search-input {
+    background-color: var(--night-card);
+    border-color: var(--night-border);
+    color: var(--night-text);
+}
+
+.night-mode-active .search-input:focus {
+    box-shadow: 2px 2px 0 var(--night-border);
+}
+
+.night-mode-active .search-input::placeholder {
+    color: var(--gray-medium);
+}
+
+.night-mode-active .search-toggle-btn {
+    background-color: var(--accent);
+    border-color: var(--night-border);
+    color: var(--secondary);
+}
+
+.night-mode-active .search-toggle-btn:hover {
+    background-color: var(--accent-hover);
+    color: var(--secondary);
+    box-shadow: 4px 4px 0px var(--night-border);
+}
+
+/* ======================================================
+   ESTILOS ADICIONALES PARA STARTUPS
+   ====================================================== */
+
+.startup-card {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+.startup-info-card {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+/* Aseguramos que los textos en gris se vean bien en modo oscuro */
+.night-mode-active .text-gray-700,
+.night-mode-active .text-gray-600,
+.night-mode-active .text-gray-500 {
+    color: var(--gray-medium) !important;
+}
+
+/* Iconos SVG en modo oscuro */
+.night-mode-active svg {
+    color: var(--night-text);
+}
+
+.night-mode-active .icon-dropdown-btn svg {
+    color: var(--night-text);
+}
+
+.night-mode-active .icon-dropdown-btn:hover svg {
+    color: var(--yellow-accent);
+}
+
+/* ======================================================
+   ESTILOS ADICIONALES PARA STARTUP_INFO.HTML
+   ====================================================== */
+
+/* Badges de roles en el equipo */
+.bg-green-500, .bg-blue-500 {
+    border: 1px solid var(--primary);
+}
+
+/* Listas con viñetas */
+.list-disc {
+    color: var(--primary);
+}
+
+/* Iconos de información de contacto */
+.night-mode-active .list-disc {
+    color: var(--night-text);
+}
+
+/* Enlaces en información de contacto */
+.night-mode-active .text-blue-600 {
+    color: #60a5fa !important;
+}
+
+.night-mode-active .text-blue-600:hover {
+    color: #93c5fd !important;
+}
+
+/* Estados de botones de voto en estadísticas */
+.stats-card .vote-btn.upvote.active {
+    background-color: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.stats-card .vote-btn.downvote.active {
     background-color: #ef4444;
-    border: 2px solid #000;
-    padding: 0 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-    font-family: 'Roboto Mono', monospace;
-    font-weight: 700;
-    color: #fff;
+    color: white;
+    border-color: #ef4444;
 }
 
-.search-toggle-btn:hover {
-    background-color: #ec0505;
-    color: #fff;
-    transform: translate(-1px, -1px);
-    box-shadow: 2px 2px 0 #000;
+.night-mode-active .stats-card .vote-btn.upvote.active {
+    background-color: #10b981 !important;
+    color: white !important;
+    border-color: #10b981 !important;
 }
 
+.night-mode-active .stats-card .vote-btn.downvote.active {
+    background-color: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+
+/* Badges de roles en modo noche */
+.night-mode-active .bg-green-500 {
+    background-color: #10b981 !important;
+    color: white !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .bg-blue-500 {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border-color: var(--night-border) !important;
+}
 /* ======================================================
-   MODO OSCURO PARA BARRA DE BÚSQUEDA DESPLEGABLE
+   ESTILOS PARA BOTONES DE CREAR STARTUP Y ORDENAMIENTO
    ====================================================== */
 
-.night-mode-active .search-input {
-    background-color: #333;
-    border-color: #fff;
-    color: #fff;
-}
-
-.night-mode-active .search-input:focus {
-    box-shadow: 2px 2px 0 #fff;
-}
-
-.night-mode-active .search-input::placeholder {
-    color: #ccc;
-}
-
-.night-mode-active .search-toggle-btn {
+/* Botón Crear Startup */
+.create-startup-btn {
     background-color: #FF5E5B;
-    border-color: #FF5E5B;
-    color: #fff;
+    color: #FFFFFF;
+    border: 2px solid #000000;
+    transition: all 0.3s;
+    box-shadow: 4px 4px 0 #000000;
 }
 
-.night-mode-active .search-toggle-btn:hover {
-    background-color: #fff;
-    color: #333;
-    box-shadow: 2px 2px 0 #fff;
-}/* ======================================================
-   ESTILOS PARA LA BARRA DE BÚSQUEDA DESPLEGABLE - CORREGIDOS
-   ====================================================== */
+.create-startup-btn:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+    box-shadow: 6px 6px 0 #000000;
+    transform: translate(-2px, -2px);
+}
 
-/* Contenedor de búsqueda */
-.search-container {
-    position: relative;
+/* Botón de toggle para ordenamiento */
+.sort-toggle-btn {
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 2px solid #000000;
+    transition: all 0.3s;
+    box-shadow: 4px 4px 0 #000000;
+}
+
+.sort-toggle-btn:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+    box-shadow: 6px 6px 0 #000000;
+    transform: translate(-2px, -2px);
+}
+
+/* Menú desplegable de ordenamiento */
+.sort-dropdown-menu {
+    border: 4px solid #000000;
+    box-shadow: 8px 8px 0 #000000;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+}
+
+.sort-option {
+    padding: 12px 16px;
     display: flex;
     align-items: center;
-    height: 2.5rem;
-}
-
-/* Input de búsqueda */
-.search-input {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    border: 2px solid #000;
-    background-color: #fff;
-    font-family: 'Roboto Mono', monospace;
     font-weight: 700;
-    color: #000;
-    transition: all 0.3s ease;
-    z-index: 10;
-}
-
-.search-input:focus {
-    box-shadow: 2px 2px 0 #000;
-    outline: none;
-}
-
-.search-input::placeholder {
-    color: #666;
-    font-weight: 400;
-}
-
-/* Botón de búsqueda - Exactamente igual al botón de login */
-.search-toggle-btn {
-    position: relative;
-    height: 100%;
-    background-color: #da2d2a; /* Mismo color que el botón de login */
-    color: #fff; /* Texto blanco */
-    border: 2px solid #da2d2a; /* Borde negro */
-    padding: 0 0.75rem;
+    border-bottom: 2px solid #000000;
+    background-color: #FFFFFF;
+    color: #1a1a1a;
+    transition: background-color 0.1s, color 0.1s;
+    width: 100%;
+    text-align: left;
     cursor: pointer;
-    transition: all 0.3s; /* Transición igual al botón de login */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-    font-weight: bold; /* Mismo peso de fuente */
 }
 
-.search-toggle-btn:hover {
-    box-shadow: 4px 4px 0px #000; /* Mismo efecto hover que el botón de login */
-    transform: translate(-2px, -2px); /* Mismo transform que el botón de login */
-    background-color: #da2d2a; /* Fondo negro al hover */
-    color: #FFD166; /* Texto blanco al hover */
+.sort-option:hover {
+    background-color: #f5f5f5;
+    color: #000000;
+}
+
+.sort-option:last-child {
+    border-bottom: none;
+}
+
+.sort-option svg {
+    color: #1a1a1a;
 }
 
 /* ======================================================
-   MODO OSCURO PARA BARRA DE BÚSQUEDA DESPLEGABLE
+   MODO NOCHE PARA BOTONES DE CREAR STARTUP Y ORDENAMIENTO
    ====================================================== */
 
-.night-mode-active .search-input {
-    background-color: #333;
-    border-color: #fff;
-    color: #fff;
+.night-mode-active .create-startup-btn {
+    background-color: #FF5E5B !important;
+    color: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+    box-shadow: 4px 4px 0 #FFFFFF !important;
 }
 
-.night-mode-active .search-input:focus {
-    box-shadow: 2px 2px 0 #fff;
+.night-mode-active .create-startup-btn:hover {
+    background-color: #FFFFFF !important;
+    color: #FF5E5B !important;
+    box-shadow: 6px 6px 0 #FFFFFF !important;
 }
 
-.night-mode-active .search-input::placeholder {
-    color: #ccc;
+.night-mode-active .sort-toggle-btn {
+    background-color: #333 !important;
+    color: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+    box-shadow: 4px 4px 0 #FFFFFF !important;
 }
 
-.night-mode-active .search-toggle-btn {
-    background-color: #da2d2a; /* Mantiene el rojo en modo oscuro */
-    border-color: #da2d2a; /* Borde blanco en modo oscuro */
-    color: #fff;
+.night-mode-active .sort-toggle-btn:hover {
+    background-color: #FFFFFF !important;
+    color: #333 !important;
+    box-shadow: 6px 6px 0 #FFFFFF !important;
 }
 
-.night-mode-active .search-toggle-btn:hover {
-    background-color: #da2d2a; /* Fondo blanco al hover en modo oscuro */
-    color: #FFD166; /* Texto rojo al hover en modo oscuro */
-    box-shadow: 4px 4px 0px #000; /* Sombra blanca en modo oscuro */
+.night-mode-active .sort-dropdown-menu {
+    border-color: #FFFFFF !important;
+    box-shadow: 8px 8px 0 #FFFFFF !important;
+    background-color: #333 !important;
+}
+
+.night-mode-active .sort-option {
+    background-color: #333 !important;
+    color: #FFFFFF !important;
+    border-bottom-color: #FFFFFF !important;
+}
+
+.night-mode-active .sort-option:hover {
+    background-color: #555 !important;
+    color: #FFFFFF !important;
+}
+
+.night-mode-active .sort-option svg {
+    color: #FFFFFF !important;
 }

@@ -2,6 +2,7 @@
 export class HomePage {
     constructor() {
         this.userVotes = {};
+        this.currentSort = 'newest'; // Valor por defecto
         this.init();
     }
 
@@ -12,7 +13,8 @@ export class HomePage {
         this.setupNavigation();
         this.setupVotingSystem();
         this.setupSearch();
-        this.loadPosts();
+        this.setupSortDropdown();
+        this.loadStartups();
         this.checkAuthStatus();
     }
 
@@ -42,6 +44,62 @@ export class HomePage {
                 }
             });
         }
+    }
+
+    setupSortDropdown() {
+        const sortDropdownBtn = document.getElementById('sort-dropdown-btn');
+        const sortDropdownMenu = document.getElementById('sort-dropdown-menu');
+
+        if (sortDropdownBtn && sortDropdownMenu) {
+            sortDropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortDropdownMenu.classList.toggle('hidden');
+            });
+
+            // Cerrar el menú si se hace clic fuera
+            document.addEventListener('click', (e) => {
+                if (!sortDropdownBtn.contains(e.target) && !sortDropdownMenu.contains(e.target)) {
+                    sortDropdownMenu.classList.add('hidden');
+                }
+            });
+
+            // Manejar selección de opciones de ordenamiento
+            const sortOptions = sortDropdownMenu.querySelectorAll('.sort-option');
+            sortOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sortType = option.dataset.sort;
+                    this.handleSortChange(sortType);
+                    sortDropdownMenu.classList.add('hidden');
+
+                    // Actualizar texto del botón
+                    let sortText = 'Ordenar por';
+                    switch(sortType) {
+                        case 'newest':
+                            sortText = 'Más nuevos';
+                            break;
+                        case 'oldest':
+                            sortText = 'Más antiguos';
+                            break;
+                        case 'most-voted':
+                            sortText = 'Más votados';
+                            break;
+                    }
+
+                    sortDropdownBtn.innerHTML = `
+                        <span>${sortText}</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    `;
+                });
+            });
+        }
+    }
+
+    handleSortChange(sortType) {
+        this.currentSort = sortType;
+        this.loadStartups(); // Recargar las startups con el nuevo orden
     }
 
     setupNightMode() {
@@ -84,37 +142,37 @@ export class HomePage {
             return;
         }
 
-        const postId = button.dataset.postId;
-        const countSpan = document.querySelector(`.vote-count[data-post-id="${postId}"]`);
-        const upvoteBtn = document.querySelector(`.upvote[data-post-id="${postId}"]`);
-        const downvoteBtn = document.querySelector(`.downvote[data-post-id="${postId}"]`);
+        const startupId = button.dataset.startupId;
+        const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
+        const upvoteBtn = document.querySelector(`.upvote[data-startup-id="${startupId}"]`);
+        const downvoteBtn = document.querySelector(`.downvote[data-startup-id="${startupId}"]`);
 
         let count = parseInt(countSpan.textContent);
-        const currentVote = this.userVotes[postId];
+        const currentVote = this.userVotes[startupId];
 
         upvoteBtn.classList.remove('active');
         downvoteBtn.classList.remove('active');
 
         if (currentVote === voteType) {
             count += (voteType === 'up') ? -1 : 1;
-            delete this.userVotes[postId];
+            delete this.userVotes[startupId];
         } else {
             if (currentVote === 'up') count -= 1;
             if (currentVote === 'down') count += 1;
 
             count += (voteType === 'up') ? 1 : -1;
-            this.userVotes[postId] = voteType;
+            this.userVotes[startupId] = voteType;
             button.classList.add('active');
         }
 
         countSpan.textContent = count;
-        this.saveVoteToServer(postId, voteType, currentVote);
+        this.saveVoteToServer(startupId, voteType, currentVote);
     }
 
-    async saveVoteToServer(postId, newVote, oldVote) {
+    async saveVoteToServer(startupId, newVote, oldVote) {
         try {
             // Integrar con tu API de votos aquí
-            console.log(`Voto guardado: Post ${postId}, Voto: ${newVote}, Anterior: ${oldVote}`);
+            console.log(`Voto guardado: Startup ${startupId}, Voto: ${newVote}, Anterior: ${oldVote}`);
         } catch (error) {
             console.error('Error saving vote:', error);
         }
@@ -187,6 +245,7 @@ export class HomePage {
     }
 
     setupSearch() {
+        // Esperar un poco para asegurar que el DOM esté listo
         setTimeout(() => {
             const searchInput = document.getElementById('search-input');
             const searchButton = document.getElementById('search-button');
@@ -238,7 +297,7 @@ export class HomePage {
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         hideSearchInput();
-                        this.loadPosts();
+                        this.loadStartups();
                     }
                 });
 
@@ -256,13 +315,17 @@ export class HomePage {
                         console.log('⚡ Búsqueda en tiempo real:', query);
                         this.performSearch(query);
                     } else if (query.length === 0) {
-                        console.log('🔄 Recargando posts (búsqueda vacía)');
-                        this.loadPosts();
+                        console.log('🔄 Recargando startups (búsqueda vacía)');
+                        this.loadStartups();
                     }
                 });
 
             } else {
                 console.error('❌ Elementos de búsqueda no encontrados');
+                console.log('Elementos en la página:', {
+                    inputs: document.querySelectorAll('input'),
+                    buttons: document.querySelectorAll('button')
+                });
             }
         }, 100);
     }
@@ -276,104 +339,203 @@ export class HomePage {
         if (query) {
             this.performSearch(query);
         } else {
-            this.loadPosts();
+            this.loadStartups();
         }
     }
 
     async performSearch(query) {
         try {
-            const postsContainer = document.getElementById('posts-container');
-            postsContainer.innerHTML = '<div class="text-center py-8">Buscando...</div>';
+            const startupsContainer = document.getElementById('startups-container');
+            startupsContainer.innerHTML = '<div class="text-center py-8">Buscando...</div>';
 
-            const allPosts = await this.fetchPosts();
-            const filteredPosts = allPosts.filter(post =>
-                post.title.toLowerCase().includes(query.toLowerCase()) ||
-                post.content.toLowerCase().includes(query.toLowerCase())
+            const allStartups = await this.fetchStartups();
+            const filteredStartups = allStartups.filter(startup =>
+                startup.name.toLowerCase().includes(query.toLowerCase()) ||
+                startup.description.toLowerCase().includes(query.toLowerCase()) ||
+                startup.category.toLowerCase().includes(query.toLowerCase())
             );
 
-            console.log(`✅ ${filteredPosts.length} resultados encontrados`);
-            this.renderPosts(filteredPosts);
+            console.log(`✅ ${filteredStartups.length} resultados encontrados`);
+
+            // Aplicar ordenamiento a los resultados de búsqueda
+            const sortedStartups = this.sortStartups(filteredStartups, this.currentSort);
+            this.renderStartups(sortedStartups);
 
         } catch (error) {
             console.error('❌ Error en búsqueda:', error);
-            const postsContainer = document.getElementById('posts-container');
-            postsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error en la búsqueda</div>';
+            const startupsContainer = document.getElementById('startups-container');
+            startupsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error en la búsqueda</div>';
         }
     }
 
-    async loadPosts() {
+    async loadStartups() {
         try {
-            const posts = await this.fetchPosts();
-            this.renderPosts(posts);
+            let startups = await this.fetchStartups();
+            startups = this.sortStartups(startups, this.currentSort);
+            this.renderStartups(startups);
         } catch (error) {
-            console.error('Error loading posts:', error);
+            console.error('Error loading startups:', error);
         }
     }
 
-    async fetchPosts() {
-        // Datos de ejemplo
+    // Método para ordenar startups
+    sortStartups(startups, sortType) {
+        const sortedStartups = [...startups]; // Crear copia para no mutar el original
+
+        switch(sortType) {
+            case 'newest':
+                return sortedStartups.sort((a, b) => {
+                    // Ordenar por fecha más reciente primero
+                    return new Date(b.created_date) - new Date(a.created_date);
+                });
+
+            case 'oldest':
+                return sortedStartups.sort((a, b) => {
+                    // Ordenar por fecha más antigua primero
+                    return new Date(a.created_date) - new Date(b.created_date);
+                });
+
+            case 'most-voted':
+                return sortedStartups.sort((a, b) => {
+                    // Ordenar por más votos primero
+                    return b.votes - a.votes;
+                });
+
+            default:
+                return sortedStartups;
+        }
+    }
+
+    async fetchStartups() {
+        // Datos de ejemplo para startups
         return [
             {
                 id: 1,
-                title: "Responsive Web Design",
-                content: "Learn how to create responsive web designs that look great on all devices.",
-                image: "https://media.geeksforgeeks.org/wp-content/uploads/20240117155347/responsive-web-design-copy.webp",
-                date: "March 21, 2024",
+                name: "TechInnovate",
+                description: "Una startup dedicada a la innovación tecnológica en el campo de la inteligencia artificial y machine learning. Desarrollamos soluciones personalizadas para empresas que buscan transformar digitalmente sus operaciones.",
+                email: "contact@techinnovate.com",
+                website: "https://techinnovate.com",
+                social_media: "@techinnovate",
+                category: "Tecnología",
+                created_date: "2024-03-21",
                 votes: 12
             },
             {
                 id: 2,
-                title: "JavaScript Fundamentals",
-                content: "Get started with JavaScript and master the fundamentals of this powerful programming language.",
-                image: "https://media.geeksforgeeks.org/wp-content/uploads/20230809133232/JavaScript-Complete-Guide-copy-2.webp",
-                date: "March 18, 2024",
+                name: "EcoSolutions",
+                description: "Soluciones sostenibles para un futuro verde y renovable. Desarrollamos tecnologías limpias y productos ecológicos que reducen el impacto ambiental.",
+                email: "info@ecosolutions.com",
+                website: "https://ecosolutions.com",
+                social_media: "@ecosolutions",
+                category: "Medio Ambiente",
+                created_date: "2024-03-18",
                 votes: 5
             },
             {
                 id: 3,
-                title: "CSS Flexbox Tutorial",
-                content: "Learn how to use CSS Flexbox to create flexible layouts with ease.",
-                image: "https://media.geeksforgeeks.org/wp-content/uploads/20240507112025/75s2.png",
-                date: "March 15, 2024",
+                name: "HealthTech Pro",
+                description: "Revolucionando la industria de la salud con tecnología de vanguardia. Plataformas de telemedicina y dispositivos médicos inteligentes.",
+                email: "hello@healthtech.com",
+                website: "https://healthtech.com",
+                social_media: "@healthtech",
+                category: "Salud",
+                created_date: "2024-03-15",
                 votes: 24
+            },
+            {
+                id: 4,
+                name: "FinSecure",
+                description: "Soluciones de seguridad financiera y pagos digitales seguros. Protegemos tus transacciones con tecnología blockchain.",
+                email: "security@finsecure.com",
+                website: "https://finsecure.com",
+                social_media: "@finsecure",
+                category: "Finanzas",
+                created_date: "2024-03-12",
+                votes: 8
+            },
+            {
+                id: 5,
+                name: "EduFuture",
+                description: "Plataforma de educación online con cursos interactivos y aprendizaje adaptativo para todas las edades.",
+                email: "learn@edufuture.com",
+                website: "https://edufuture.com",
+                social_media: "@edufuture",
+                category: "Educación",
+                created_date: "2024-03-10",
+                votes: 15
+            },
+            {
+                id: 6,
+                name: "MarketHub",
+                description: "Marketplace B2B que conecta proveedores con retailers. Optimizamos la cadena de suministro con IA.",
+                email: "sales@markethub.com",
+                website: "https://markethub.com",
+                social_media: "@markethub",
+                category: "Comercio",
+                created_date: "2024-03-08",
+                votes: 3
             }
         ];
     }
 
-    renderPosts(posts) {
-        const container = document.getElementById('posts-container');
+    renderStartups(startups) {
+        const container = document.getElementById('startups-container');
         if (!container) {
-            console.error('❌ Contenedor de posts no encontrado');
+            console.error('❌ Contenedor de startups no encontrado');
             return;
         }
 
-        container.innerHTML = posts.map(post => `
-            <div class="blog-post bg-white neo-brutalist rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out flex">
+        container.innerHTML = startups.map(startup => `
+            <div class="startup-card bg-white neo-brutalist rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out flex">
                 <div class="flex flex-col items-center justify-start vote-container flex-shrink-0">
-                    <button class="vote-btn upvote" data-post-id="${post.id}">
+                    <button class="vote-btn upvote" data-startup-id="${startup.id}">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                         </svg>
                     </button>
-                    <span class="vote-count text-lg font-bold my-1" data-post-id="${post.id}">${post.votes}</span>
-                    <button class="vote-btn downvote" data-post-id="${post.id}">
+                    <span class="vote-count text-lg font-bold my-1" data-startup-id="${startup.id}">${startup.votes}</span>
+                    <button class="vote-btn downvote" data-startup-id="${startup.id}">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                 </div>
-                <img src="${post.image}" alt="${post.title}" class="w-64 h-32 object-cover rounded-l-sm flex-shrink-0">
                 <div class="p-6 flex-grow border-l-4 border-black">
-                    <h2 class="text-2xl font-semibold mb-2">${post.title}</h2>
-                    <p class="text-gray-700 mb-4 text-base">${post.content}</p>
-                    <div class="flex items-center justify-between mt-2">
-                        <p class="text-sm text-gray-700 date-text">${post.date}</p>
-                        <a href="./post-detail.html?id=${post.id}" class="text-black bg-yellow-400 py-1 px-3 border-2 border-black hover:bg-black hover:text-yellow-400 read-more">
-                            LEER MÁS »
-                        </a>
+                    <div class="flex justify-between items-start mb-2">
+                        <h2 class="text-2xl font-semibold">${startup.name}</h2>
+                        <span class="category-badge">${startup.category}</span>
+                    </div>
+                    <p class="text-gray-700 mb-3 text-base">${startup.description}</p>
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            ${startup.email ? `<span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                ${startup.email}
+                            </span>` : ''}
+                            ${startup.website ? `<span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                </svg>
+                                Sitio web
+                            </span>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-sm text-gray-700 date-text">${this.formatDate(startup.created_date)}</span>
+                            <a href="./startup_info.html?id=${startup.id}" class="text-black bg-yellow-400 py-1 px-3 border-2 border-black hover:bg-black hover:text-yellow-400 read-more transition-all">
+                                VER DETALLES »
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         `).join('');
+    }
+
+    formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', options);
     }
 }

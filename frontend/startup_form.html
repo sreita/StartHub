@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StartHub - Inicio</title>
+    <title>StartHub - Crear Startup</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -76,63 +76,78 @@
     </nav>
 
     <!-- Contenido principal -->
-    <div class="container mx-auto py-8 px-4 md:px-0">
-        <!-- Header con título y botones -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-            <h1 class="text-4xl md:text-5xl mb-4 md:mb-0 text-center md:text-left">
-                STARTUPS AGREGADAS
-            </h1>
+    <div class="container mx-auto py-8 px-4 md:px-0 max-w-4xl">
+        <h1 class="text-4xl md:text-5xl mb-6 md:mb-8 text-center">
+            <span id="form-title">Crear Startup</span>
+        </h1>
 
-            <div class="flex flex-col sm:flex-row gap-4 items-center">
-                <!-- Botón Crear Startup -->
-                <a href="./startup_form.html"
-                   class="create-startup-btn bg-[#FF5E5B] text-white border-2 border-black px-6 py-3 font-bold hover:bg-black hover:text-white transition-all duration-200 text-center w-full sm:w-auto">
-                    + Crear Startup
-                </a>
+        <form id="startup-form" class="bg-white neo-brutalist p-8">
+            <!-- Información básica -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4 border-b-2 border-black pb-2">Información Básica</h2>
 
-                <!-- Dropdown de Ordenamiento -->
-                <div class="relative">
-                    <button id="sort-dropdown-btn"
-                            class="sort-toggle-btn bg-white text-black border-2 border-black px-4 py-3 font-bold hover:bg-black hover:text-white transition-all duration-200 flex items-center justify-between w-full sm:w-48">
-                        <span>Ordenar por</span>
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
+                <div class="mb-4">
+                    <label for="name" class="block text-lg font-bold mb-2">Nombre de la Startup *</label>
+                    <input type="text" id="name" name="name" required
+                           class="w-full p-3 border-2 border-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000]">
+                </div>
 
-                    <div id="sort-dropdown-menu" class="sort-dropdown-menu hidden absolute right-0 mt-2 w-48 overflow-hidden z-50">
-                        <button class="sort-option" data-sort="newest">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                            Más nuevos
-                        </button>
-                        <button class="sort-option" data-sort="oldest">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
-                            </svg>
-                            Más antiguos
-                        </button>
-                        <button class="sort-option" data-sort="most-voted">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-                            </svg>
-                            Más votados
-                        </button>
-                    </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-lg font-bold mb-2">Descripción *</label>
+                    <textarea id="description" name="description" rows="4" required
+                              class="w-full p-3 border-2 border-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000]"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="category_id" class="block text-lg font-bold mb-2">Categoría *</label>
+                    <select id="category_id" name="category_id" required
+                            class="w-full p-3 border-2 border-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000]">
+                        <option value="">Selecciona una categoría</option>
+                        <!-- Las categorías se cargarán dinámicamente -->
+                    </select>
                 </div>
             </div>
-        </div>
 
-        <div id="startups-container" class="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
-            <!-- Las startups se cargarán aquí dinámicamente -->
-        </div>
+            <!-- Información de contacto -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-4 border-b-2 border-black pb-2">Información de Contacto</h2>
+
+                <div class="mb-4">
+                    <label for="email" class="block text-lg font-bold mb-2">Email de contacto</label>
+                    <input type="email" id="email" name="email"
+                           class="w-full p-3 border-2 border-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000]">
+                </div>
+
+                <div class="mb-4">
+                    <label for="website" class="block text-lg font-bold mb-2">Sitio web</label>
+                    <input type="url" id="website" name="website"
+                           class="w-full p-3 border-2 border-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000]"
+                           placeholder="https://">
+                </div>
+
+                <div class="mb-4">
+                    <label for="social_media" class="block text-lg font-bold mb-2">Redes sociales</label>
+                    <input type="text" id="social_media" name="social_media"
+                           class="w-full p-3 border-2 border-black font-mono focus:outline-none focus:shadow-[2px_2px_0_#000]"
+                           placeholder="@usuario">
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex space-x-4">
+                <button type="submit"
+                        class="flex-1 bg-[#FF5E5B] text-white border-2 border-black py-3 font-bold hover:bg-black hover:text-white transition-all">
+                    <span id="submit-text">Crear Startup</span>
+                </button>
+                <a href="./home.html"
+                   class="flex-1 bg-gray-300 text-black border-2 border-black py-3 font-bold text-center hover:bg-black hover:text-white transition-all">
+                    Cancelar
+                </a>
+            </div>
+        </form>
     </div>
 
     <!-- Scripts -->
-    <script type="module">
-        import { HomePage } from './js/home.js';
-        new HomePage();
-    </script>
+    <script type="module" src="./js/startup_form.js"></script>
 </body>
 </html>
