@@ -4,59 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - StartHub</title>
-    <!-- Incluir Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Si tienes estilos personalizados -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        .font-display {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 md:p-8">
     <div class="w-full max-w-md">
         <!-- Enlace para volver al home -->
-        <div class="text-center mb-4">
-            <a href="./home.html" class="text-blue-500 hover:text-blue-700">← Volver al inicio</a>
+        <div class="text-center mb-6">
+            <a href="./home.html" class="text-black hover:text-yellow-600 font-bold font-mono text-lg">← VOLVER AL INICIO</a>
         </div>
 
-        <form id="login-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-            <h2 class="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
+        <!-- Formulario con estilo neo-brutalista -->
+        <div class="neo-brutalist bg-white p-8 rounded-lg">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display">INICIAR SESIÓN</h2>
 
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                    Usuario
-                </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       id="username"
-                       type="text"
-                       placeholder="Tu usuario"
-                       required>
+            <form id="login-form">
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="username">
+                        USUARIO
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           id="username"
+                           type="text"
+                           placeholder="TU USUARIO"
+                           required>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="password">
+                        CONTRASEÑA
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           id="password"
+                           type="password"
+                           placeholder="******************"
+                           required>
+                </div>
+
+                <!-- Botón centrado y enlace debajo -->
+                <div class="text-center mb-6">
+                    <button class="neo-brutalist bg-yellow-400 hover:bg-black hover:text-yellow-400 text-black font-bold py-3 px-8 font-mono transition-all duration-200 mb-4"
+                            type="submit">
+                        INICIAR SESIÓN
+                    </button>
+                    <div class="mt-2">
+                        <a class="font-bold text-sm text-black hover:text-yellow-600 font-mono" href="./signup.html">
+                            ¿NO TIENES CUENTA?
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="text-center pt-4 border-t-2 border-black">
+                <p class="text-gray-600 text-sm font-mono">
+                    ¿OLVIDASTE TU CONTRASEÑA?
+                    <a href="#" class="text-black hover:text-yellow-600 font-bold">RECUPÉRALA AQUÍ</a>
+                </p>
             </div>
-
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                    Contraseña
-                </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                       id="password"
-                       type="password"
-                       placeholder="******************"
-                       required>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        type="submit">
-                    Iniciar Sesión
-                </button>
-                <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="./signup.html">
-                    ¿No tienes cuenta?
-                </a>
-            </div>
-        </form>
-
-        <div class="text-center">
-            <p class="text-gray-600 text-sm">
-                ¿Olvidaste tu contraseña?
-                <a href="#" class="text-blue-500 hover:text-blue-700">Recupérala aquí</a>
-            </p>
         </div>
     </div>
 
@@ -95,6 +106,12 @@
         // Verificar si ya está autenticado
         if (localStorage.getItem('authToken')) {
             window.location.href = './home.html';
+        }
+
+        // Configurar modo noche si está activo
+        const savedNightMode = localStorage.getItem('nightMode') === 'true';
+        if (savedNightMode) {
+            document.body.classList.add('night-mode-active');
         }
     </script>
 </body>
