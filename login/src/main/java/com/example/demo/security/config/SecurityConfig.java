@@ -65,11 +65,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF para APIs stateless
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 🔥 Añade esta línea
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos: login, registro y la UI de thymeleaf
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/registration/**").permitAll()
+                .requestMatchers("/api/v1/startups").permitAll() // Permitir listar startups
+                .requestMatchers("/api/v1/startups/{id}").permitAll() // Permitir ver detalles
+                .requestMatchers("/startup_info.html").permitAll() // Permitir acceso a la página de detalles
                 .requestMatchers("/", "/login", "/signup", "/req/**", "/home", "/css/**", "/js/**", "/process-login", "/favicon.ico").permitAll()
                 // Todas las demás peticiones requieren autenticación
                 .anyRequest().authenticated()
@@ -100,7 +103,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*","http://127.0.0.1:5500"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

@@ -79,11 +79,11 @@
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             try {
-                const result = await AuthService.login(username, password);
+                const result = await AuthService.login(email, password);
 
                 if (result.success) {
                     // Guardar token y redirigir
@@ -99,12 +99,12 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification('Error de conexión', 'error');
+                showNotification('Error de conexión o credenciales incorrectas', 'error');
             }
         });
 
         // Verificar si ya está autenticado
-        if (localStorage.getItem('authToken')) {
+        if (AuthService.isAuthenticated()) {
             window.location.href = './home.html';
         }
 

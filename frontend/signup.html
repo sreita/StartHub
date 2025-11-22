@@ -143,10 +143,10 @@
                     const result = await AuthService.register(userData);
 
                     if (result.success) {
-                        showNotification("¡Cuenta creada exitosamente!", "success");
+                        showNotification("¡Cuenta creada exitosamente! Por favor revisa tu email para confirmar.", "success");
                         setTimeout(() => {
                             window.location.href = "./login.html";
-                        }, 1500);
+                        }, 3000);
                     } else {
                         showNotification(result.message || "Error creando la cuenta", "error");
                     }

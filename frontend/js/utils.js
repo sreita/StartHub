@@ -26,8 +26,6 @@ export function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('es-ES');
 }
 
-
-export function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
+export function isAuthenticated() {
+    return !!getAuthToken();
 }

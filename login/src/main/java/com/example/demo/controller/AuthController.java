@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
+
+        try{
+
         // Autenticar al usuario con Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
@@ -36,7 +41,16 @@ public class AuthController {
         // Generar el token JWT
         String token = jwtService.generateToken(userDetails);
 
+
         // Devolver el token en la respuesta
         return new LoginResponse(token);
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Credenciales inválidas");
+        } catch (UsernameNotFoundException e) {
+            throw new RuntimeException("Usuario no encontrado");
+        } catch (Exception e) {
+            throw new RuntimeException("Error en la autenticación: " + e.getMessage());
+        }
+
     }
 }
