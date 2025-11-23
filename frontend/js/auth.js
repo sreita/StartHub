@@ -1,11 +1,10 @@
 // js/auth.js
 export class AuthService {
-    static BASE_URL = 'http://localhost:8080'; // URL de tu backend Spring Boot
+    static BASE_URL = 'http://localhost:8080/api/v1';
 
     static async login(email, password) {
         try {
-            // Conectando con tu backend Spring Boot
-            const response = await fetch(`${this.BASE_URL}/api/v1/auth/login`, {
+            const response = await fetch(`${this.BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -15,14 +14,14 @@ export class AuthService {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || 'Error en la respuesta del servidor');
+                throw new Error(errorText || 'Login failed');
             }
 
             const data = await response.json();
             return {
                 success: true,
                 token: data.token,
-                user: { email: email } // Puedes expandir esto con más datos del usuario
+                user: data.user
             };
         } catch (error) {
             console.error('Error en AuthService.login:', error);
@@ -32,8 +31,7 @@ export class AuthService {
 
     static async register(userData) {
         try {
-            // Conectando con tu backend Spring Boot
-            const response = await fetch(`${this.BASE_URL}/api/v1/registration`, {
+            const response = await fetch(`${this.BASE_URL}/registration`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +41,7 @@ export class AuthService {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || 'Error en el registro');
+                throw new Error(errorText || 'Registration failed');
             }
 
             const result = await response.text();
@@ -57,10 +55,104 @@ export class AuthService {
         }
     }
 
+    static async recoverPassword(email) {
+    try {
+        const response = await fetch(`${this.BASE_URL}/auth/recover-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || 'Error en la recuperación de contraseña');
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error en AuthService.recoverPassword:', error);
+        throw error;
+    }
+}
+
+    static async resetPassword(token, newPassword) {
+        try {
+            console.log('🔍 Enviando reset password con token:', token);
+
+            const response = await fetch(`${this.BASE_URL}/auth/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token, newPassword })
+            });
+
+            console.log('📡 Respuesta del servidor:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Error del servidor:', errorText);
+                throw new Error(errorText || 'Error al restablecer la contraseña');
+            }
+
+            console.log('✅ Contraseña restablecida exitosamente');
+            return { success: true }; // Este return está dentro de una función, es válido
+        } catch (error) {
+            console.error('💥 Error en AuthService.resetPassword:', error);
+            throw error;
+        }
+    }
+
+    static async getUserProfile(userId) {
+        try {
+            const response = await this.makeAuthenticatedRequest(`/users/${userId}`);
+            return await response.json();
+        } catch (error) {
+            console.error('Error en AuthService.getUserProfile:', error);
+            throw error;
+        }
+    }
+
+    static async updateUserProfile(userId, userData) {
+        try {
+            const response = await this.makeAuthenticatedRequest(`/users/${userId}`, {
+                method: 'PUT',
+                body: JSON.stringify(userData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error en AuthService.updateUserProfile:', error);
+            throw error;
+        }
+    }
+
+    static async deleteUser(userId) {
+        try {
+            const response = await this.makeAuthenticatedRequest(`/users/${userId}`, {
+                method: 'DELETE'
+            });
+            return { success: true };
+        } catch (error) {
+            console.error('Error en AuthService.deleteUser:', error);
+            throw error;
+        }
+    }
+
     static logout() {
+        // Opcional: llamar al endpoint de logout del servidor
+        fetch(`${this.BASE_URL}/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.getToken()}`
+            }
+        }).catch(console.error);
+
+        // Limpiar localStorage y redirigir
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        window.location.href = './login.html';
+        window.location.href = './home.html';
     }
 
     static getCurrentUser() {
@@ -72,7 +164,6 @@ export class AuthService {
         return !!localStorage.getItem('authToken');
     }
 
-    // Método para hacer peticiones autenticadas
     static async makeAuthenticatedRequest(url, options = {}) {
         const token = this.getToken();
 
@@ -92,7 +183,7 @@ export class AuthService {
 
         const response = await fetch(`${this.BASE_URL}${url}`, mergedOptions);
 
-        if (response.status === 403 || response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
             this.logout();
             throw new Error('Authentication failed');
         }

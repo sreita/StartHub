@@ -73,32 +73,87 @@ export class StartupInfoPage {
     }
 
     renderStartupInfo(startup) {
-        const container = document.getElementById('startup-info');
-        container.innerHTML = `
-            <div class="flex justify-between items-start mb-6">
-                <h1 class="text-4xl md:text-5xl font-bold">${startup.name}</h1>
-                <span class="bg-yellow-400 text-black px-3 py-1 border-2 border-black font-bold">${startup.category_name}</span>
+    const container = document.getElementById('startup-info');
+    container.innerHTML = `
+        <div class="flex justify-between items-start mb-6">
+            <h1 class="text-4xl md:text-5xl font-bold">${startup.name}</h1>
+            <span class="category-badge text-black px-3 py-1 border-2 border-black font-bold">${startup.category_name}</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-bold mb-4">Descripción</h2>
+                <p class="text-gray-700 text-lg leading-relaxed">${startup.description}</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2">
-                    <h2 class="text-2xl font-bold mb-4">Descripción</h2>
-                    <p class="text-gray-700 text-lg leading-relaxed">${startup.description}</p>
-                </div>
-
-                <div class="bg-gray-50 p-6 border-2 border-black">
-                    <h3 class="text-xl font-bold mb-4">Información de Contacto</h3>
-                    <div class="space-y-3">
-                        ${startup.email ? `<p><strong>Email:</strong> <a href="mailto:${startup.email}" class="text-blue-600 hover:underline">${startup.email}</a></p>` : ''}
-                        ${startup.website ? `<p><strong>Website:</strong> <a href="${startup.website}" target="_blank" class="text-blue-600 hover:underline">${startup.website}</a></p>` : ''}
-                        ${startup.social_media ? `<p><strong>Redes Sociales:</strong> ${startup.social_media}</p>` : ''}
-                        <p><strong>Fundador:</strong> ${startup.owner_name}</p>
-                        <p><strong>Fecha de creación:</strong> ${new Date(startup.created_date).toLocaleDateString('es-ES')}</p>
-                    </div>
+            <div class="contact-info p-6 border-2 border-black">
+                <h3 class="text-xl font-bold mb-4">Información de Contacto</h3>
+                <div class="space-y-3">
+                    ${startup.email ? `<p><strong>Email:</strong> <a href="mailto:${startup.email}" class="text-blue-600 hover:underline">${startup.email}</a></p>` : ''}
+                    ${startup.website ? `<p><strong>Website:</strong> <a href="${startup.website}" target="_blank" class="text-blue-600 hover:underline">${startup.website}</a></p>` : ''}
+                    ${startup.social_media ? `<p><strong>Redes Sociales:</strong> ${startup.social_media}</p>` : ''}
+                    <p><strong>Fundador:</strong> ${startup.owner_name}</p>
+                    <p><strong>Fecha de creación:</strong> ${new Date(startup.created_date).toLocaleDateString('es-ES')}</p>
                 </div>
             </div>
-        `;
+        </div>
+    `;
+
+    // FORZAR ESTILOS DE MODO NOCHE SI ESTÁ ACTIVO
+    this.forceNightModeStyles();
+}
+
+// Agregar este nuevo método a la clase StartupInfoPage
+forceNightModeStyles() {
+    if (document.body.classList.contains('night-mode-active')) {
+        console.log('Aplicando estilos forzados de modo noche...');
+
+        // Forzar estilos en el badge de categoría
+        const categoryBadge = document.querySelector('.category-badge');
+        if (categoryBadge) {
+            categoryBadge.style.backgroundColor = '#2d3748'; // gray-darker
+            categoryBadge.style.color = '#FFD166'; // yellow-accent
+            categoryBadge.style.borderColor = '#0f3460'; // night-border
+            categoryBadge.style.boxShadow = '4px 4px 0 #0f3460';
+            categoryBadge.classList.remove('bg-yellow-400', 'text-black');
+            categoryBadge.classList.add('night-mode-category');
+        }
+
+        // Forzar estilos en el cuadro de contacto
+        const contactInfo = document.querySelector('.contact-info');
+        if (contactInfo) {
+            contactInfo.style.backgroundColor = '#16213e'; // night-card
+            contactInfo.style.color = '#e2e8f0'; // night-text
+            contactInfo.style.borderColor = '#0f3460'; // night-border
+            contactInfo.style.boxShadow = '6px 6px 0 #0f3460';
+            contactInfo.classList.remove('bg-gray-50');
+            contactInfo.classList.add('night-mode-contact');
+
+            // Forzar estilos en los textos dentro del contacto
+            const strongElements = contactInfo.querySelectorAll('strong');
+            strongElements.forEach(strong => {
+                strong.style.color = '#e2e8f0';
+            });
+
+            const links = contactInfo.querySelectorAll('a');
+            links.forEach(link => {
+                link.style.color = '#FFD166'; // yellow-accent
+                link.classList.remove('text-blue-600');
+            });
+
+            const spans = contactInfo.querySelectorAll('span');
+            spans.forEach(span => {
+                span.style.color = '#cbd5e0'; // night-text-secondary
+            });
+        }
+
+        // Forzar estilos en la descripción
+        const description = document.querySelector('.text-gray-700');
+        if (description) {
+            description.style.color = '#cbd5e0'; // night-text-secondary
+        }
     }
+}
 
     async loadVotes() {
         try {

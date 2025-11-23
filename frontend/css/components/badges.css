@@ -1,0 +1,27 @@
+/* ======================================================
+   BADGES Y ETIQUETAS
+   ====================================================== */
+
+.category-badge {
+    background-color: #FFD166 !important; /* Amarillo fijo */
+    color: #000000 !important; /* Negro fijo */
+    border: 1px solid #000000 !important; /* Borde negro fijo */
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+/* Badges de roles en el equipo */
+.bg-green-500, .bg-blue-500 {
+    border: 1px solid var(--primary);
+}
+
+.category-badge {
+    background-color: #FFD700;
+    padding: 4px 12px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    font-weight: bold;
+}

@@ -479,59 +479,75 @@ export class HomePage {
     }
 
     renderStartups(startups) {
-        const container = document.getElementById('startups-container');
-        if (!container) {
-            console.error('❌ Contenedor de startups no encontrado');
-            return;
-        }
+    const container = document.getElementById('startups-container');
+    if (!container) {
+        console.error('❌ Contenedor de startups no encontrado');
+        return;
+    }
 
-        container.innerHTML = startups.map(startup => `
-            <div class="startup-card bg-white neo-brutalist rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out flex">
-                <div class="flex flex-col items-center justify-start vote-container flex-shrink-0">
-                    <button class="vote-btn upvote" data-startup-id="${startup.id}">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                        </svg>
-                    </button>
-                    <span class="vote-count text-lg font-bold my-1" data-startup-id="${startup.id}">${startup.votes}</span>
-                    <button class="vote-btn downvote" data-startup-id="${startup.id}">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
+    container.innerHTML = startups.map(startup => `
+        <div class="startup-card bg-white neo-brutalist rounded-lg shadow-md transition duration-300 ease-in-out flex mb-8">
+            <!-- Sección de votos - más compacta -->
+            <div class="flex flex-col items-center justify-start vote-container flex-shrink-0">
+                <button class="vote-btn upvote mb-1" data-startup-id="${startup.id}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                </button>
+                <span class="vote-count text-base font-bold my-1" data-startup-id="${startup.id}">${startup.votes}</span>
+                <button class="vote-btn downvote mt-1" data-startup-id="${startup.id}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="p-4 flex-grow flex flex-col border-l-2 border-black min-h-0">
+                <!-- Header con nombre y categoría -->
+                <div class="flex justify-between items-start mb-3 flex-shrink-0">
+                    <h2 class="text-xl font-bold text-gray-900">${startup.name}</h2>
+                    <span class="category-badge bg-black text-white px-3 py-1 rounded-full text-xs font-bold">
+                        ${startup.category}
+                    </span>
                 </div>
-                <div class="p-6 flex-grow border-l-4 border-black">
-                    <div class="flex justify-between items-start mb-2">
-                        <h2 class="text-2xl font-semibold">${startup.name}</h2>
-                        <span class="category-badge">${startup.category}</span>
+
+                <!-- Descripción -->
+                <p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">
+                    ${startup.description}
+                </p>
+
+                <!-- Información de contacto y botón - SIEMPRE VISIBLE -->
+                <div class="flex items-center justify-between pt-3 border-t border-gray-300 flex-shrink-0 bg-white">
+                    <div class="flex items-center space-x-3 text-xs text-gray-600">
+                        ${startup.email ? `<span class="flex items-center whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="truncate" style="max-width: 100px;">${startup.email}</span>
+                        </span>` : ''}
+                        ${startup.website ? `<span class="flex items-center whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                            </svg>
+                            Sitio web
+                        </span>` : ''}
                     </div>
-                    <p class="text-gray-700 mb-3 text-base">${startup.description}</p>
-                    <div class="flex items-center justify-between mt-4">
-                        <div class="flex items-center space-x-4 text-sm text-gray-600">
-                            ${startup.email ? `<span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                ${startup.email}
-                            </span>` : ''}
-                            ${startup.website ? `<span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
-                                </svg>
-                                Sitio web
-                            </span>` : ''}
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-sm text-gray-700 date-text">${this.formatDate(startup.created_date)}</span>
-                            <a href="./startup_info.html?id=${startup.id}" class="text-black bg-yellow-400 py-1 px-3 border-2 border-black hover:bg-black hover:text-yellow-400 read-more transition-all">
-                                VER DETALLES »
-                            </a>
-                        </div>
+
+                    <div class="flex items-center space-x-3 ml-2">
+                        <span class="text-xs text-gray-700 date-text whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+                            ${this.formatDate(startup.created_date)}
+                        </span>
+                        <a href="./startup_info.html?id=${startup.id}"
+                           class="read-more text-black bg-yellow-400 py-2 px-3 rounded font-bold text-xs transition-all duration-200 hover:scale-105">
+                            DETALLES »
+                        </a>
                     </div>
                 </div>
             </div>
-        `).join('');
-    }
+        </div>
+    `).join('');
+}
 
     formatDate(dateString) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };

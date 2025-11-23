@@ -9,7 +9,7 @@ spring:
     hibernate:
       # changed from create-drop to validate so we don't drop or recreate existing tables
       # change to 'update' for add new columns or tables without dropping data
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect

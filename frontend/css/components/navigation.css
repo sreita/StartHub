@@ -1,0 +1,43 @@
+/* ======================================================
+   NAVEGACIÓN
+   ====================================================== */
+
+header {
+    background-color: var(--primary);
+    color: var(--secondary);
+    padding: 15px 20px;
+    flex-shrink: 0;
+}
+
+header nav a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-logo, h1, h2, h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+}
+
+.navbar-link:hover {
+    color: var(--yellow-accent);
+    text-decoration: underline;
+}
+
+footer {
+    padding: 20px;
+    background-color: var(--gray-light);
+    text-align: center;
+    border-top: 1px solid var(--primary);
+    flex-shrink: 0;
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 2.5rem;
+}

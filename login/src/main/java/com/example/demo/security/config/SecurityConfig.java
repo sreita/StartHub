@@ -74,6 +74,15 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/startups/{id}").permitAll() // Permitir ver detalles
                 .requestMatchers("/startup_info.html").permitAll() // Permitir acceso a la página de detalles
                 .requestMatchers("/", "/login", "/signup", "/req/**", "/home", "/css/**", "/js/**", "/process-login", "/favicon.ico").permitAll()
+                .requestMatchers("/reset-password").permitAll()
+                .requestMatchers("/forgot-password").permitAll()
+
+                // Endpoints protegidos
+                .requestMatchers("/api/v1/users/**").authenticated()
+                .requestMatchers("/startup_form.html").authenticated()
+                .requestMatchers("/profile.html").authenticated()
+
+
                 // Todas las demás peticiones requieren autenticación
                 .anyRequest().authenticated()
             )

@@ -1,4 +1,4 @@
 package com.example.demo.controller;
 
-public record LoginResponse(String token) {
+public record LoginResponse(String token, UserProfileResponse user) {
 }

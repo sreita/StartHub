@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.controller.UserProfileResponse;
+import com.example.demo.controller.UserUpdateRequest;
 import com.example.demo.registration.token.ConfirmationToken;
 import com.example.demo.registration.token.ConfirmationTokenService;
 
@@ -25,6 +27,48 @@ public class AppUserService implements UserDetailsService {
   private final AppUserRepository appUserRepository;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
   private final ConfirmationTokenService confirmationTokenService;
+
+
+  public UserProfileResponse getUserProfile(Integer id) {
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
+
+        return new UserProfileResponse(
+                (long) appUser.getId(),
+                appUser.getFirstName(),
+                appUser.getLastName(),
+                appUser.getEmail(),
+                appUser.getRegistrationDate(),
+                appUser.getProfileInfo()
+        );
+    }
+
+    public UserProfileResponse updateUserProfile(Integer id, UserUpdateRequest updateRequest) {
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
+
+        appUser.setFirstName(updateRequest.firstName());
+        appUser.setLastName(updateRequest.lastName());
+        appUser.setEmail(updateRequest.email());
+        appUser.setProfileInfo(updateRequest.profileInfo());
+
+        appUserRepository.save(appUser);
+
+        return new UserProfileResponse(
+                (long) appUser.getId(),
+                appUser.getFirstName(),
+                appUser.getLastName(),
+                appUser.getEmail(),
+                appUser.getRegistrationDate(),
+                appUser.getProfileInfo()
+        );
+    }
+
+    public void deleteUser(Integer id) {
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
+        appUserRepository.delete(appUser);
+    }
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

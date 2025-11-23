@@ -1,0 +1,799 @@
+/* ======================================================
+   MODO NOCHE - ACTUALIZADO CON NUEVOS COLORES
+   ====================================================== */
+
+body.night-mode-active {
+    background-color: var(--night-bg) !important;
+    color: var(--night-text) !important;
+}
+
+/* ===== ELEMENTOS NEO-BRUTALISTAS ===== */
+.night-mode-active .neo-brutalist {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 8px 8px 0 var(--night-border) !important;
+}
+
+.night-mode-active .neo-brutalist:hover {
+    box-shadow: 10px 10px 0 var(--night-border) !important;
+}
+
+/* ===== FONDOS ===== */
+.night-mode-active .bg-white {
+    background-color: var(--night-card) !important;
+}
+
+.night-mode-active .bg-gray-100 {
+    background-color: var(--night-bg) !important;
+}
+
+/* ===== TEXTOS ===== */
+.night-mode-active .text-black {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .text-gray-700 {
+    color: var(--night-text-secondary) !important;
+}
+
+.night-mode-active .text-gray-600 {
+    color: var(--night-text-gray) !important;
+}
+
+/* ===== FORMULARIOS ===== */
+.night-mode-active input,
+.night-mode-active textarea,
+.night-mode-active select {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active input:focus,
+.night-mode-active textarea:focus,
+.night-mode-active select:focus {
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* ===== BOTONES PRINCIPALES (MANTIENEN COLOR EN MODO NOCHE) ===== */
+.night-mode-active .sort-toggle-btn,
+.night-mode-active .create-startup-btn,
+.night-mode-active .search-toggle-btn,
+.night-mode-active .icon-dropdown-btn {
+    background-color: var(--night-card) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .sort-toggle-btn:hover,
+.night-mode-active .create-startup-btn:hover,
+.night-mode-active .search-toggle-btn:hover,
+.night-mode-active .icon-dropdown-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* ===== DROPDOWNS ===== */
+.night-mode-active .dropdown-menu,
+.night-mode-active .sort-dropdown-menu {
+    background-color: var(--night-card) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+.night-mode-active .dropdown-menu-item,
+.night-mode-active .sort-option {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .dropdown-menu-item:hover,
+.night-mode-active .sort-option:hover {
+    background-color: var(--night-border) !important;
+    color: var(--secondary) !important;
+}
+
+/* ===== STARTUP CARDS ===== */
+.night-mode-active .startup-card {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 8px 8px 0 var(--night-border) !important;
+}
+
+.night-mode-active .startup-card:hover {
+    box-shadow: 12px 12px 0 var(--night-border) !important;
+}
+
+.night-mode-active .vote-container {
+    background-color: var(--night-border) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .category-badge {
+    background-color: var(--gray-darker) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .read-more {
+    background-color: var(--gray-darker) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .read-more:hover {
+    background-color: var(--primary) !important;
+    color: var(--yellow-accent) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* ===== BOTONES DE VOTACIÓN ===== */
+.night-mode-active .upvote.active {
+    color: #10B981 !important;
+}
+
+.night-mode-active .downvote.active {
+    color: #EF4444 !important;
+}
+
+/* ===== MODALES ===== */
+.night-mode-active .modal-content {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 12px 12px 0 var(--night-border) !important;
+}
+
+/* ===== NOTIFICACIONES ===== */
+.night-mode-active .notification {
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* ===== SCROLLBAR ===== */
+.night-mode-active ::-webkit-scrollbar-track {
+    background: var(--night-card) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active ::-webkit-scrollbar-thumb {
+    background: var(--accent) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary) !important;
+}
+
+/* ===== ELEMENTOS ADICIONALES ESPECÍFICOS ===== */
+
+/* Navbar y header */
+.night-mode-active header {
+    background-color: var(--night-card) !important;
+    border-bottom-color: var(--night-border) !important;
+}
+
+.night-mode-active .navbar-link {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .navbar-link:hover {
+    color: var(--yellow-accent) !important;
+}
+
+/* Footer */
+.night-mode-active footer {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-top-color: var(--night-border) !important;
+}
+
+
+/* Comentarios */
+.night-mode-active .comment-item {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-bottom-color: var(--night-border) !important;
+}
+
+/* Botones generales */
+.night-mode-active .btn-primary,
+.night-mode-active .btn-secondary {
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .btn-primary:hover,
+.night-mode-active .btn-secondary:hover {
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* Inputs con estilo neo */
+.night-mode-active .input-neo {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .input-neo:focus {
+    box-shadow: 2px 2px 0 var(--night-border) !important;
+}
+
+.night-mode-active .input-neo::placeholder {
+    color: var(--night-text-gray) !important;
+}
+
+/* Botones neo */
+.night-mode-active .btn-neo {
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+.night-mode-active .btn-neo:hover {
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+/* ===== TÍTULOS Y ENCABEZADOS EN MODO NOCHE ===== */
+
+/* Títulos principales */
+.night-mode-active h1,
+.night-mode-active h2,
+.night-mode-active h3,
+.night-mode-active h4,
+.night-mode-active h5,
+.night-mode-active h6 {
+    color: var(--night-text) !important;
+}
+
+/* Títulos específicos de secciones */
+.night-mode-active .text-2xl,
+.night-mode-active .text-3xl,
+.night-mode-active .text-4xl {
+    color: var(--night-text) !important;
+}
+
+/* Títulos dentro de cards y contenedores */
+.night-mode-active .startup-card h3,
+.night-mode-active .startup-card h4,
+.night-mode-active .startup-info-container h1,
+.night-mode-active .startup-info-container h2,
+.night-mode-active .startup-info-container h3 {
+    color: var(--night-text) !important;
+}
+
+/* Texto "STARTUPS AGREGADAS" y otros encabezados de sección */
+.night-mode-active .section-title,
+.night-mode-active .page-title,
+.night-mode-active .content-title {
+    color: var(--night-text) !important;
+}
+
+/* Si usas clases específicas para estos títulos */
+.night-mode-active .text-gray-900,
+.night-mode-active .text-gray-800 {
+    color: var(--night-text) !important;
+}
+
+/* ===== CAJA DE VOTOS MEJORADA ===== */
+
+/* Fondo de la caja de votos en modo claro */
+.vote-container {
+    background-color: var(--gray-light) !important; /* Fondo gris claro */
+    border: 2px solid var(--primary) !important;
+    box-shadow: 3px 3px 0 var(--primary) !important;
+    padding: 1rem 0.75rem;
+}
+
+/* Caja de votos en modo noche */
+.night-mode-active .vote-container {
+    background-color: var(--night-card) !important; /* Gris más oscuro que el fondo principal */
+    border-color: var(--night-border) !important;
+    box-shadow: 3px 3px 0 var(--night-border) !important;
+}
+
+/* Botones de voto en modo claro */
+.vote-btn {
+    background-color: transparent;
+    border: 2px solid var(--primary);
+    padding: 4px;
+    transition: background-color 0.1s, transform 0.1s;
+    color: var(--primary);
+}
+
+.vote-btn:hover {
+    background-color: var(--yellow-accent);
+    transform: translateY(-1px);
+    color: var(--primary);
+}
+
+/* Botones de voto en modo noche */
+.night-mode-active .vote-btn {
+    background-color: transparent;
+    border-color: var(--night-border);
+    color: var(--night-text);
+}
+
+.night-mode-active .vote-btn:hover {
+    background-color: var(--yellow-accent);
+    color: var(--primary);
+}
+
+/* Estados activos de botones de voto */
+.night-mode-active .vote-btn.upvote.active {
+    background-color: #1b4c30 !important;
+    color: var(--secondary) !important;
+    border-color: #1b4c30 !important;
+}
+
+.night-mode-active .vote-btn.downvote.active {
+    background-color: #4a1717 !important;
+    color: var(--secondary) !important;
+    border-color: #4a1717 !important;
+}
+
+/* Contador de votos */
+.night-mode-active .vote-count {
+    color: var(--night-text) !important;
+}
+
+/* ======================================================
+   BOTONES DE ACCIÓN EN MODO NOCHE
+   ====================================================== */
+
+/* Botones de acción en modo noche */
+.night-mode-active .action-btn {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-card) !important;
+}
+
+.night-mode-active .action-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--blue-500) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+
+/* ======================================================
+   FORMULARIO DE STARTUP - MODO NOCHE
+   ====================================================== */
+
+/* Fondo del formulario */
+.night-mode-active #startup-form {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 8px 8px 0 var(--night-border) !important;
+}
+
+/* Títulos del formulario */
+.night-mode-active #startup-form h1,
+.night-mode-active #startup-form h2,
+.night-mode-active #form-title {
+    color: var(--night-text) !important;
+}
+
+/* Etiquetas de los campos */
+.night-mode-active #startup-form label {
+    color: var(--night-text) !important;
+}
+
+/* Campos de formulario */
+.night-mode-active #startup-form input,
+.night-mode-active #startup-form textarea,
+.night-mode-active #startup-form select {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active #startup-form input:focus,
+.night-mode-active #startup-form textarea:focus,
+.night-mode-active #startup-form select:focus {
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+    outline: none;
+}
+
+/* Placeholder de los campos */
+.night-mode-active #startup-form input::placeholder,
+.night-mode-active #startup-form textarea::placeholder {
+    color: var(--night-text-gray) !important;
+}
+
+/* Botones del formulario */
+.night-mode-active #startup-form button[type="submit"] {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active #startup-form button[type="submit"]:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* Botón cancelar */
+.night-mode-active #startup-form a.bg-gray-300 {
+    background-color: var(--gray-darker) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active #startup-form a.bg-gray-300:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* Líneas divisorias */
+.night-mode-active #startup-form .border-b-2.border-black {
+    border-color: var(--night-border) !important;
+}
+
+
+
+
+/* ======================================================
+   BOTÓN PUBLICAR COMENTARIO - MODO NOCHE
+   ====================================================== */
+
+.night-mode-active .comment-submit-btn {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border: 2px solid var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+    transition: all 0.2s ease;
+}
+
+.night-mode-active .comment-submit-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+    transform: translate(-2px, -2px);
+}
+
+/* ======================================================
+   CUADRO DE CATEGORÍA - MODO NOCHE MEJORADO
+   ====================================================== */
+
+.night-mode-active .category-badge {
+    background-color: var(--gray-darker) !important;
+    color: var(--yellow-accent) !important;
+    border: 2px solid var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+    font-weight: bold;
+}
+
+/* ======================================================
+   TEXTAREA DE COMENTARIO - MODO NOCHE
+   ====================================================== */
+
+.night-mode-active .comment-textarea {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border: 2px solid var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+.night-mode-active .comment-textarea:focus {
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+    outline: none;
+}
+
+.night-mode-active .comment-textarea::placeholder {
+    color: var(--night-text-gray) !important;
+}
+
+/* ======================================================
+   BADGES DE ROL EN EQUIPO - MODO NOCHE
+   ====================================================== */
+
+.night-mode-active .badge-role-founder {
+    background-color: #1e40af !important;
+    color: var(--secondary) !important;
+    border: 1px solid #1e40af !important;
+}
+
+.night-mode-active .badge-role-technical {
+    background-color: #059669 !important;
+    color: var(--secondary) !important;
+    border: 1px solid #059669 !important;
+}
+
+/* ======================================================
+   ELEMENTOS DE ESTADÍSTICAS - MODO NOCHE
+   ====================================================== */
+
+.night-mode-active .stats-card {
+    background-color: var(--night-card) !important;
+    border: 2px solid var(--night-border) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+.night-mode-active .stats-card h3 {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .stats-card p {
+    color: var(--night-text-secondary) !important;
+}
+
+/* ======================================================
+   ELEMENTOS DE COMENTARIOS - MODO NOCHE
+   ====================================================== */
+
+.night-mode-active .comment-item {
+    border-bottom: 1px solid var(--night-border) !important;
+}
+
+.night-mode-active .comment-item strong {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .comment-item p {
+    color: var(--night-text-secondary) !important;
+}
+
+.night-mode-active .comment-item span {
+    color: var(--night-text-gray) !important;
+}
+
+/* ======================================================
+   CORRECCIONES ESPECÍFICAS PARA STARTUP_INFO.HTML
+   ====================================================== */
+
+/* CUADRO DE CATEGORÍA - FORZAR CAMBIO DE COLOR */
+.night-mode-active .startup-info-container .category-badge {
+    background-color: var(--gray-darker) !important;
+    color: var(--yellow-accent) !important;
+    border: 2px solid var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+    font-weight: bold;
+}
+
+/* CUADRO DE CONTACTO - FORZAR ESTILOS DE MODO NOCHE */
+.night-mode-active .startup-info-container .contact-info {
+    background-color: var(--night-card) !important;
+    border: 2px solid var(--night-border) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+    color: var(--night-text) !important;
+}
+
+/* Textos dentro del cuadro de contacto */
+.night-mode-active .startup-info-container .contact-info strong {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .startup-info-container .contact-info a {
+    color: var(--yellow-accent) !important;
+}
+
+.night-mode-active .startup-info-container .contact-info a:hover {
+    color: var(--primary) !important;
+    text-decoration: underline;
+}
+
+.night-mode-active .startup-info-container .contact-info span {
+    color: var(--night-text-secondary) !important;
+}
+
+/* Iconos SVG en contacto */
+.night-mode-active .startup-info-container .contact-info svg {
+    stroke: var(--yellow-accent) !important;
+}
+
+
+.night-mode-active .startup-info-container .contact-info,
+.night-mode-active .contact-info.neo-brutalist {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+/* ======================================================
+   SOBREESCRIBIR ESTILOS DE STARTUP_INFO.CSS
+   ====================================================== */
+
+/* Sobreescribir los estilos de startup_info.css para modo noche */
+.night-mode-active .startup-info-container,
+.night-mode-active .comment-form-container,
+.night-mode-active .contact-info,
+.night-mode-active .comment-item {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .comment-item {
+    border-bottom: 2px solid var(--night-border) !important;
+}
+
+.night-mode-active .comment-item:last-child {
+    border-bottom: none !important;
+}
+
+/* ======================================================
+   ESTILOS ESPECÍFICOS PARA BOTONES EN STARTUP_INFO
+   ====================================================== */
+
+.night-mode-active .stats-card .vote-btn.upvote.active {
+    background-color: #1b4c30 !important;
+    color: var(--secondary) !important;
+    border-color: #1b4c30 !important;
+}
+
+.night-mode-active .stats-card .vote-btn.downvote.active {
+    background-color: #4a1717 !important;
+    color: var(--secondary) !important;
+    border-color: #4a1717 !important;
+}
+
+
+/* ======================================================
+   FORMULARIOS DE AUTENTICACIÓN - MODO NOCHE CORREGIDO
+   ====================================================== */
+
+/* Formularios de login, registro y reset password */
+.night-mode-active .bg-white.neo-brutalist {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 8px 8px 0 var(--night-border) !important;
+}
+
+/* Inputs en formularios de auth */
+.night-mode-active .bg-white input {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .bg-white input:focus {
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+    outline: none;
+}
+
+.night-mode-active .bg-white input::placeholder {
+    color: var(--night-text-gray) !important;
+}
+
+/* Botones en formularios de auth */
+.night-mode-active .bg-yellow-400 {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .bg-yellow-400:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 4px 4px 0 var(--night-border) !important;
+}
+
+/* Labels y textos en formularios de auth */
+.night-mode-active .bg-white label {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .bg-white .text-gray-700 {
+    color: var(--night-text) !important;
+}
+
+.night-mode-active .bg-white .text-gray-600 {
+    color: var(--night-text-secondary) !important;
+}
+
+/* Enlaces en formularios de auth */
+.night-mode-active .bg-white a {
+    color: var(--yellow-accent) !important;
+}
+
+.night-mode-active .bg-white a:hover {
+    color: var(--primary) !important;
+}
+
+/* Líneas divisorias en formularios de auth */
+.night-mode-active .bg-white .border-t-2.border-black {
+    border-color: var(--night-border) !important;
+}
+
+/* Texto negro en formularios de auth */
+.night-mode-active .bg-white .text-black {
+    color: var(--night-text) !important;
+}
+
+/* ======================================================
+   BOTONES ESPECÍFICOS DE FORMULARIOS AUTH
+   ====================================================== */
+
+/* Botón de login */
+.night-mode-active button[type="submit"].bg-yellow-400 {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active button[type="submit"].bg-yellow-400:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+}
+
+/* Botón de registro */
+.night-mode-active .w-full.bg-yellow-400 {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .w-full.bg-yellow-400:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+}
+
+/* Botón de reset password */
+.night-mode-active .w-full.bg-yellow-400.text-black {
+    background-color: var(--night-card) !important;
+    color: var(--night-text) !important;
+    border-color: var(--night-border) !important;
+}
+
+.night-mode-active .w-full.bg-yellow-400.text-black:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+}
+
+/* ======================================================
+   ENLACES DE VOLVER AL INICIO
+   ====================================================== */
+
+.night-mode-active .text-center a.text-black {
+    color: var(--yellow-accent) !important;
+}
+
+.night-mode-active .text-center a.text-black:hover {
+    color: var(--primary) !important;
+}
+
+/* ======================================================
+   MENSAJES DE DEBUG Y NOTIFICACIONES
+   ====================================================== */
+
+.night-mode-active .text-red-600 {
+    color: #f87171 !important;
+}
+
+.night-mode-active .text-green-600 {
+    color: #4ade80 !important;
+}
+
+.night-mode-active .text-gray-600 {
+    color: var(--night-text-gray) !important;
+}
+
+/* ======================================================
+   SOBREESCRIBIR CLASES DE TAILWIND ESPECÍFICAS
+   ====================================================== */
+
+/* Asegurar que bg-white sea reemplazado en modo noche */
+.night-mode-active .bg-white {
+    background-color: var(--night-card) !important;
+}
+
+/* Asegurar que bg-yellow-400 sea reemplazado en modo noche */
+.night-mode-active .bg-yellow-400 {
+    background-color: var(--night-card) !important;
+}
+
+/* Asegurar que text-black sea reemplazado en modo noche */
+.night-mode-active .text-black {
+    color: var(--night-text) !important;
+}
+
+/* Asegurar que border-black sea reemplazado en modo noche */
+.night-mode-active .border-black {
+    border-color: var(--night-border) !important;
+}

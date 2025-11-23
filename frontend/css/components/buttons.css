@@ -1,0 +1,244 @@
+/* ======================================================
+   BOTONES
+   ====================================================== */
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--accent);
+  color: var(--secondary);
+  border: 2px solid var(--primary);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  transition: all 0.3s;
+}
+
+button:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: translate(-2px, -2px);
+  background-color: var(--accent-hover);
+}
+
+/* Botón Leer Más/Ver Detalles */
+.read-more {
+  background-color: var(--yellow-accent);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+.read-more:hover {
+  background-color: var(--primary);
+  color: var(--yellow-accent);
+  border-color: var(--primary);
+}
+
+/* Botones de voto */
+.vote-btn {
+  background-color: transparent;
+  border: 2px solid var(--primary);
+  padding: 4px;
+  transition: background-color 0.1s, transform 0.1s;
+  color: var(--primary);
+}
+
+.vote-btn:hover {
+  background-color: var(--yellow-accent);
+  transform: translateY(-1px);
+  color: var(--primary);
+}
+
+.vote-btn.upvote.active {
+  background-color: #269554;
+  color: var(--secondary);
+  border-color: #269554;
+}
+
+.vote-btn.downvote.active {
+  background-color: #FF5E5B;
+  color: var(--secondary);
+  border-color: #FF5E5B;
+}
+
+/* Botón Crear Startup */
+.create-startup-btn {
+  background-color: #FF5E5B;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+.create-startup-btn:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+  box-shadow: 6px 6px 0 #000000;
+  transform: translate(-2px, -2px);
+}
+
+/* Botón de ordenamiento */
+.sort-toggle-btn {
+  background-color: #FF5E5B;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+.sort-toggle-btn:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+  box-shadow: 6px 6px 0 #000000;
+  transform: translate(-2px, -2px);
+}
+
+/* Botones con estilo neo-brutalista */
+.btn-neo {
+  background-color: var(--yellow-accent);
+  border: 2px solid var(--primary);
+  padding: 0.75rem 1.5rem;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  box-shadow: 4px 4px 0 var(--primary);
+  color: var(--primary);
+}
+
+.btn-neo:hover {
+  background-color: var(--primary);
+  color: var(--yellow-accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--primary);
+}
+
+.btn-neo:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 var(--primary);
+}
+
+
+/* ======================================================
+   BOTONES DE ACCIÓN (BÚSQUEDA Y DROPDOWN)
+   ====================================================== */
+
+/* Estilos para el grupo de botones de acción */
+.action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Clase común para ambos botones - COLOR UNIFICADO */
+.action-btn {
+    /* Tamaño fijo para ambos botones */
+    height: 40px;
+    width: 40px;
+
+    /* Estilos comunes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #da2d2a;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-weight: bold;
+
+    /* COLOR UNIFICADO - Usando variables CSS para consistencia */
+    background-color: var(--accent-hover, #da2d2a);
+    color: var(--secondary, #FFFFFF);
+}
+
+/* Estados hover unificados */
+.action-btn:hover {
+    background-color: var(--accent-hover, #da2d2a);
+    color: var(--yellow-accent, #FFD166);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--primary, #000000);
+}
+
+/* CONTENEDOR DE BÚSQUEDA - MANTENER FUNCIONALIDAD */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* INPUT DE BÚSQUEDA - MANTENER ANIMACIONES */
+.search-input {
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+/* Estados del input de búsqueda */
+.search-input.w-0 {
+    width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.search-input.w-64 {
+    width: 16rem;
+    opacity: 1;
+}
+
+/* Botón de búsqueda - siempre visible y clickeable */
+.search-toggle-btn {
+    position: relative;
+    z-index: 10;
+}
+
+/* Botón de comentario */
+.comment-submit-btn {
+  background-color: var(--accent);
+  color: var(--secondary);
+  border: 2px solid var(--primary);
+  transition: all 0.3s;
+}
+
+.comment-submit-btn:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: translate(-2px, -2px);
+  background-color: var(--accent-hover);
+}
+
+/* ======================================================
+   BOTONES DE HEADER UNIFICADOS
+   ====================================================== */
+
+.header-btn {
+    background-color: var(--accent);
+    color: var(--secondary);
+    border: 2px solid var(--primary);
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: bold;
+    height: 40px;
+    min-width: 40px;
+}
+
+.header-btn:hover {
+    background-color: var(--primary);
+    color: var(--secondary);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--primary);
+}
+
+.header-btn.icon-btn {
+    padding: 8px;
+}
+
+.header-btn svg {
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+}
+

@@ -1,0 +1,41 @@
+/* ======================================================
+   DETALLES DE STARTUP
+   ====================================================== */
+
+.startup-info-container {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+.comment-form-container {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+.contact-info {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+.comment-item {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+/* Estados de botones de voto en estadísticas */
+.stats-card .vote-btn.upvote.active {
+    background-color: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.stats-card .vote-btn.downvote.active {
+    background-color: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
