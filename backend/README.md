@@ -114,6 +114,31 @@ curl "http://127.0.0.1:8000/startups/search?sort_by=votos_asc"
 curl "http://127.0.0.1:8000/startups/search?sort_by=comentarios_desc"
 ```
 
+- Crud Startups:
+
+```bash
+# Crear
+
+curl -X POST "http://localhost:8000/startups/?user_id=1" -H "Content-Type: application/json" -d "{\"name\": \"Mi Startup Tech\", \"description\": \"Descripción de mi startup\", \"category_id\": 1}"
+
+# Listar startups de un usuario específico
+curl -X GET "http://localhost:8000/startups/my-startups?user_id=1"
+
+# Actualizar nombre y descripción
+curl -X PUT "http://localhost:8000/startups/1?user_id=1" -H "Content-Type: application/json" -d "{\"name\": \"Nuevo Nombre\", \"description\": \"Nueva descripción\"}"
+
+# Actualizar solo el email
+curl -X PUT "http://localhost:8000/startups/1?user_id=1" -H "Content-Type: application/json" -d "{\"email\": \"nuevo@email.com\"}"
+
+# Actualizar múltiples campos
+curl -X PUT "http://localhost:8000/startups/1?user_id=1" -H "Content-Type: application/json" -d "{\"name\": \"Nombre Actualizado\", \"website\": \"https://nuevo-sitio.com\", \"category_id\": 3}"
+
+# Eliminar startup 
+curl -X DELETE "http://localhost:8000/startups/1?user_id=1"
+```
+
+
+
 Endpoints
 - `POST /comments` (create)
 - `GET /comments?startup_id=1&skip=0&limit=50` (list with pagination)
