@@ -50,8 +50,8 @@ class StartupService:
             raise ValueError("Startup no encontrada")
         
         # Verificar que el usuario es el propietario comentariado para pruebas
-        #if startup.owner_user_id != user_id:
-        #    raise PermissionError("No tienes permisos para editar esta startup")
+        if startup.owner_user_id != user_id:
+            raise PermissionError("No tienes permisos para editar esta startup")
         
         update_data = payload.model_dump(exclude_unset=True)
         updated_startup = self.repository.update(startup_id, update_data)
@@ -65,9 +65,9 @@ class StartupService:
         if not startup:
             raise ValueError("Startup no encontrada")
         
-        # Verificar que el usuario es el propietario
-        #if startup.owner_user_id != user_id:
-        #    raise PermissionError("No tienes permisos para eliminar esta startup")
+        #Verificar que el usuario es el propietario
+        if startup.owner_user_id != user_id:
+            raise PermissionError("No tienes permisos para eliminar esta startup")
         
         if not self.repository.delete(startup_id):
             raise ValueError("Error al eliminar la startup")

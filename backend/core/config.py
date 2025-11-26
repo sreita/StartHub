@@ -1,6 +1,12 @@
 from functools import lru_cache
 from pathlib import Path
 import os
+from typing import Any
+
+try:  # pydantic ValidationError import (v2)
+    from pydantic import ValidationError  # type: ignore
+except Exception:  # pragma: no cover
+    ValidationError = Exception  # fallback to avoid import errors
 
 # Ruta al directorio backend
 BACKEND_DIR = Path(__file__).resolve().parents[1]
@@ -9,7 +15,8 @@ try:
     from pydantic_settings import BaseSettings, SettingsConfigDict  # type: ignore
 
     class Settings(BaseSettings):
-        database_url: str
+        # database_url may be omitted; fallback to in-memory SQLite for tests/CI/local dev when absent.
+        database_url: str | None = None
         app_debug: bool = False
         cors_origins: str = "*"  # Comma-separated list or "*"
 
@@ -21,7 +28,11 @@ try:
 
     @lru_cache
     def get_settings() -> "Settings":  # noqa: F821
-        return Settings()
+        s = Settings()
+        if not s.database_url:
+            # Fallback: ephemeral in-memory DB. Suitable for tests/CI.
+            object.__setattr__(s, "database_url", "sqlite+pysqlite:///:memory:")
+        return s
 
 except ModuleNotFoundError:
     from pydantic import BaseModel
