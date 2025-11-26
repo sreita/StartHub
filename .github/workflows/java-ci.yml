@@ -2,7 +2,7 @@ name: Java Spring Boot CI
 
 on:
   push:
-    branches: [ main, develop, feature/** ]  # Agregué feature/**
+    branches: [ main, develop, feature/** ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:  # Permite ejecución manual
@@ -44,6 +44,7 @@ jobs:
 
     - name: Run tests with Maven
       run: mvn -B test
+      working-directory: ./login  # ← ESTA ES LA CLAVE
       env:
         SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/starthub_test
         SPRING_DATASOURCE_USERNAME: root
@@ -56,5 +57,5 @@ jobs:
       if: always()
       with:
         name: test-reports
-        path: target/surefire-reports/
+        path: login/target/surefire-reports/  # ← Actualiza la ruta
         retention-days: 30
