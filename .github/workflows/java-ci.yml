@@ -1,11 +1,11 @@
-
 name: Java Spring Boot CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feature/** ]  # Agregué feature/**
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+  workflow_dispatch:  # Permite ejecución manual
 
 jobs:
   test:
@@ -19,14 +19,11 @@ jobs:
           MYSQL_DATABASE: starthub
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up JDK 21
       uses: actions/setup-java@v4
@@ -34,6 +31,12 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+
+    - name: Wait for MySQL to be ready
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client
+        mysql -h 127.0.0.1 -u root -proot -e "SELECT 1;" || sleep 5
 
     - name: Create test database
       run: |
@@ -46,3 +49,12 @@ jobs:
         SPRING_DATASOURCE_USERNAME: root
         SPRING_DATASOURCE_PASSWORD: root
         SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+        SPRING_PROFILES_ACTIVE: test
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-reports
+        path: target/surefire-reports/
+        retention-days: 30
