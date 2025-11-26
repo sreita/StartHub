@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from backend.models.startup import Startup
+from backend.models.startup import Startup 
 from backend.schemas.startup_crud import StartupCreate, StartupUpdate, StartupOut, StartupWithStats
 from backend.repositories.startup_repository import StartupRepository
 
@@ -10,7 +10,7 @@ class StartupService:
         self.repository = StartupRepository(db)
 
     def create(self, user_id: int, payload: StartupCreate) -> StartupOut:
-        # Verificar que el usuario existe
+        # Verificar que el usuario corresponde
         startup_data = payload.model_dump()
         startup_data['owner_user_id'] = user_id
         

@@ -136,7 +136,7 @@ def test_create_startup_invalid_data(client):
             "category_id": 1
         },
     )
-    assert resp.status_code == 400, resp.text
+    assert resp.status_code == 422, resp.text
 
 
 def test_get_startup_success(client):

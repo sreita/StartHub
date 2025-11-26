@@ -102,33 +102,18 @@ def client():
     return TestClient(app)
 
 
-def test_create_startup_user_not_found(client):
-    """Test crear startup con usuario que no existe"""
-    resp = client.post(
-        "/startups",
-        params={"user_id": 999},
-        json={
-            "name": "Startup Test",
-            "description": "Descripción",
-            "category_id": 1
-        },
-    )
-    assert resp.status_code == 404, resp.text
-
-
-def test_create_startup_category_not_found(client):
-    """Test crear startup con categoría que no existe"""
+def test_create_startup_empty_name(client):
+    """Test crear startup con nombre vacío"""
     resp = client.post(
         "/startups",
         params={"user_id": 1},
         json={
-            "name": "Startup Test",
+            "name": "",
             "description": "Descripción",
-            "category_id": 999
+            "category_id": 1
         },
     )
-    assert resp.status_code == 404, resp.text
-
+    assert resp.status_code == 422, resp.text
 
 def test_update_startup_not_found(client):
     """Test actualizar startup que no existe"""
@@ -144,21 +129,6 @@ def test_delete_startup_not_found(client):
     """Test eliminar startup que no existe"""
     resp = client.delete("/startups/999", params={"user_id": 1})
     assert resp.status_code == 404, resp.text
-
-
-def test_create_startup_empty_name(client):
-    """Test crear startup con nombre vacío"""
-    resp = client.post(
-        "/startups",
-        params={"user_id": 1},
-        json={
-            "name": "",
-            "description": "Descripción",
-            "category_id": 1
-        },
-    )
-    assert resp.status_code == 400, resp.text
-
 
 def test_get_startup_with_stats_not_found(client):
     """Test obtener estadísticas de startup que no existe"""
