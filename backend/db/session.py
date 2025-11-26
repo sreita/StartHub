@@ -4,6 +4,7 @@ from backend.core.config import get_settings
 
 settings = get_settings()
 
+# Engine is created lazily friendly; settings.database_url is guaranteed non-empty after fallback.
 engine = create_engine(settings.database_url, echo=settings.app_debug, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 
