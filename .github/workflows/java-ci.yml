@@ -5,22 +5,13 @@ on:
     branches: [ main, develop, feature/** ]
   pull_request:
     branches: [ main, develop ]
-  workflow_dispatch:  # Permite ejecución manual
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: starthub
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
-
+    # ELIMINA la sección de services de MySQL
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -32,30 +23,15 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Wait for MySQL to be ready
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mysql-client
-        mysql -h 127.0.0.1 -u root -proot -e "SELECT 1;" || sleep 5
-
-    - name: Create test database
-      run: |
-        mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS starthub_test;"
-
-    - name: Run tests with Maven
+    - name: Run tests with Maven (H2 in-memory)
       run: mvn -B test
-      working-directory: ./login  # ← ESTA ES LA CLAVE
-      env:
-        SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/starthub_test
-        SPRING_DATASOURCE_USERNAME: root
-        SPRING_DATASOURCE_PASSWORD: root
-        SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-        SPRING_PROFILES_ACTIVE: test
+      working-directory: ./login
+      # SIN variables de entorno de base de datos
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-reports
-        path: login/target/surefire-reports/  # ← Actualiza la ruta
+        path: login/target/surefire-reports/
         retention-days: 30
