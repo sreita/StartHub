@@ -65,15 +65,13 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void whenAccessNonExistentEndpoint_thenReturnsNotFound() {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-            getBaseUrl() + "/api/v1/non-existent-" + System.currentTimeMillis(),
-            String.class
-        );
-
-        // Un endpoint inexistente debería dar 404
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-    }
+void whenAccessNonExistentEndpoint_thenReturnsForbidden() {
+    ResponseEntity<String> response = restTemplate.getForEntity(
+        getBaseUrl() + "/api/v1/non-existent-" + System.currentTimeMillis(),
+        String.class
+    );
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+}
 
     @Test
     void whenPostToLoginWithValidJson_thenReturnsResponse() {
