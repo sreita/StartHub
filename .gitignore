@@ -121,3 +121,11 @@ dump.sql
 backup.sql
 *.sql~
 *.bak.mwb
+
+# -------------------------
+# private
+# -------------------------
+services/spring-auth/.env.example
+services/spring-auth/mvnw
+services/spring-auth/.env.example
+services/fastapi/alembic.ini
