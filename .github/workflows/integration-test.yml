@@ -1,0 +1,101 @@
+name: Full Stack Integration Test
+
+on:
+  push:
+    branches: [ main, develop, integration/** ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testpassword
+          MYSQL_DATABASE: starthub
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Setup Python for FastAPI
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    # Setup Java for Spring Boot
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+
+    # Install Python dependencies
+    - name: Install FastAPI dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r services/fastapi/requirements.txt
+
+    # Load database schema
+    - name: Setup database
+      run: |
+        mysql -h 127.0.0.1 -u root -ptestpassword starthub < Database/schema/schema.sql
+        mysql -h 127.0.0.1 -u root -ptestpassword starthub < Database/schema/views.sql
+        mysql -h 127.0.0.1 -u root -ptestpassword starthub < Database/seeds/seed_categories.sql
+        mysql -h 127.0.0.1 -u root -ptestpassword starthub < Database/seeds/seed_users.sql
+
+    # Test FastAPI
+    - name: Test FastAPI with MySQL
+      run: |
+        cd services/fastapi
+        python -m pytest tests/ -v
+      env:
+        DATABASE_URL: mysql+mysqlconnector://root:testpassword@127.0.0.1:3306/starthub
+        APP_DEBUG: true
+        CORS_ORIGINS: "*"
+
+    # Build Spring Boot
+    - name: Build Spring Boot
+      run: ./mvnw -B package -DskipTests
+      working-directory: ./services/spring-auth
+
+    # Test Spring Boot with MySQL
+    - name: Test Spring Boot with MySQL
+      run: ./mvnw -B test
+      working-directory: ./services/spring-auth
+      env:
+        DB_PASSWORD: testpassword
+        DB_USERNAME: root
+        DB_URL: jdbc:mysql://127.0.0.1:3306/starthub
+        SERVER_PORT: 8081
+
+    # Upload test results
+    - name: Upload FastAPI test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: fastapi-integration-test-results
+        path: services/fastapi/test-results/
+        retention-days: 30
+
+    - name: Upload Spring Boot test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: spring-integration-test-results
+        path: services/spring-auth/target/surefire-reports/
+        retention-days: 30

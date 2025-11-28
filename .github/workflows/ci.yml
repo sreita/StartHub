@@ -1,29 +1,50 @@
-name: CI
+name: FastAPI CI
 
 on:
   push:
     branches:
       - main
+      - develop
       - feature/**
       - integration/**
   pull_request:
     branches:
       - main
-      - feature/**
-      - integration/**
+      - develop
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
-      - name: Run tests
+          pip install -r services/fastapi/requirements.txt
+        working-directory: ./
+      
+      - name: Run FastAPI tests
         run: |
-          python -m pytest -q
+          python -m pytest services/fastapi/tests/ -v --tb=short
+        env:
+          DATABASE_URL: sqlite+pysqlite:///./test.db
+          APP_DEBUG: true
+          CORS_ORIGINS: "*"
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fastapi-test-results
+          path: services/fastapi/test-results/
+          retention-days: 30

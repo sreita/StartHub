@@ -1,3 +1,7 @@
+# ============================================================================
+# StartHub .gitignore
+# ============================================================================
+
 # -------------------------
 # OS / Editor
 # -------------------------
@@ -5,6 +9,9 @@
 Thumbs.db
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
 
 # -------------------------
 # Python
@@ -24,22 +31,93 @@ env/
 coverage.xml
 htmlcov/
 pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# -------------------------
+# Java / Maven / Spring Boot
+# -------------------------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.mvn-temp-check
+
+# -------------------------
+# Logs and Runtime Files
+# -------------------------
+logs/
 *.log
+*.pid
+
+# -------------------------
+# Database Files
+# -------------------------
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# -------------------------
+# Tools (MailHog, etc.)
+# -------------------------
+tools/
 
 # -------------------------
 # Environment files (keep only examples tracked)
 # -------------------------
 .env
 .env.*
-!backend/.env.example
+!.env.example
+!**/.env.example
 
-# Explicitly ignore backend runtime env
+# Explicitly ignore environment files in all services
+services/fastapi/.env
+services/spring-auth/.env
 backend/.env
 
 # -------------------------
-# Node / Frontend (in case added later)
+# Node / Frontend (if added later)
 # -------------------------
 node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
 dist/
 build/
-\n# JWT RSA Keys\n/login/src/main/resources/certs/
+
+# -------------------------
+# Build Artifacts
+# -------------------------
+*.pyc
+*.pyo
+*.so
+*.dll
+*.exe
+*.out
+*.o
+
+# -------------------------
+# Temporary Files
+# -------------------------
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# -------------------------
+# Database-specific
+# -------------------------
+dump.sql
+backup.sql
+*.sql~
+*.bak.mwb

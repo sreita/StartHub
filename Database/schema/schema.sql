@@ -76,6 +76,23 @@ CREATE TABLE ConfirmationToken (
 
 CREATE INDEX idx_token_user ON ConfirmationToken(app_user_id);
 
+CREATE TABLE PasswordResetToken (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    confirmed_at DATETIME,
+    
+    CONSTRAINT fk_password_reset_user 
+        FOREIGN KEY (user_id) 
+        REFERENCES `User`(user_id) 
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_password_reset_token ON PasswordResetToken(token);
+CREATE INDEX idx_password_reset_user ON PasswordResetToken(user_id);
+CREATE INDEX idx_password_reset_expires ON PasswordResetToken(expires_at);
+
 
 CREATE TABLE Comment (
     comment_id INT PRIMARY KEY AUTO_INCREMENT,

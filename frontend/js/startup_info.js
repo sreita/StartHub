@@ -1,4 +1,6 @@
 // js/startup_info.js
+const DATA_API = 'http://localhost:8000';
+
 export class StartupInfoPage {
     constructor() {
         this.startupId = this.getStartupIdFromURL();
@@ -56,19 +58,21 @@ export class StartupInfoPage {
     }
 
     async fetchStartupById(startupId) {
-        // Simulación de datos - reemplazar con llamada real a la API
+        const res = await fetch(`${DATA_API}/startups/${startupId}`);
+        if (!res.ok) throw new Error('Startup no encontrada');
+        const s = await res.json();
         return {
-            startup_id: startupId,
-            name: "TechInnovate",
-            description: "Una startup dedicada a la innovación tecnológica en el campo de la inteligencia artificial y machine learning. Desarrollamos soluciones personalizadas para empresas que buscan transformar digitalmente sus operaciones.",
-            email: "contact@techinnovate.com",
-            website: "https://techinnovate.com",
-            social_media: "@techinnovate",
-            created_date: "2024-03-21",
-            owner_user_id: 1,
-            category_id: 1,
-            category_name: "Tecnología",
-            owner_name: "Ana García"
+            startup_id: s.startup_id,
+            name: s.name,
+            description: s.description || '',
+            email: '',
+            website: '',
+            social_media: '',
+            created_date: s.created_date || new Date().toISOString(),
+            owner_user_id: s.owner_user_id,
+            category_id: s.category_id,
+            category_name: s.category_id ? `Categoría ${s.category_id}` : 'General',
+            owner_name: s.owner_user_id ? `Usuario ${s.owner_user_id}` : 'Usuario'
         };
     }
 
@@ -167,19 +171,19 @@ forceNightModeStyles() {
     }
 
     async fetchVotes(startupId) {
-        // Simulación - reemplazar con llamada real a la API
+        const res = await fetch(`${DATA_API}/votes/count/${startupId}`);
+        if (!res.ok) return { upvotes: 0, downvotes: 0, total: 0 };
+        const data = await res.json();
         return {
-            upvotes: 15,
-            downvotes: 3,
-            total: 12
+            upvotes: data.upvotes || 0,
+            downvotes: data.downvotes || 0,
+            total: (data.upvotes || 0) - (data.downvotes || 0)
         };
     }
 
     async fetchUserVote(startupId) {
-        if (!this.currentUser) return null;
-
-        // Simulación - reemplazar con llamada real a la API
-        return null; // o 'upvote' o 'downvote'
+        // No hay endpoint específico para el voto del usuario actualmente
+        return null;
     }
 
     updateVoteDisplay(votes, userVote) {
@@ -215,23 +219,16 @@ forceNightModeStyles() {
     }
 
     async fetchComments(startupId) {
-        // Simulación - reemplazar con llamada real a la API
-        return [
-            {
-                comment_id: 1,
-                content: "¡Excelente proyecto! Me encanta el enfoque en IA responsable.",
-                created_date: "2024-03-22T10:30:00",
-                user_name: "Carlos Rodríguez",
-                user_id: 2
-            },
-            {
-                comment_id: 2,
-                content: "Interesante propuesta de valor. ¿Tienen planes de expansión internacional?",
-                created_date: "2024-03-21T15:45:00",
-                user_name: "María López",
-                user_id: 3
-            }
-        ];
+        const res = await fetch(`${DATA_API}/comments/?startup_id=${startupId}&skip=0&limit=50`);
+        if (!res.ok) return [];
+        const items = await res.json();
+        return items.map(c => ({
+            comment_id: c.comment_id,
+            content: c.content,
+            created_date: c.created_date,
+            user_name: `Usuario ${c.user_id}`,
+            user_id: c.user_id,
+        }));
     }
 
     renderComments(comments) {
@@ -338,9 +335,12 @@ forceNightModeStyles() {
     }
 
     async submitVote(voteType) {
-        // Simulación - reemplazar con llamada real a la API
-        console.log(`Enviando voto ${voteType} para startup ${this.startupId}`);
-        return new Promise(resolve => setTimeout(resolve, 500));
+        const user = this.currentUser;
+        await fetch(`${DATA_API}/votes/?user_id=${user.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ startup_id: Number(this.startupId), vote_type: voteType })
+        });
     }
 
     async handleCommentSubmit(e) {
@@ -369,9 +369,11 @@ forceNightModeStyles() {
     }
 
     async submitComment(content) {
-        // Simulación - reemplazar con llamada real a la API
-        console.log(`Enviando comentario: ${content}`);
-        return new Promise(resolve => setTimeout(resolve, 500));
+        await fetch(`${DATA_API}/comments/?user_id=${this.currentUser.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content, startup_id: Number(this.startupId) })
+        });
     }
 
     async deleteComment(commentId) {
@@ -389,9 +391,7 @@ forceNightModeStyles() {
     }
 
     async performDeleteComment(commentId) {
-        // Simulación - reemplazar con llamada real a la API
-        console.log(`Eliminando comentario ${commentId}`);
-        return new Promise(resolve => setTimeout(resolve, 500));
+        await fetch(`${DATA_API}/comments/${commentId}?user_id=${this.currentUser.id}`, { method: 'DELETE' });
     }
 
     async leavePartnership(userId) {

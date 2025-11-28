@@ -1,0 +1,12 @@
+fastapi==0.111.0
+uvicorn==0.30.0
+SQLAlchemy==2.0.31
+python-dotenv==1.0.1
+mysql-connector-python==8.4.0
+# Accepts recent versions of pydantic (2.12.x installed). Limited to <3 for stability.
+pydantic>=2.12,<3.0
+pydantic-settings>=2.12,<3.0
+pytest==8.3.3
+python-multipart>=0.0.9,<1.0
+alembic>=1.13,<2.0
+requests>=2.31.0,<3.0

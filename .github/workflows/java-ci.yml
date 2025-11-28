@@ -1,8 +1,8 @@
-name: Java Spring Boot CI
+name: Spring Boot CI
 
 on:
   push:
-    branches: [ main, develop, feature/** ]
+    branches: [ main, develop, feature/**, integration/** ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
@@ -11,7 +11,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    # ELIMINA la sección de services de MySQL
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -24,14 +23,29 @@ jobs:
         cache: maven
 
     - name: Run tests with Maven (H2 in-memory)
-      run: mvn -B test
-      working-directory: ./login
-      # SIN variables de entorno de base de datos
+      run: ./mvnw -B test -Dspring-boot.run.profiles=test
+      working-directory: ./services/spring-auth
+      env:
+        DB_PASSWORD: ""
+        DB_USERNAME: sa
+        DB_URL: jdbc:h2:mem:testdb
+        SERVER_PORT: 8081
+
+    - name: Build with Maven
+      run: ./mvnw -B package -DskipTests
+      working-directory: ./services/spring-auth
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-reports
-        path: login/target/surefire-reports/
+        name: spring-boot-test-reports
+        path: services/spring-auth/target/surefire-reports/
         retention-days: 30
+    
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: spring-boot-jar
+        path: services/spring-auth/target/*.jar
+        retention-days: 7

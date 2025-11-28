@@ -1,4 +1,6 @@
 // js/home.js
+const DATA_API = 'http://localhost:8000';
+
 export class HomePage {
     constructor() {
         this.userVotes = {};
@@ -171,8 +173,15 @@ export class HomePage {
 
     async saveVoteToServer(startupId, newVote, oldVote) {
         try {
-            // Integrar con tu API de votos aquí
-            console.log(`Voto guardado: Startup ${startupId}, Voto: ${newVote}, Anterior: ${oldVote}`);
+            const userRaw = localStorage.getItem('user');
+            if (!userRaw) return;
+            const user = JSON.parse(userRaw);
+            const vote_type = newVote === 'up' ? 'upvote' : 'downvote';
+            await fetch(`${DATA_API}/votes/?user_id=${user.id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ startup_id: Number(startupId), vote_type })
+            });
         } catch (error) {
             console.error('Error saving vote:', error);
         }
@@ -407,75 +416,44 @@ export class HomePage {
     }
 
     async fetchStartups() {
-        // Datos de ejemplo para startups
-        return [
-            {
-                id: 1,
-                name: "TechInnovate",
-                description: "Una startup dedicada a la innovación tecnológica en el campo de la inteligencia artificial y machine learning. Desarrollamos soluciones personalizadas para empresas que buscan transformar digitalmente sus operaciones.",
-                email: "contact@techinnovate.com",
-                website: "https://techinnovate.com",
-                social_media: "@techinnovate",
-                category: "Tecnología",
-                created_date: "2024-03-21",
-                votes: 12
-            },
-            {
-                id: 2,
-                name: "EcoSolutions",
-                description: "Soluciones sostenibles para un futuro verde y renovable. Desarrollamos tecnologías limpias y productos ecológicos que reducen el impacto ambiental.",
-                email: "info@ecosolutions.com",
-                website: "https://ecosolutions.com",
-                social_media: "@ecosolutions",
-                category: "Medio Ambiente",
-                created_date: "2024-03-18",
-                votes: 5
-            },
-            {
-                id: 3,
-                name: "HealthTech Pro",
-                description: "Revolucionando la industria de la salud con tecnología de vanguardia. Plataformas de telemedicina y dispositivos médicos inteligentes.",
-                email: "hello@healthtech.com",
-                website: "https://healthtech.com",
-                social_media: "@healthtech",
-                category: "Salud",
-                created_date: "2024-03-15",
-                votes: 24
-            },
-            {
-                id: 4,
-                name: "FinSecure",
-                description: "Soluciones de seguridad financiera y pagos digitales seguros. Protegemos tus transacciones con tecnología blockchain.",
-                email: "security@finsecure.com",
-                website: "https://finsecure.com",
-                social_media: "@finsecure",
-                category: "Finanzas",
-                created_date: "2024-03-12",
-                votes: 8
-            },
-            {
-                id: 5,
-                name: "EduFuture",
-                description: "Plataforma de educación online con cursos interactivos y aprendizaje adaptativo para todas las edades.",
-                email: "learn@edufuture.com",
-                website: "https://edufuture.com",
-                social_media: "@edufuture",
-                category: "Educación",
-                created_date: "2024-03-10",
-                votes: 15
-            },
-            {
-                id: 6,
-                name: "MarketHub",
-                description: "Marketplace B2B que conecta proveedores con retailers. Optimizamos la cadena de suministro con IA.",
-                email: "sales@markethub.com",
-                website: "https://markethub.com",
-                social_media: "@markethub",
-                category: "Comercio",
-                created_date: "2024-03-08",
-                votes: 3
+        const res = await fetch(`${DATA_API}/startups/?skip=0&limit=50`);
+        if (!res.ok) throw new Error('No se pudieron cargar las startups');
+        const items = await res.json();
+        // Enriquecer con votos (upvotes - downvotes)
+        const withVotes = await Promise.all(items.map(async (s) => {
+            try {
+                const vc = await fetch(`${DATA_API}/votes/count/${s.startup_id}`);
+                let votes = 0;
+                if (vc.ok) {
+                    const data = await vc.json();
+                    votes = (data.upvotes || 0) - (data.downvotes || 0);
+                }
+                return {
+                    id: s.startup_id,
+                    name: s.name,
+                    description: s.description || '',
+                    email: '',
+                    website: '',
+                    social_media: '',
+                    category: s.category_id ? `Categoría ${s.category_id}` : 'General',
+                    created_date: s.created_date || new Date().toISOString(),
+                    votes,
+                };
+            } catch (e) {
+                return {
+                    id: s.startup_id,
+                    name: s.name,
+                    description: s.description || '',
+                    email: '',
+                    website: '',
+                    social_media: '',
+                    category: s.category_id ? `Categoría ${s.category_id}` : 'General',
+                    created_date: s.created_date || new Date().toISOString(),
+                    votes: 0,
+                };
             }
-        ];
+        }));
+        return withVotes;
     }
 
     renderStartups(startups) {
