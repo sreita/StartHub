@@ -16,6 +16,7 @@ backend/
     __init__.py
     comment.py
     vote.py
+    search.py
     startup.py
     user.py
   schemas/
@@ -27,12 +28,14 @@ backend/
   services/
     comment_service.py
     vote_service.py
+    search_service.py
   api/
     router.py
     routes/
       comments.py
       votes.py
       dev.py
+      search.py
   tests/
     conftest.py
     test_comments_votes.py
@@ -93,6 +96,49 @@ curl -i -X POST "http://127.0.0.1:8000/votes/?user_id=1" \
 curl -i "http://127.0.0.1:8000/votes/count/1"
 ```
 
+- Search, filters and sort:
+```bash
+# Filter by multiple categories
+curl "http://127.0.0.1:8000/startups/search?categorias=1,2"
+
+# Filter by minimum votes and comments
+curl "http://127.0.0.1:8000/startups/search?min_votos=2&min_comentarios=1"
+
+# Combined search with filters
+curl "http://127.0.0.1:8000/startups/search?q=fi&categorias=1,2&min_votos=1"
+
+# Sort by votes (ascending - least votes first)  
+curl "http://127.0.0.1:8000/startups/search?sort_by=votos_asc"
+
+# Sort by comments count
+curl "http://127.0.0.1:8000/startups/search?sort_by=comentarios_desc"
+```
+
+- Crud Startups:
+
+```bash
+# Crear
+
+curl -X POST "http://localhost:8000/startups/?user_id=1" -H "Content-Type: application/json" -d "{\"name\": \"Mi Startup Tech\", \"description\": \"Descripción de mi startup\", \"category_id\": 1}"
+
+# Listar startups de un usuario específico
+curl -X GET "http://localhost:8000/startups/my-startups?user_id=1"
+
+# Actualizar nombre y descripción
+curl -X PUT "http://localhost:8000/startups/1?user_id=1" -H "Content-Type: application/json" -d "{\"name\": \"Nuevo Nombre\", \"description\": \"Nueva descripción\"}"
+
+# Actualizar solo el email
+curl -X PUT "http://localhost:8000/startups/1?user_id=1" -H "Content-Type: application/json" -d "{\"email\": \"nuevo@email.com\"}"
+
+# Actualizar múltiples campos
+curl -X PUT "http://localhost:8000/startups/1?user_id=1" -H "Content-Type: application/json" -d "{\"name\": \"Nombre Actualizado\", \"website\": \"https://nuevo-sitio.com\", \"category_id\": 3}"
+
+# Eliminar startup 
+curl -X DELETE "http://localhost:8000/startups/1?user_id=1"
+```
+
+
+
 Endpoints
 - `POST /comments` (create)
 - `GET /comments?startup_id=1&skip=0&limit=50` (list with pagination)
@@ -102,6 +148,9 @@ Endpoints
 - `GET /votes/count/{startup_id}` (up/down counts)
 - `DELETE /votes?user_id=&startup_id=` (delete vote)
 - `POST /dev/bootstrap` (only when `APP_DEBUG=true`, seeds minimal data)
+- `GET /startups/search` search with filters and sorting
+- `GET /startups/autocomplete` name suggestions
+- `GET /startups/{startup_id}` detailed startup information
 
 Tests
 ```bash

@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/search_exploration-module ]
   pull_request:
     branches: [ main ]
 
