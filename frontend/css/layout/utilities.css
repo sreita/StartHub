@@ -1,0 +1,41 @@
+/* ======================================================
+   UTILITARIOS
+   ====================================================== */
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 2px solid var(--primary);
+  margin: 0 10px;
+}
+
+.footer a {
+  color: var(--primary);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Textos */
+.text-gray-700,
+.text-gray-600,
+.text-gray-500 {
+    color: var(--gray-dark);
+}
+
+.read-more, .date-text {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+}
+
+/* Listas con viñetas */
+.list-disc {
+    color: var(--primary);
+}

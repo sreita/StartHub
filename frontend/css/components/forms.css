@@ -1,0 +1,96 @@
+/* ======================================================
+   FORMULARIOS
+   ====================================================== */
+
+.input-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--primary);
+  background-color: var(--secondary);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s;
+  color: var(--primary);
+}
+
+input:focus {
+  box-shadow: 4px 4px 0px var(--primary);
+}
+
+input::placeholder {
+  color: var(--gray-dark);
+}
+
+.input-neo {
+  border: 2px solid var(--primary);
+  background-color: var(--secondary);
+  padding: 0.75rem 1rem;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  color: var(--primary);
+}
+
+.input-neo:focus {
+  box-shadow: 2px 2px 0 var(--primary);
+  transform: translate(-1px, -1px);
+  outline: none;
+}
+
+.input-neo::placeholder {
+  color: var(--gray-dark);
+}
+
+.comment-textarea {
+  background-color: var(--secondary);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.comment-textarea:focus {
+  box-shadow: 2px 2px 0 var(--primary);
+  outline: none;
+}
+
+.comment-textarea::placeholder {
+  color: var(--gray-dark);
+}
+
+.search-input {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  border: 2px solid var(--primary);
+  background-color: var(--secondary);
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+  color: var(--primary);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.search-input:focus {
+  box-shadow: 2px 2px 0 var(--primary);
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--gray-dark);
+  font-weight: 400;
+}

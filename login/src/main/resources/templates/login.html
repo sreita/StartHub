@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout_base :: layout_base(
+            title='Login',
+            content=~{::content}
+      )}">
+<body>
+</body>
+
+<!-- 🔹 ESTE fragmento se inserta dentro de <main> del layout -->
+<div th:fragment="content">
+
+    <div class="login-container">
+
+        <h1>LOGIN</h1>
+
+        <form th:action="@{/process-login}" method="POST">
+
+            <div class="input-group">
+                <label for="email">EMAIL</label>
+                <input
+                        type="email"
+                        id="email"
+                        name="username"
+                        placeholder="your@email.com"
+                        required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="password">PASSWORD</label>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                >
+            </div>
+
+            <button type="submit">SIGN IN</button>
+        </form>
+
+        <div class="footer">
+            Don't have an account?
+            <a th:href="@{/req/signup}">Sign up</a>
+        </div>
+
+    </div>
+
+</div>
+
+</html>

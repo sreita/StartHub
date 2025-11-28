@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout_base :: layout_base(
+            title='Registro - Crear Cuenta',
+            content=~{::content}
+      )}">
+
+<div th:fragment="content" class="content-wrapper">
+
+  <div class="login-container">
+    <h1>SIGN UP</h1>
+
+    <form id="registrationForm">
+
+      <div class="input-group">
+        <label for="firstname">FIRST NAME</label>
+        <input type="text" id="firstname" name="firstName" placeholder="Your name" required />
+      </div>
+
+      <div class="input-group">
+        <label for="lastname">LAST NAME</label>
+        <input type="text" id="lastname" name="lastName" placeholder="Your lastname" required />
+      </div>
+
+      <div class="input-group">
+        <label for="email">EMAIL</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" required />
+      </div>
+
+      <div class="input-group">
+        <label for="password">PASSWORD</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required />
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPassword">CONFIRM PASSWORD</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" id="submit">CREATE ACCOUNT</button>
+    </form>
+
+    <div class="footer">
+      Already have an account?
+      <a th:href="@{/req/login}">Sign in</a>
+    </div>
+  </div>
+
+  <script>
+    // 1. Obtenemos el formulario por su ID
+    const registrationForm = document.getElementById("registrationForm");
+
+    if (registrationForm) { // Comprueba si el formulario existe
+
+        // 2. Adjuntamos el listener al evento 'submit' del formulario
+        registrationForm.addEventListener("submit", function(event) {
+
+            // 3. Detenemos el envío tradicional del formulario. ¡Esta es la clave!
+            event.preventDefault();
+
+            // 4. Obtenemos los valores de los inputs
+            const firstName = document.getElementById("firstname").value;
+            const lastName = document.getElementById("lastname").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            const data = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password
+            };
+
+            // 5. Enviamos la petición fetch
+            fetch("/api/v1/registration", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            })
+            .then(async (response) => {
+                if (response.ok) {
+                    // Registro exitoso, redirigir
+                    window.location.href = "/req/success";
+                } else {
+                    // Captura el error del backend para dar feedback
+                    const errorText = await response.text();
+                    alert("Error creating account. Details: " + (errorText || "Please try again."));
+                }
+            })
+            .catch((error) => {
+                console.error('Fetch error:', error);
+                alert("Unexpected error. Try again later.");
+            });
+        });
+
+    } else {
+        console.error("Error: Elemento 'registrationForm' no encontrado.");
+    }
+
+  </script>
+
+</div> </html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StartHub - Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+    <!-- Navbar será insertada aquí por el componente -->
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto py-8 px-4 md:px-0">
+        <!-- Header con título y botones -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <h1 class="text-3xl md:text-5xl mb-4 md:mb-0 text-center md:text-left">
+                STARTUPS AGREGADAS
+            </h1>
+
+            <div class="flex flex-col sm:flex-row gap-4 items-center">
+                <!-- Dropdown de Ordenamiento -->
+                <div class="relative">
+                    <button id="sort-dropdown-btn"
+                            class="sort-toggle-btn px-4 md:px-6 py-2 md:py-3 font-bold transition-all duration-200 flex items-center justify-between w-40 md:w-48">
+                        <span class="text-sm md:text-base">Ordenar por</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="sort-dropdown-menu" class="sort-dropdown-menu hidden absolute right-0 mt-2 w-48 overflow-hidden z-40">
+                        <button class="sort-option" data-sort="newest">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            Más nuevos
+                        </button>
+                        <button class="sort-option" data-sort="oldest">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                            </svg>
+                            Más antiguos
+                        </button>
+                        <button class="sort-option" data-sort="most-voted">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                            </svg>
+                            Más votados
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botón Crear Startup -->
+                <button id="create-startup-btn"
+                   class="create-startup-btn px-4 md:px-6 py-2 md:py-3 font-bold transition-all duration-200 text-center w-full sm:w-auto text-sm md:text-base">
+                    + Crear Startup
+                </button>
+            </div>
+        </div>
+
+        <div id="startups-container" class="grid grid-cols-1 gap-4 md:gap-8 max-w-4xl mx-auto">
+            <!-- Las startups se cargarán aquí dinámicamente -->
+            <div class="startup-card neo-brutalist p-4 md:p-6">
+                <!-- Layout móvil: votos horizontales arriba -->
+                <div class="block md:hidden">
+                    <!-- Sección de votos para móvil -->
+                    <div class="vote-container-mobile flex flex-row items-center justify-center space-x-6 mb-4 p-3">
+                        <button class="vote-btn upvote">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </button>
+                        <span class="vote-count font-bold text-lg">12</span>
+                        <button class="vote-btn downvote">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Contenido para móvil -->
+                    <div class="mobile-content">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-bold">TECHINNOVATE</h3>
+                            <span class="category-badge text-xs">Tecnología</span>
+                        </div>
+
+                        <p class="text-gray-700 text-sm mb-3 line-clamp-3">
+                            Una startup dedicada a la innovación tecnológica en el campo de la inteligencia artificial y machine learning. Desarrollamos soluciones personalizadas para empresas que buscan transformar digitalmente sus operaciones.
+                        </p>
+
+                        <div class="contact-info-mobile text-xs text-gray-600 mb-3 space-y-1">
+                            <div class="flex items-center">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="truncate">contact@techinnovate.com</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                </svg>
+                                <span class="truncate">techinnovate.com</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="date-text text-xs text-gray-500">28 mar 2024</span>
+                            <a href="./startup_info.html" class="read-more px-3 py-1 font-bold text-xs">
+                                VER DETALLES
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout escritorio: votos verticales a la izquierda -->
+                <div class="hidden md:flex flex-col md:flex-row">
+                    <!-- Sección de votos -->
+                    <div class="vote-container-desktop flex flex-col items-center justify-center p-4 mb-4 md:mb-0 md:mr-6">
+                        <button class="vote-btn upvote mb-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </button>
+                        <span class="vote-count font-bold text-xl">12</span>
+                        <button class="vote-btn downvote mt-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Contenido de la startup -->
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">TECHINNOVATE</h3>
+                            <span class="category-badge">Tecnología</span>
+                        </div>
+
+                        <p class="text-gray-700 mb-4">
+                            Una startup dedicada a la innovación tecnológica en el campo de la inteligencia artificial y machine learning. Desarrollamos soluciones personalizadas para empresas que buscan transformar digitalmente sus operaciones.
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                contact@techinnovate.com
+                            </span>
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                </svg>
+                                techinnovate.com
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="date-text text-gray-500">28 de marzo de 2024</span>
+                            <a href="./startup_info.html" class="read-more px-4 py-2 font-bold">
+                                VER DETALLES
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segunda startup de ejemplo -->
+            <div class="startup-card neo-brutalist p-4 md:p-6">
+                <!-- Layout móvil -->
+                <div class="block md:hidden">
+                    <div class="vote-container-mobile flex flex-row items-center justify-center space-x-6 mb-4 p-3">
+                        <button class="vote-btn upvote">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </button>
+                        <span class="vote-count font-bold text-lg">8</span>
+                        <button class="vote-btn downvote">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="mobile-content">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-bold">ECO-SOLUTIONS</h3>
+                            <span class="category-badge text-xs">Sostenibilidad</span>
+                        </div>
+
+                        <p class="text-gray-700 text-sm mb-3 line-clamp-3">
+                            Desarrollamos tecnologías limpias para reducir la huella de carbono en la industria. Nuestras soluciones incluyen sistemas de reciclaje inteligente y energía renovable accesible.
+                        </p>
+
+                        <div class="contact-info-mobile text-xs text-gray-600 mb-3 space-y-1">
+                            <div class="flex items-center">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="truncate">info@ecosolutions.com</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                </svg>
+                                <span class="truncate">ecosolutions.com</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="date-text text-xs text-gray-500">15 mar 2024</span>
+                            <a href="./startup_info.html" class="read-more px-3 py-1 font-bold text-xs">
+                                VER DETALLES
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout escritorio -->
+                <div class="hidden md:flex flex-col md:flex-row">
+                    <div class="vote-container-desktop flex flex-col items-center justify-center p-4 mb-4 md:mb-0 md:mr-6">
+                        <button class="vote-btn upvote mb-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </button>
+                        <span class="vote-count font-bold text-xl">8</span>
+                        <button class="vote-btn downvote mt-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">ECO-SOLUTIONS</h3>
+                            <span class="category-badge">Sostenibilidad</span>
+                        </div>
+
+                        <p class="text-gray-700 mb-4">
+                            Desarrollamos tecnologías limpias para reducir la huella de carbono en la industria. Nuestras soluciones incluyen sistemas de reciclaje inteligente y energía renovable accesible para pequeñas empresas.
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                info@ecosolutions.com
+                            </span>
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                </svg>
+                                ecosolutions.com
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="date-text text-gray-500">15 de marzo de 2024</span>
+                            <a href="./startup_info.html" class="read-more px-4 py-2 font-bold">
+                                VER DETALLES
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { NavbarManager } from './js/navbar.js';
+        import { AuthService } from './js/auth.js';
+        import { HomePage } from './js/home.js';
+
+        // Inicializar navbar
+        new NavbarManager();
+
+        // Inicializar la página de inicio
+        const homePage = new HomePage();
+
+        // Actualizar botón de crear startup según autenticación
+        function updateCreateStartupButton() {
+            const createStartupBtn = document.getElementById('create-startup-btn');
+            if (!createStartupBtn) return;
+
+            const isAuthenticated = AuthService.isAuthenticated();
+
+            if (isAuthenticated) {
+                createStartupBtn.onclick = () => {
+                    window.location.href = './startup_form.html';
+                };
+            } else {
+                createStartupBtn.onclick = () => {
+                    window.location.href = './login.html';
+                };
+            }
+        }
+
+        // Inicializar
+        updateCreateStartupButton();
+    </script>
+</body>
+</html>

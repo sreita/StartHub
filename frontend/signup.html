@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - StartHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        .font-display {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 md:p-8">
+    <div class="w-full max-w-md">
+        <!-- Enlace para volver al home -->
+        <div class="text-center mb-6">
+            <a href="./home.html" class="text-black hover:text-yellow-600 font-bold font-mono text-lg">← VOLVER AL INICIO</a>
+        </div>
+
+        <!-- Formulario de registro con estilo neo-brutalista -->
+        <div class="neo-brutalist bg-white p-8 rounded-lg">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display">CREAR CUENTA</h2>
+
+            <form id="registrationForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="firstname">
+                        NOMBRE
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           type="text"
+                           id="firstname"
+                           name="firstName"
+                           placeholder="TU NOMBRE"
+                           required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="lastname">
+                        APELLIDO
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           type="text"
+                           id="lastname"
+                           name="lastName"
+                           placeholder="TU APELLIDO"
+                           required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="email">
+                        EMAIL
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           type="email"
+                           id="email"
+                           name="email"
+                           placeholder="TU@EMAIL.COM"
+                           required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="password">
+                        CONTRASEÑA
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           type="password"
+                           id="password"
+                           name="password"
+                           placeholder="••••••••"
+                           required>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-3 font-mono" for="confirmPassword">
+                        CONFIRMAR CONTRASEÑA
+                    </label>
+                    <input class="w-full py-3 px-4 border-2 border-black bg-white text-gray-700 font-mono focus:outline-none focus:shadow-[2px_2px_0_#000] transition-all duration-200"
+                           type="password"
+                           id="confirmPassword"
+                           name="confirmPassword"
+                           placeholder="••••••••"
+                           required>
+                </div>
+
+<div class="text-center mb-6">
+    <button type="submit"
+            class="neo-brutalist w-full bg-yellow-400 hover:bg-black hover:text-yellow-400 text-black font-bold py-3 px-6 font-mono transition-all duration-200 mb-4">
+        CREAR CUENTA
+    </button>
+    <div class="mt-2">
+        <a href="./login.html" class="font-bold text-sm text-black hover:text-yellow-600 font-mono">
+            ¿YA TIENES UNA CUENTA? INICIAR SESIÓN
+        </a>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { AuthService } from './js/auth.js';
+        import { showNotification, validateEmail } from './js/utils.js';
+
+        const registrationForm = document.getElementById("registrationForm");
+
+        if (registrationForm) {
+            registrationForm.addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                const firstName = document.getElementById("firstname").value;
+                const lastName = document.getElementById("lastname").value;
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                // Validaciones
+                if (password !== confirmPassword) {
+                    showNotification("Las contraseñas no coinciden", "error");
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showNotification("La contraseña debe tener al menos 6 caracteres", "error");
+                    return;
+                }
+
+                if (!validateEmail(email)) {
+                    showNotification("Por favor ingresa un email válido", "error");
+                    return;
+                }
+
+                const userData = {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password
+                };
+
+                try {
+                    const result = await AuthService.register(userData);
+
+                    if (result.success) {
+                        showNotification("¡Cuenta creada exitosamente! Por favor revisa tu email para confirmar.", "success");
+                        setTimeout(() => {
+                            window.location.href = "./login.html";
+                        }, 3000);
+                    } else {
+                        showNotification(result.message || "Error creando la cuenta", "error");
+                    }
+                } catch (error) {
+                    console.error('Error en registro:', error);
+                    showNotification("Error de conexión. Intenta nuevamente.", "error");
+                }
+            });
+        }
+
+        // Configurar modo noche si está activo
+        const savedNightMode = localStorage.getItem('nightMode') === 'true';
+        if (savedNightMode) {
+            document.body.classList.add('night-mode-active');
+        }
+    </script>
+</body>
+</html>
