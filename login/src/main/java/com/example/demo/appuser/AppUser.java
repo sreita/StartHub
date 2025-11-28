@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -50,7 +51,8 @@ public class AppUser implements UserDetails {
   @Column(name = "registration_date", insertable = false, updatable = false)
   private LocalDateTime registrationDate;
 
-  @Column(name = "profile_info", columnDefinition = "text")
+  @Lob
+  @Column(name = "profile_info")
   private String profileInfo;
 
   @Column(name = "is_locked")

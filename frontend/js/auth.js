@@ -1,6 +1,6 @@
 // js/auth.js
 export class AuthService {
-    static BASE_URL = 'http://localhost:8080/api/v1';
+    static BASE_URL = 'http://localhost:8081/api/v1';
 
     static async login(email, password) {
         try {
