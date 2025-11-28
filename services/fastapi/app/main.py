@@ -17,25 +17,28 @@ app = FastAPI(
     },
 )
 
-# CORS
+# CORS - Usa solo la configuración del settings
 settings = get_settings()
-cors_raw = settings.cors_origins or "*"
-origins = [o.strip() for o in cors_raw.split(",") if o.strip()] or ["*"]
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081"
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(api_router)
 
-
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
 
 @app.get("/health/db")
 def health_db():

@@ -90,8 +90,7 @@ public class SecurityConfig {
             "/home",
             "/css/**",
             "/js/**",
-            "/process-login",
-            "/favicon.ico"
+            "/process-login"
           )
           .permitAll()
           .requestMatchers("/reset-password")
@@ -152,7 +151,9 @@ public class SecurityConfig {
         "http://localhost:*",
         "http://127.0.0.1:*",
         "http://127.0.0.1:5500",
-        "http://localhost:5500"
+        "http://localhost:5500",
+        "http://127.0.0.1:3000",
+        "http://localhost:3000"
       )
     );
     configuration.setAllowedMethods(

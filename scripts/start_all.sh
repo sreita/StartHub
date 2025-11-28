@@ -68,28 +68,64 @@ cd "$PROJECT_ROOT"
 echo -e "${BLUE}[2/4] Starting Spring Boot Authentication (port 8081)...${NC}"
 cd services/spring-auth
 
-# Load environment variables from .env file
-if [ -f ".env" ]; then
-    set -a
-    source .env
-    set +a
-else
-    echo -e "${YELLOW}Warning: .env file not found in services/spring-auth${NC}"
-    echo -e "${YELLOW}Please copy .env.example to .env and configure your database credentials${NC}"
-fi
-
-# Start Spring Boot in background (uses MySQL from application.yml)
+# Ensure mvnw has execution permissions
 if [ -f "mvnw" ]; then
-    ./mvnw spring-boot:run > ../../logs/spring-auth.log 2>&1 &
-elif [ -f "mvnw.cmd" ]; then
-    ./mvnw.cmd spring-boot:run > ../../logs/spring-auth.log 2>&1 &
-else
-    echo -e "${RED}Error: Maven wrapper not found${NC}"
-    kill $FASTAPI_PID
-    exit 1
+    chmod +x mvnw
+    echo -e "${GREEN}✓ Set execution permissions for mvnw${NC}"
 fi
 
+# Create .env file if it doesn't exist
+if [ ! -f ".env" ]; then
+    echo -e "${YELLOW}Creating .env file with default configuration...${NC}"
+    cat > .env << EOF
+DB_PASSWORD=
+DB_USERNAME=root
+DB_URL=jdbc:mysql://127.0.0.1:3306/starthub
+SERVER_PORT=8081
+MAIL_HOST=localhost
+MAIL_PORT=1025
+MAIL_USERNAME=hello
+MAIL_PASSWORD=hello
+EOF
+    echo -e "${GREEN}✓ .env file created${NC}"
+fi
+
+# Load environment variables
+set -a
+source .env
+set +a
+echo -e "${GREEN}✓ Environment variables loaded from .env${NC}"
+
+# Verify database connection
+echo -e "${YELLOW}Testing database connection...${NC}"
+if command -v mysql &> /dev/null; then
+    if mysql -h 127.0.0.1 -u root -e "USE starthub;" 2>/dev/null; then
+        echo -e "${GREEN}✓ Database connection successful${NC}"
+    else
+        echo -e "${RED}❌ Database connection failed${NC}"
+        echo -e "${YELLOW}Attempting to create database...${NC}"
+        mysql -h 127.0.0.1 -u root -e "CREATE DATABASE IF NOT EXISTS starthub;"
+        if mysql -h 127.0.0.1 -u root -e "USE starthub;" 2>/dev/null; then
+            echo -e "${GREEN}✓ Database created and connection successful${NC}"
+        else
+            echo -e "${RED}❌ Still cannot connect to database${NC}"
+            exit 1
+        fi
+    fi
+else
+    echo -e "${YELLOW}⚠ mysql client not available, skipping database test${NC}"
+fi
+
+# Clean and compile
+echo -e "${YELLOW}Compiling Spring Boot application...${NC}"
+./mvnw clean compile -q
+echo -e "${GREEN}✓ Compilation successful${NC}"
+
+# Start Spring Boot
+echo -e "${YELLOW}Starting Spring Boot server...${NC}"
+./mvnw spring-boot:run >> ../../logs/spring-auth.log 2>&1 &
 SPRING_PID=$!
+echo $SPRING_PID > ../../logs/spring.pid
 echo -e "${GREEN}✓ Spring Boot started (PID: $SPRING_PID)${NC}"
 echo "  Logs: logs/spring-auth.log"
 echo "  API: http://localhost:8081/api/v1"
@@ -98,9 +134,35 @@ echo ""
 
 cd "$PROJECT_ROOT"
 
-# Wait for Spring Boot to start (it takes longer)
+# Wait for Spring Boot with better feedback
 echo -e "${YELLOW}Waiting for Spring Boot to initialize...${NC}"
-sleep 10
+SPRING_READY=false
+for i in {1..60}; do
+    if curl -s http://localhost:8081/api/v1/auth/login > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Spring Boot is ready! (after $i seconds)${NC}"
+        SPRING_READY=true
+        break
+    fi
+
+    # Show progress every 10 seconds
+    if [ $((i % 10)) -eq 0 ]; then
+        echo -e "${YELLOW}Still waiting... ($i/60 seconds)${NC}"
+        # Show recent log entries if waiting too long
+        if [ $i -gt 30 ]; then
+            echo -e "${YELLOW}Recent log entries:${NC}"
+            tail -3 logs/spring-auth.log | sed 's/^/  /'
+        fi
+    fi
+
+    sleep 1
+done
+
+if [ "$SPRING_READY" = false ]; then
+    echo -e "${RED}❌ Spring Boot failed to start within 60 seconds${NC}"
+    echo -e "${YELLOW}Check logs/spring-auth.log for details:${NC}"
+    tail -20 logs/spring-auth.log
+    exit 1
+fi
 
 echo -e "${BLUE}[3/4] Starting Frontend Server (port 3000)...${NC}"
 cd scripts
@@ -140,7 +202,7 @@ echo ""
 echo "To stop all services:"
 echo "  bash scripts/stop_all.sh"
 echo ""
-echo -e "${YELLOW}Press Ctrl+C to stop monitoring (services will continue running)${NC}"
+echo -e "${GREEN}StartHub is ready! Open http://localhost:3000 in your browser.${NC}"
 echo ""
 
 # Monitor logs in real-time (optional)

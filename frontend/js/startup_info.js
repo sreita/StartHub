@@ -58,23 +58,23 @@ export class StartupInfoPage {
     }
 
     async fetchStartupById(startupId) {
-        const res = await fetch(`${DATA_API}/startups/${startupId}`);
-        if (!res.ok) throw new Error('Startup no encontrada');
-        const s = await res.json();
-        return {
-            startup_id: s.startup_id,
-            name: s.name,
-            description: s.description || '',
-            email: '',
-            website: '',
-            social_media: '',
-            created_date: s.created_date || new Date().toISOString(),
-            owner_user_id: s.owner_user_id,
-            category_id: s.category_id,
-            category_name: s.category_id ? `Categoría ${s.category_id}` : 'General',
-            owner_name: s.owner_user_id ? `Usuario ${s.owner_user_id}` : 'Usuario'
-        };
-    }
+    const res = await fetch(`${DATA_API}/startups/${startupId}`);
+    if (!res.ok) throw new Error('Startup no encontrada');
+    const s = await res.json();
+    return {
+        startup_id: s.startup_id,
+        name: s.name,
+        description: s.description || '',
+        email: '',
+        website: '',
+        social_media: '',
+        created_date: s.created_date || new Date().toISOString(),
+        owner_user_id: s.owner_user_id,
+        category_id: s.category_id,
+        category_name: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
+        owner_name: s.owner_name || (s.owner_user_id ? `Usuario ${s.owner_user_id}` : 'Usuario')  // NUEVO
+    };
+}
 
     renderStartupInfo(startup) {
     const container = document.getElementById('startup-info');
@@ -96,14 +96,13 @@ export class StartupInfoPage {
                     ${startup.email ? `<p><strong>Email:</strong> <a href="mailto:${startup.email}" class="text-blue-600 hover:underline">${startup.email}</a></p>` : ''}
                     ${startup.website ? `<p><strong>Website:</strong> <a href="${startup.website}" target="_blank" class="text-blue-600 hover:underline">${startup.website}</a></p>` : ''}
                     ${startup.social_media ? `<p><strong>Redes Sociales:</strong> ${startup.social_media}</p>` : ''}
-                    <p><strong>Fundador:</strong> ${startup.owner_name}</p>
+                    <p><strong>Fundador:</strong> ${startup.owner_name}</p>  <!-- CAMBIADO -->
                     <p><strong>Fecha de creación:</strong> ${new Date(startup.created_date).toLocaleDateString('es-ES')}</p>
                 </div>
             </div>
         </div>
     `;
 
-    // FORZAR ESTILOS DE MODO NOCHE SI ESTÁ ACTIVO
     this.forceNightModeStyles();
 }
 

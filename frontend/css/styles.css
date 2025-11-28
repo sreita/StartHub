@@ -1,6 +1,5 @@
 /* Base */
 @import url('base/reset.css');
-@import url('base/typography.css');
 
 /* Components */
 @import url('components/buttons.css');
@@ -11,14 +10,12 @@
 @import url('components/badges.css');
 
 /* Layout */
-@import url('layout/grid.css');
 @import url('layout/utilities.css');
 
 /* Pages */
 @import url('pages/auth.css');
-@import url('pages/home.css');
 @import url('pages/startup_info.css');
-@import url('pages/startup_form.css');
+
 
 /* Modes */
 @import url('modes/night-mode.css');

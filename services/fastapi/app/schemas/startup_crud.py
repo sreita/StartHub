@@ -28,7 +28,7 @@ class StartupUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=255)
     category_id: Optional[int] = None
-    
+
     model_config = ConfigDict(
         json_schema_extra={
             "examples": [
@@ -46,7 +46,9 @@ class StartupOut(StartupBase):
     startup_id: int
     owner_user_id: int
     created_date: Optional[datetime] = None
-    
+    category_name: Optional[str] = None
+    owner_name: Optional[str] = None  # NUEVO CAMPO
+
     model_config = ConfigDict(from_attributes=True)
 
 

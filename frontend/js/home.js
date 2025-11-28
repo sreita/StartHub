@@ -416,45 +416,46 @@ export class HomePage {
     }
 
     async fetchStartups() {
-        const res = await fetch(`${DATA_API}/startups/?skip=0&limit=50`);
-        if (!res.ok) throw new Error('No se pudieron cargar las startups');
-        const items = await res.json();
-        // Enriquecer con votos (upvotes - downvotes)
-        const withVotes = await Promise.all(items.map(async (s) => {
-            try {
-                const vc = await fetch(`${DATA_API}/votes/count/${s.startup_id}`);
-                let votes = 0;
-                if (vc.ok) {
-                    const data = await vc.json();
-                    votes = (data.upvotes || 0) - (data.downvotes || 0);
-                }
-                return {
-                    id: s.startup_id,
-                    name: s.name,
-                    description: s.description || '',
-                    email: '',
-                    website: '',
-                    social_media: '',
-                    category: s.category_id ? `Categoría ${s.category_id}` : 'General',
-                    created_date: s.created_date || new Date().toISOString(),
-                    votes,
-                };
-            } catch (e) {
-                return {
-                    id: s.startup_id,
-                    name: s.name,
-                    description: s.description || '',
-                    email: '',
-                    website: '',
-                    social_media: '',
-                    category: s.category_id ? `Categoría ${s.category_id}` : 'General',
-                    created_date: s.created_date || new Date().toISOString(),
-                    votes: 0,
-                };
+    const res = await fetch(`${DATA_API}/startups/?skip=0&limit=50`);
+    if (!res.ok) throw new Error('No se pudieron cargar las startups');
+    const items = await res.json();
+
+    const withVotes = await Promise.all(items.map(async (s) => {
+        try {
+            const vc = await fetch(`${DATA_API}/votes/count/${s.startup_id}`);
+            let votes = 0;
+            if (vc.ok) {
+                const data = await vc.json();
+                votes = (data.upvotes || 0) - (data.downvotes || 0);
             }
-        }));
-        return withVotes;
-    }
+            return {
+                id: s.startup_id,
+                name: s.name,
+                description: s.description || '',
+                email: '',
+                website: '',
+                social_media: '',
+                // Usar category_name si está disponible, sino category_id como fallback
+                category: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
+                created_date: s.created_date || new Date().toISOString(),
+                votes,
+            };
+        } catch (e) {
+            return {
+                id: s.startup_id,
+                name: s.name,
+                description: s.description || '',
+                email: '',
+                website: '',
+                social_media: '',
+                category: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
+                created_date: s.created_date || new Date().toISOString(),
+                votes: 0,
+            };
+        }
+    }));
+    return withVotes;
+}
 
     renderStartups(startups) {
     const container = document.getElementById('startups-container');

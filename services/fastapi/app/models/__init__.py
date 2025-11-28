@@ -1,6 +1,8 @@
-from app.models.comment import Comment
-from app.models.vote import Vote
-from app.models.user import User
-from app.models.startup import Startup
+from .user import User
+from .category import Category
+from .startup import Startup
+from .comment import Comment
+from .vote import Vote
 
-__all__ = ["Comment", "Vote", "User", "Startup"]
+# Esto asegura que todos los modelos estén disponibles
+__all__ = ["User", "Category", "Startup", "Comment", "Vote"]
