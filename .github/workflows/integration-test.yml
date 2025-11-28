@@ -34,13 +34,12 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: 'pip'
 
     # Setup Java for Spring Boot
-    - name: Set up JDK 21
+    - name: Set up JDK 18
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '18'
         distribution: 'temurin'
         cache: maven
 
@@ -71,18 +70,22 @@ jobs:
         CORS_ORIGINS: "*"
 
     # Build Spring Boot
+    - name: Make mvnw executable
+      run: chmod +x mvnw
+      working-directory: ./services/spring-auth
+
     - name: Build Spring Boot
       run: ./mvnw -B package -DskipTests
       working-directory: ./services/spring-auth
 
-    # Test Spring Boot with MySQL
-    - name: Test Spring Boot with MySQL
-      run: ./mvnw -B test
+    # Test Spring Boot with H2 (tests use H2 by default)
+    - name: Test Spring Boot
+      run: ./mvnw -B test -Dspring-boot.run.profiles=test
       working-directory: ./services/spring-auth
       env:
-        DB_PASSWORD: testpassword
-        DB_USERNAME: root
-        DB_URL: jdbc:mysql://127.0.0.1:3306/starthub
+        DB_PASSWORD: ""
+        DB_USERNAME: sa
+        DB_URL: jdbc:h2:mem:testdb
         SERVER_PORT: 8081
 
     # Upload test results
