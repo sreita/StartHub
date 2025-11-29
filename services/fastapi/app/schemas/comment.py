@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
 from pydantic.config import ConfigDict
+from typing import Optional
 
 
 class CommentBase(BaseModel):
@@ -36,6 +37,7 @@ class CommentUpdate(BaseModel):
 class CommentOut(CommentBase):
     comment_id: int
     user_id: int
+    user_name: str
     created_date: datetime
     modified_date: datetime | None = None
 

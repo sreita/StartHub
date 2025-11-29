@@ -218,17 +218,17 @@ forceNightModeStyles() {
     }
 
     async fetchComments(startupId) {
-        const res = await fetch(`${DATA_API}/comments/?startup_id=${startupId}&skip=0&limit=50`);
-        if (!res.ok) return [];
-        const items = await res.json();
-        return items.map(c => ({
-            comment_id: c.comment_id,
-            content: c.content,
-            created_date: c.created_date,
-            user_name: `Usuario ${c.user_id}`,
-            user_id: c.user_id,
-        }));
-    }
+    const res = await fetch(`${DATA_API}/comments/?startup_id=${startupId}&skip=0&limit=50`);
+    if (!res.ok) return [];
+    const items = await res.json();
+    return items.map(c => ({
+        comment_id: c.comment_id,
+        content: c.content,
+        created_date: c.created_date,
+        user_name: c.user_name, // Esto ahora vendrá del backend con el nombre real
+        user_id: c.user_id,
+    }));
+}
 
     renderComments(comments) {
         const container = document.getElementById('comments-list');
