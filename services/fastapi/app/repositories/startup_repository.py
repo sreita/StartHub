@@ -120,3 +120,6 @@ class StartupRepository:
 
     def exists(self, startup_id: int) -> bool:
         return self.db.query(Startup).filter(Startup.startup_id == startup_id).first() is not None
+
+    def get_categories(self) -> List[Category]:
+        return self.db.query(Category).all()

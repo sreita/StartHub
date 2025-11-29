@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.db.session import get_db
-from app.schemas.startup_crud import StartupCreate, StartupOut, StartupUpdate, StartupWithStats
+from app.schemas.startup_crud import StartupCreate, StartupOut, StartupUpdate, StartupWithStats, CategoryOut
 from app.services.startup_service import StartupService
 
 router = APIRouter()
@@ -14,11 +14,10 @@ def get_startup_service(db: Session = Depends(get_db)):
 @router.post("/", response_model=StartupOut, status_code=201)
 def create_startup(
     payload: StartupCreate,
-    user_id: int = Query(..., description="ID del usuario propietario"),
     service: StartupService = Depends(get_startup_service),
 ):
     try:
-        return service.create(user_id, payload)
+        return service.create(payload.owner_user_id, payload)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -88,3 +87,13 @@ def delete_startup(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     return None
+
+# Endpoint para obtener categorías
+@router.get("/categories/list", response_model=List[CategoryOut])
+def list_categories(
+    service: StartupService = Depends(get_startup_service),
+):
+    try:
+        return service.list_categories()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al cargar categorías: {str(e)}")

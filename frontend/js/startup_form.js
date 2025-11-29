@@ -1,6 +1,7 @@
 // js/startup_form.js
 export class StartupFormPage {
     constructor() {
+        this.API_BASE_URL = 'http://localhost:8000';
         this.startupId = this.getStartupIdFromURL();
         this.isEditMode = !!this.startupId;
         this.currentUser = null;
@@ -32,70 +33,148 @@ export class StartupFormPage {
 
         if (token && user) {
             this.currentUser = JSON.parse(user);
+            console.log('Usuario completo desde localStorage:', this.currentUser);
+
+            // SOLUCIÓN: Buscar el ID del usuario en diferentes propiedades posibles
+            this.currentUser.user_id = this.findUserId(this.currentUser);
+
+            if (!this.currentUser.user_id) {
+                console.error('No se pudo encontrar el ID del usuario en:', this.currentUser);
+                this.showError('Error de autenticación: no se pudo identificar al usuario');
+                return;
+            }
+
+            console.log('Usuario autenticado con ID:', this.currentUser.user_id);
         } else {
-            // Redirigir al login si no está autenticado
             alert('Debes iniciar sesión para crear o editar una startup');
             window.location.href = './login.html';
         }
     }
 
+    // Método para encontrar el ID del usuario en diferentes formatos
+    findUserId(userObj) {
+        // Probar diferentes nombres de campo comunes
+        const possibleIdFields = [
+            'user_id', 'id', 'userId', 'ID', 'Id',
+            'usuario_id', 'usuarioId', 'USER_ID'
+        ];
+
+        for (const field of possibleIdFields) {
+            if (userObj[field] !== undefined && userObj[field] !== null) {
+                console.log(`ID encontrado en campo: ${field}`, userObj[field]);
+                return parseInt(userObj[field]);
+            }
+        }
+
+        // Si no se encuentra en campos comunes, buscar en toda la estructura
+        console.log('Buscando ID recursivamente...');
+        return this.findUserIdRecursive(userObj);
+    }
+
+    findUserIdRecursive(obj, depth = 0) {
+        if (depth > 3) return null; // Límite de profundidad para evitar bucles infinitos
+
+        if (typeof obj === 'object' && obj !== null) {
+            for (const key in obj) {
+                const value = obj[key];
+
+                // Si la clave sugiere que es un ID y el valor es un número
+                if ((key.toLowerCase().includes('id') || key.toLowerCase().includes('_id')) &&
+                    (typeof value === 'number' || (typeof value === 'string' && !isNaN(value)))) {
+                    console.log(`ID potencial encontrado en ${key}:`, value);
+                    return parseInt(value);
+                }
+
+                // Buscar recursivamente en objetos y arrays
+                if (typeof value === 'object' && value !== null) {
+                    const found = this.findUserIdRecursive(value, depth + 1);
+                    if (found) return found;
+                }
+            }
+        }
+
+        return null;
+    }
+
     async loadCategories() {
         try {
-            this.categories = await this.fetchCategories();
-            this.renderCategories();
+            console.log('Cargando categorías desde /categories/');
+            const response = await fetch(`${this.API_BASE_URL}/categories/`);
+
+            if (response.ok) {
+                this.categories = await response.json();
+                console.log('Categorías cargadas:', this.categories);
+                this.renderCategories();
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
         } catch (error) {
-            console.error('Error loading categories:', error);
+            console.log('Error cargando categorías:', error.message);
+            this.loadFallbackCategories();
         }
     }
 
-    async fetchCategories() {
-        // Simulación - reemplazar con llamada real a la API
-        return [
-            { category_id: 1, name: "Tecnología", description: "Startups tecnológicas e innovadoras" },
-            { category_id: 2, name: "Salud", description: "Innovación en el sector salud" },
-            { category_id: 3, name: "Educación", description: "EdTech y soluciones educativas" },
-            { category_id: 4, name: "Finanzas", description: "FinTech y servicios financieros" },
-            { category_id: 5, name: "Medio Ambiente", description: "Soluciones sostenibles y ecológicas" },
-            { category_id: 6, name: "Comercio", description: "E-commerce y retail" }
+    loadFallbackCategories() {
+        console.log('Cargando categorías de respaldo...');
+        this.categories = [
+            { category_id: 1, name: "Tecnología" },
+            { category_id: 2, name: "Salud" },
+            { category_id: 3, name: "Educación" },
+            { category_id: 4, name: "Finanzas" },
+            { category_id: 5, name: "Medio Ambiente" },
+            { category_id: 6, name: "Comercio" }
         ];
+        this.renderCategories();
     }
 
     renderCategories() {
         const select = document.getElementById('category_id');
-        select.innerHTML = '<option value="">Selecciona una categoría</option>' +
-            this.categories.map(cat =>
-                `<option value="${cat.category_id}">${cat.name}</option>`
-            ).join('');
+        if (select) {
+            select.innerHTML = '<option value="">Selecciona una categoría</option>' +
+                this.categories.map(cat =>
+                    `<option value="${cat.category_id}">${cat.name}</option>`
+                ).join('');
+        }
     }
 
     async loadStartupData() {
         try {
-            const startup = await this.fetchStartupById(this.startupId);
-            this.populateForm(startup);
-            this.updateUIForEditMode();
+            const token = localStorage.getItem('authToken');
+            console.log('Cargando startup con ID:', this.startupId);
+
+            const response = await fetch(`${this.API_BASE_URL}/startups/${this.startupId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('Respuesta de startup:', response.status, response.statusText);
+
+            if (response.ok) {
+                const startup = await response.json();
+                console.log('Startup cargada:', startup);
+                this.populateForm(startup);
+                this.updateUIForEditMode();
+
+                // Verificar que el usuario es el propietario
+                if (startup.owner_user_id !== this.currentUser.user_id && !this.currentUser.is_admin) {
+                    this.showError('No tienes permisos para editar esta startup');
+                    window.location.href = './home.html';
+                }
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
         } catch (error) {
             console.error('Error loading startup data:', error);
-            this.showError('Error al cargar los datos de la startup');
+            this.showError('Error al cargar los datos de la startup: ' + error.message);
         }
     }
 
-    async fetchStartupById(startupId) {
-        // Simulación - reemplazar con llamada real a la API
-        return {
-            startup_id: startupId,
-            name: "TechInnovate",
-            description: "Una startup dedicada a la innovación tecnológica",
-            email: "contact@techinnovate.com",
-            website: "https://techinnovate.com",
-            social_media: "@techinnovate",
-            category_id: 1
-        };
-    }
-
     populateForm(startup) {
-        document.getElementById('name').value = startup.name;
-        document.getElementById('description').value = startup.description;
-        document.getElementById('category_id').value = startup.category_id;
+        document.getElementById('name').value = startup.name || '';
+        document.getElementById('description').value = startup.description || '';
+        document.getElementById('category_id').value = startup.category_id || '';
         document.getElementById('email').value = startup.email || '';
         document.getElementById('website').value = startup.website || '';
         document.getElementById('social_media').value = startup.social_media || '';
@@ -108,7 +187,9 @@ export class StartupFormPage {
 
     setupForm() {
         const form = document.getElementById('startup-form');
-        form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        }
     }
 
     async handleFormSubmit(e) {
@@ -118,23 +199,34 @@ export class StartupFormPage {
             return;
         }
 
-        const formData = this.getFormData();
+        const submitButton = document.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = 'Guardando...';
+        submitButton.disabled = true;
 
         try {
+            let result;
             if (this.isEditMode) {
-                await this.updateStartup(formData);
+                result = await this.updateStartup();
             } else {
-                await this.createStartup(formData);
+                result = await this.createStartup();
             }
 
-            this.showSuccess('Startup guardada exitosamente');
-            setTimeout(() => {
-                window.location.href = './home.html';
-            }, 1500);
+            if (result.success) {
+                this.showSuccess(result.message);
+                setTimeout(() => {
+                    window.location.href = './home.html';
+                }, 1500);
+            } else {
+                this.showError(result.message);
+            }
 
         } catch (error) {
             console.error('Error saving startup:', error);
-            this.showError('Error al guardar la startup');
+            this.showError('Error al guardar la startup: ' + error.message);
+        } finally {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
         }
     }
 
@@ -162,37 +254,149 @@ export class StartupFormPage {
     }
 
     getFormData() {
-        return {
+        const formData = {
             name: document.getElementById('name').value.trim(),
             description: document.getElementById('description').value.trim(),
             category_id: parseInt(document.getElementById('category_id').value),
             email: document.getElementById('email').value.trim() || null,
             website: document.getElementById('website').value.trim() || null,
-            social_media: document.getElementById('social_media').value.trim() || null,
-            owner_user_id: this.currentUser.user_id
+            social_media: document.getElementById('social_media').value.trim() || null
         };
+
+        // Para creación, agregar owner_user_id al body
+        if (!this.isEditMode) {
+            formData.owner_user_id = this.currentUser.user_id;
+        }
+
+        return formData;
     }
 
-    async createStartup(formData) {
-        // Simulación - reemplazar con llamada real a la API
-        console.log('Creando startup:', formData);
-        return new Promise(resolve => setTimeout(resolve, 1000));
+    async createStartup() {
+        const token = localStorage.getItem('authToken');
+        const formData = this.getFormData();
+
+        console.log('Enviando datos de creación:', formData);
+        console.log('URL:', `${this.API_BASE_URL}/startups/`);
+
+        const response = await fetch(`${this.API_BASE_URL}/startups/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        console.log('Respuesta de creación:', response.status, response.statusText);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Startup creada exitosamente:', data);
+            return {
+                success: true,
+                message: 'Startup creada exitosamente',
+                data: data
+            };
+        } else {
+            let errorMessage = `Error ${response.status}: ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                console.log('Error detallado del servidor:', errorData);
+
+                // Manejar diferentes formatos de error de FastAPI
+                if (errorData.detail) {
+                    if (Array.isArray(errorData.detail)) {
+                        // Si es un array de errores de validación
+                        errorMessage = errorData.detail.map(err =>
+                            `${err.loc ? err.loc.join('.') : ''}: ${err.msg}`
+                        ).join(', ');
+                    } else {
+                        // Si es un string simple
+                        errorMessage = errorData.detail;
+                    }
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {
+                console.log('No se pudo parsear la respuesta de error:', e);
+            }
+            throw new Error(errorMessage);
+        }
     }
 
-    async updateStartup(formData) {
-        // Simulación - reemplazar con llamada real a la API
-        console.log('Actualizando startup:', formData);
-        return new Promise(resolve => setTimeout(resolve, 1000));
+    async updateStartup() {
+        const token = localStorage.getItem('authToken');
+        const formData = this.getFormData();
+
+        console.log('Enviando datos de actualización:', formData);
+
+        // Para actualización, el user_id va como query parameter
+        const queryParams = new URLSearchParams({
+            user_id: this.currentUser.user_id
+        });
+
+        const response = await fetch(`${this.API_BASE_URL}/startups/${this.startupId}?${queryParams}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        console.log('Respuesta de actualización:', response.status, response.statusText);
+
+        if (response.ok) {
+            const data = await response.json();
+            return {
+                success: true,
+                message: 'Startup actualizada exitosamente',
+                data: data
+            };
+        } else {
+            let errorMessage = `Error ${response.status}: ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                console.log('Error detallado del servidor:', errorData);
+
+                if (errorData.detail) {
+                    if (Array.isArray(errorData.detail)) {
+                        errorMessage = errorData.detail.map(err =>
+                            `${err.loc ? err.loc.join('.') : ''}: ${err.msg}`
+                        ).join(', ');
+                    } else {
+                        errorMessage = errorData.detail;
+                    }
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {
+                console.log('No se pudo parsear la respuesta de error:', e);
+            }
+            throw new Error(errorMessage);
+        }
     }
 
     showSuccess(message) {
-        // Implementar notificación de éxito
-        alert(message);
+        this.showNotification(message, 'success');
     }
 
     showError(message) {
-        // Implementar notificación de error
-        alert(message);
+        this.showNotification(message, 'error');
+    }
+
+    showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg border-2 border-black font-bold z-50 ${
+            type === 'success' ? 'bg-green-400' : 'bg-red-400'
+        }`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
     }
 
     setupNightMode() {
@@ -228,5 +432,6 @@ export class StartupFormPage {
     }
 }
 
-// Inicializar la página
-new StartupFormPage();
+document.addEventListener('DOMContentLoaded', () => {
+    new StartupFormPage();
+});

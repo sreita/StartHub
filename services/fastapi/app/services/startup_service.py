@@ -1,13 +1,15 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.models.startup import Startup
-from app.schemas.startup_crud import StartupCreate, StartupUpdate, StartupOut, StartupWithStats
+from app.models.category import Category
+from app.schemas.startup_crud import StartupCreate, StartupUpdate, StartupOut, StartupWithStats, CategoryOut
 from app.repositories.startup_repository import StartupRepository
 
 
 class StartupService:
     def __init__(self, db: Session):
         self.repository = StartupRepository(db)
+        self.db = db  # Guardar la sesión para métodos adicionales
 
     def create(self, user_id: int, payload: StartupCreate) -> StartupOut:
         startup_data = payload.model_dump()
@@ -65,7 +67,15 @@ class StartupService:
         if not self.repository.delete(startup_id):
             raise ValueError("Error al eliminar la startup")
 
-    # ESTOS MÉTODOS DEBEN ESTAR DENTRO DE LA CLASE
+    # Nuevo método para listar categorías
+    def list_categories(self) -> List[CategoryOut]:
+        categories = self.db.query(Category).all()
+        return [CategoryOut(
+            category_id=cat.category_id,
+            name=cat.name,
+            description=cat.description
+        ) for cat in categories]
+
     def _enrich_startup_out(self, startup: Startup) -> StartupOut:
         """Enriquece el objeto Startup con category_name y owner_name antes de convertirlo a StartupOut"""
         startup_dict = {
@@ -75,6 +85,9 @@ class StartupService:
             "category_id": startup.category_id,
             "owner_user_id": startup.owner_user_id,
             "created_date": startup.created_date,
+            "email": startup.email,
+            "website": startup.website,
+            "social_media": startup.social_media,
             "category_name": getattr(startup, 'category_name', None),
             "owner_name": getattr(startup, 'owner_name', f"Usuario {startup.owner_user_id}")
         }
@@ -89,6 +102,9 @@ class StartupService:
             "category_id": startup.category_id,
             "owner_user_id": startup.owner_user_id,
             "created_date": startup.created_date,
+            "email": startup.email,
+            "website": startup.website,
+            "social_media": startup.social_media,
             "category_name": getattr(startup, 'category_name', None),
             "owner_name": getattr(startup, 'owner_name', f"Usuario {startup.owner_user_id}"),
             "total_comentarios": total_comentarios,
