@@ -29,6 +29,11 @@ def upsert_vote(payload: VoteCreate, user_id: int = Query(...), response: Respon
 def count_votes(startup_id: int, service: VoteService = Depends(get_vote_service)):
     return service.count(startup_id)
 
+@router.get("/user/{user_id}", response_model=list[VoteOut])
+def get_user_votes(user_id: int, service: VoteService = Depends(get_vote_service)):
+    # Necesitarás implementar este método en VoteService y VoteRepository
+    return service.get_user_votes(user_id)
+
 
 @router.delete("/", status_code=204)
 def delete_vote(user_id: int = Query(...), startup_id: int = Query(...), service: VoteService = Depends(get_vote_service)):

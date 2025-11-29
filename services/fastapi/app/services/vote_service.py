@@ -31,3 +31,5 @@ class VoteService:
         ok = self.repo.delete(user_id=user_id, startup_id=startup_id)
         if not ok:
             raise ValueError("Vote not found")
+    def get_user_votes(self, user_id: int) -> list[Vote]:
+        return self.repo.get_by_user(user_id)

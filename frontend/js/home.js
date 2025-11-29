@@ -4,11 +4,11 @@ const DATA_API = 'http://localhost:8000';
 export class HomePage {
     constructor() {
         this.userVotes = {};
-        this.currentSort = 'newest'; // Valor por defecto
+        this.currentSort = 'newest';
         this.init();
     }
 
-    init() {
+    async init() {
         console.log('Inicializando HomePage...');
         this.setupDropdown();
         this.setupNightMode();
@@ -16,8 +16,13 @@ export class HomePage {
         this.setupVotingSystem();
         this.setupSearch();
         this.setupSortDropdown();
-        this.loadStartups();
         this.checkAuthStatus();
+
+        // Cargar votos primero, luego startups
+        await this.loadUserVotes();
+        await this.loadStartups();
+
+        console.log('HomePage inicializada completamente');
     }
 
     setupDropdown() {
@@ -58,14 +63,12 @@ export class HomePage {
                 sortDropdownMenu.classList.toggle('hidden');
             });
 
-            // Cerrar el menú si se hace clic fuera
             document.addEventListener('click', (e) => {
                 if (!sortDropdownBtn.contains(e.target) && !sortDropdownMenu.contains(e.target)) {
                     sortDropdownMenu.classList.add('hidden');
                 }
             });
 
-            // Manejar selección de opciones de ordenamiento
             const sortOptions = sortDropdownMenu.querySelectorAll('.sort-option');
             sortOptions.forEach(option => {
                 option.addEventListener('click', (e) => {
@@ -74,7 +77,6 @@ export class HomePage {
                     this.handleSortChange(sortType);
                     sortDropdownMenu.classList.add('hidden');
 
-                    // Actualizar texto del botón
                     let sortText = 'Ordenar por';
                     switch(sortType) {
                         case 'newest':
@@ -101,7 +103,7 @@ export class HomePage {
 
     handleSortChange(sortType) {
         this.currentSort = sortType;
-        this.loadStartups(); // Recargar las startups con el nuevo orden
+        this.loadStartups();
     }
 
     setupNightMode() {
@@ -110,10 +112,8 @@ export class HomePage {
             nightModeToggle.addEventListener('click', (e) => {
                 e.preventDefault();
                 document.body.classList.toggle('night-mode-active');
-
                 const isNightMode = document.body.classList.contains('night-mode-active');
                 localStorage.setItem('nightMode', isNightMode);
-
                 const dropdownMenu = document.getElementById('dropdown-menu');
                 if (dropdownMenu) {
                     dropdownMenu.classList.add('hidden');
@@ -137,7 +137,7 @@ export class HomePage {
         });
     }
 
-    handleVote(button, voteType) {
+    async handleVote(button, voteType) {
         if (!this.isAuthenticated()) {
             alert('Por favor inicia sesión para votar');
             window.location.href = './login.html';
@@ -145,45 +145,201 @@ export class HomePage {
         }
 
         const startupId = button.dataset.startupId;
-        const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
+        console.log('Procesando voto:', { startupId, voteType, currentVotes: this.userVotes });
+
         const upvoteBtn = document.querySelector(`.upvote[data-startup-id="${startupId}"]`);
         const downvoteBtn = document.querySelector(`.downvote[data-startup-id="${startupId}"]`);
+        const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
 
-        let count = parseInt(countSpan.textContent);
-        const currentVote = this.userVotes[startupId];
-
-        upvoteBtn.classList.remove('active');
-        downvoteBtn.classList.remove('active');
-
-        if (currentVote === voteType) {
-            count += (voteType === 'up') ? -1 : 1;
-            delete this.userVotes[startupId];
-        } else {
-            if (currentVote === 'up') count -= 1;
-            if (currentVote === 'down') count += 1;
-
-            count += (voteType === 'up') ? 1 : -1;
-            this.userVotes[startupId] = voteType;
-            button.classList.add('active');
+        if (!countSpan || !upvoteBtn || !downvoteBtn) {
+            console.error('Elementos de voto no encontrados para startup:', startupId);
+            return;
         }
 
-        countSpan.textContent = count;
-        this.saveVoteToServer(startupId, voteType, currentVote);
+        const currentVote = this.userVotes[startupId];
+        const isUpvote = voteType === 'up';
+        const newVoteType = isUpvote ? 'upvote' : 'downvote';
+
+        console.log('Estado actual del voto:', currentVote);
+        console.log('Nuevo voto:', newVoteType);
+
+        let shouldUpdate = false;
+        let voteChange = 0;
+
+        // Lógica de votación
+        if (!currentVote) {
+            // Nuevo voto
+            this.userVotes[startupId] = newVoteType;
+            voteChange = isUpvote ? 1 : -1;
+            shouldUpdate = true;
+            console.log('Nuevo voto registrado');
+        } else if (currentVote === newVoteType) {
+            // Quitar voto existente
+            delete this.userVotes[startupId];
+            voteChange = isUpvote ? -1 : 1;
+            shouldUpdate = true;
+            console.log('Voto eliminado');
+        } else {
+            // Cambiar de upvote a downvote o viceversa
+            this.userVotes[startupId] = newVoteType;
+            voteChange = isUpvote ? 2 : -2;
+            shouldUpdate = true;
+            console.log('Voto cambiado');
+        }
+
+        if (shouldUpdate) {
+            // Actualizar UI inmediatamente
+            this.updateVoteUI(startupId, currentVote, newVoteType, voteChange);
+
+            // Enviar al servidor
+            try {
+                await this.saveVoteToServer(startupId, this.userVotes[startupId] || null);
+                console.log('Voto guardado en servidor exitosamente');
+
+                // Verificar sincronización
+                await this.verifyVoteSync(startupId);
+
+            } catch (error) {
+                console.error('Error al procesar voto:', error);
+                alert('Error al registrar el voto');
+                // Revertir cambios en caso de error
+                this.revertVoteUI(startupId, currentVote, voteChange);
+            }
+        }
     }
 
-    async saveVoteToServer(startupId, newVote, oldVote) {
+    updateVoteUI(startupId, previousVote, newVote, voteChange) {
+        const upvoteBtn = document.querySelector(`.upvote[data-startup-id="${startupId}"]`);
+        const downvoteBtn = document.querySelector(`.downvote[data-startup-id="${startupId}"]`);
+        const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
+
+        if (!countSpan || !upvoteBtn || !downvoteBtn) return;
+
+        // Actualizar contador visual inmediatamente
+        const currentCount = parseInt(countSpan.textContent) || 0;
+        countSpan.textContent = currentCount + voteChange;
+
+        // Resetear estilos de ambos botones
+        upvoteBtn.classList.remove('active', 'bg-green-500', 'text-white', 'border-green-500');
+        downvoteBtn.classList.remove('active', 'bg-red-500', 'text-white', 'border-red-500');
+
+        // Aplicar estilos base
+        upvoteBtn.classList.add('border', 'border-gray-300', 'hover:bg-gray-100');
+        downvoteBtn.classList.add('border', 'border-gray-300', 'hover:bg-gray-100');
+
+        // Aplicar estilos activos según el voto actual
+        if (newVote === 'upvote') {
+            upvoteBtn.classList.add('active', 'bg-green-500', 'text-white', 'border-green-500');
+            upvoteBtn.classList.remove('border-gray-300', 'hover:bg-gray-100');
+        } else if (newVote === 'downvote') {
+            downvoteBtn.classList.add('active', 'bg-red-500', 'text-white', 'border-red-500');
+            downvoteBtn.classList.remove('border-gray-300', 'hover:bg-gray-100');
+        }
+
+        console.log(`UI actualizada para startup ${startupId}: ${newVote}`);
+    }
+
+    revertVoteUI(startupId, previousVote, voteChange) {
+        const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
+        if (countSpan) {
+            const currentCount = parseInt(countSpan.textContent) || 0;
+            countSpan.textContent = currentCount - voteChange;
+        }
+
+        // Restaurar estado anterior de votos
+        if (previousVote) {
+            this.userVotes[startupId] = previousVote;
+        } else {
+            delete this.userVotes[startupId];
+        }
+
+        this.updateVoteButtons();
+    }
+
+    async saveVoteToServer(startupId, voteType) {
+        const userRaw = localStorage.getItem('user');
+        if (!userRaw) throw new Error('Usuario no autenticado');
+
+        const user = JSON.parse(userRaw);
+        let response;
+
         try {
-            const userRaw = localStorage.getItem('user');
-            if (!userRaw) return;
-            const user = JSON.parse(userRaw);
-            const vote_type = newVote === 'up' ? 'upvote' : 'downvote';
-            await fetch(`${DATA_API}/votes/?user_id=${user.id}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ startup_id: Number(startupId), vote_type })
-            });
+            if (voteType === null) {
+                // Eliminar voto
+                response = await fetch(
+                    `${DATA_API}/votes/?user_id=${user.id}&startup_id=${startupId}`,
+                    {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    }
+                );
+            } else {
+                // Crear o actualizar voto
+                response = await fetch(`${DATA_API}/votes/?user_id=${user.id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        startup_id: parseInt(startupId),
+                        vote_type: voteType
+                    })
+                });
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            return true;
         } catch (error) {
-            console.error('Error saving vote:', error);
+            console.error('Error en saveVoteToServer:', error);
+            throw error;
+        }
+    }
+
+    async verifyVoteSync(startupId) {
+        try {
+            const serverCount = await this.getServerVoteCount(startupId);
+            const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
+
+            if (countSpan && serverCount !== null) {
+                const localCount = parseInt(countSpan.textContent);
+                if (localCount !== serverCount) {
+                    countSpan.textContent = serverCount;
+                    console.log(`Sincronizado voto para startup ${startupId}: local=${localCount}, servidor=${serverCount}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error en verificación de sincronización:', error);
+        }
+    }
+
+    async getServerVoteCount(startupId) {
+        try {
+            const response = await fetch(`${DATA_API}/votes/count/${startupId}`);
+            if (response.ok) {
+                const data = await response.json();
+                return (data.upvotes || 0) - (data.downvotes || 0);
+            }
+        } catch (error) {
+            console.error('Error obteniendo conteo del servidor:', error);
+        }
+        return null;
+    }
+
+    async updateVoteCount(startupId) {
+        try {
+            const response = await fetch(`${DATA_API}/votes/count/${startupId}`);
+            if (response.ok) {
+                const voteData = await response.json();
+                const countSpan = document.querySelector(`.vote-count[data-startup-id="${startupId}"]`);
+                if (countSpan) {
+                    const totalVotes = (voteData.upvotes || 0) - (voteData.downvotes || 0);
+                    countSpan.textContent = totalVotes;
+                }
+            }
+        } catch (error) {
+            console.error('Error updating vote count:', error);
         }
     }
 
@@ -254,7 +410,6 @@ export class HomePage {
     }
 
     setupSearch() {
-        // Esperar un poco para asegurar que el DOM esté listo
         setTimeout(() => {
             const searchInput = document.getElementById('search-input');
             const searchButton = document.getElementById('search-button');
@@ -266,35 +421,28 @@ export class HomePage {
             if (searchInput && searchButton) {
                 console.log('✅ Elementos de búsqueda encontrados y configurados');
 
-                // Función para mostrar el input
                 const showSearchInput = () => {
                     searchInput.classList.remove('w-0', 'opacity-0');
                     searchInput.classList.add('w-48', 'md:w-64', 'opacity-100');
                     searchInput.focus();
                 };
 
-                // Función para ocultar el input
                 const hideSearchInput = () => {
                     searchInput.classList.add('w-0', 'opacity-0');
                     searchInput.classList.remove('w-48', 'md:w-64', 'opacity-100');
                     searchInput.value = '';
                 };
 
-                // Búsqueda al hacer clic en el botón
                 searchButton.addEventListener('click', (e) => {
                     console.log('🖱️ Botón de búsqueda clickeado');
-
-                    // Si el input está visible, ejecutar búsqueda
                     if (searchInput.classList.contains('opacity-100')) {
                         console.log('🔍 Ejecutando búsqueda desde el botón');
                         this.handleSearch();
                     } else {
-                        // Si no está visible, mostrar el input
                         showSearchInput();
                     }
                 });
 
-                // Búsqueda al presionar Enter
                 searchInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         console.log('↵ Enter presionado en búsqueda');
@@ -302,7 +450,6 @@ export class HomePage {
                     }
                 });
 
-                // Ocultar el input cuando se presione Escape
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         hideSearchInput();
@@ -310,14 +457,12 @@ export class HomePage {
                     }
                 });
 
-                // Ocultar el input cuando se haga clic fuera
                 document.addEventListener('click', (e) => {
                     if (!searchInput.contains(e.target) && !searchButton.contains(e.target)) {
                         hideSearchInput();
                     }
                 });
 
-                // Búsqueda en tiempo real después de escribir
                 searchInput.addEventListener('input', (e) => {
                     const query = e.target.value.trim();
                     if (query.length >= 2) {
@@ -331,10 +476,6 @@ export class HomePage {
 
             } else {
                 console.error('❌ Elementos de búsqueda no encontrados');
-                console.log('Elementos en la página:', {
-                    inputs: document.querySelectorAll('input'),
-                    buttons: document.querySelectorAll('button')
-                });
             }
         }, 100);
     }
@@ -365,8 +506,6 @@ export class HomePage {
             );
 
             console.log(`✅ ${filteredStartups.length} resultados encontrados`);
-
-            // Aplicar ordenamiento a los resultados de búsqueda
             const sortedStartups = this.sortStartups(filteredStartups, this.currentSort);
             this.renderStartups(sortedStartups);
 
@@ -387,146 +526,225 @@ export class HomePage {
         }
     }
 
-    // Método para ordenar startups
     sortStartups(startups, sortType) {
-        const sortedStartups = [...startups]; // Crear copia para no mutar el original
+        const sortedStartups = [...startups];
 
         switch(sortType) {
             case 'newest':
                 return sortedStartups.sort((a, b) => {
-                    // Ordenar por fecha más reciente primero
                     return new Date(b.created_date) - new Date(a.created_date);
                 });
-
             case 'oldest':
                 return sortedStartups.sort((a, b) => {
-                    // Ordenar por fecha más antigua primero
                     return new Date(a.created_date) - new Date(b.created_date);
                 });
-
             case 'most-voted':
                 return sortedStartups.sort((a, b) => {
-                    // Ordenar por más votos primero
                     return b.votes - a.votes;
                 });
-
             default:
                 return sortedStartups;
         }
     }
 
-    async fetchStartups() {
-    const res = await fetch(`${DATA_API}/startups/?skip=0&limit=50`);
-    if (!res.ok) throw new Error('No se pudieron cargar las startups');
-    const items = await res.json();
-
-    const withVotes = await Promise.all(items.map(async (s) => {
-        try {
-            const vc = await fetch(`${DATA_API}/votes/count/${s.startup_id}`);
-            let votes = 0;
-            if (vc.ok) {
-                const data = await vc.json();
-                votes = (data.upvotes || 0) - (data.downvotes || 0);
-            }
-            return {
-                id: s.startup_id,
-                name: s.name,
-                description: s.description || '',
-                email: '',
-                website: '',
-                social_media: '',
-                // Usar category_name si está disponible, sino category_id como fallback
-                category: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
-                created_date: s.created_date || new Date().toISOString(),
-                votes,
-            };
-        } catch (e) {
-            return {
-                id: s.startup_id,
-                name: s.name,
-                description: s.description || '',
-                email: '',
-                website: '',
-                social_media: '',
-                category: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
-                created_date: s.created_date || new Date().toISOString(),
-                votes: 0,
-            };
+    async loadUserVotes() {
+        if (!this.isAuthenticated()) {
+            console.log('Usuario no autenticado, no hay votos que cargar');
+            this.userVotes = {};
+            return;
         }
-    }));
-    return withVotes;
-}
 
-    renderStartups(startups) {
-    const container = document.getElementById('startups-container');
-    if (!container) {
-        console.error('❌ Contenedor de startups no encontrado');
-        return;
+        try {
+            const userRaw = localStorage.getItem('user');
+            if (!userRaw) {
+                console.log('No se encontró información del usuario en localStorage');
+                return;
+            }
+
+            const user = JSON.parse(userRaw);
+            console.log('Cargando votos para usuario:', user.id);
+
+            const response = await fetch(`${DATA_API}/votes/user/${user.id}`);
+            if (response.ok) {
+                const userVotes = await response.json();
+                console.log('Votos recibidos del servidor:', userVotes);
+
+                this.userVotes = {};
+                userVotes.forEach(vote => {
+                    this.userVotes[vote.startup_id] = vote.vote_type;
+                    console.log(`Voto encontrado: startup ${vote.startup_id} -> ${vote.vote_type}`);
+                });
+
+                console.log('Estado final de userVotes:', this.userVotes);
+            } else {
+                console.error('Error cargando votos:', response.status);
+            }
+        } catch (error) {
+            console.error('Error loading user votes:', error);
+            this.userVotes = {};
+        }
     }
 
-    container.innerHTML = startups.map(startup => `
-        <div class="startup-card bg-white neo-brutalist rounded-lg shadow-md transition duration-300 ease-in-out flex mb-8">
-            <!-- Sección de votos - más compacta -->
-            <div class="flex flex-col items-center justify-start vote-container flex-shrink-0">
-                <button class="vote-btn upvote mb-1" data-startup-id="${startup.id}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                    </svg>
-                </button>
-                <span class="vote-count text-base font-bold my-1" data-startup-id="${startup.id}">${startup.votes}</span>
-                <button class="vote-btn downvote mt-1" data-startup-id="${startup.id}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-            </div>
+    updateVoteButtons() {
+        console.log('Actualizando botones de voto con estado:', this.userVotes);
 
-            <!-- Contenido principal -->
-            <div class="p-4 flex-grow flex flex-col border-l-2 border-black min-h-0">
-                <!-- Header con nombre y categoría -->
-                <div class="flex justify-between items-start mb-3 flex-shrink-0">
-                    <h2 class="text-xl font-bold text-gray-900">${startup.name}</h2>
-                    <span class="category-badge bg-black text-white px-3 py-1 rounded-full text-xs font-bold">
-                        ${startup.category}
-                    </span>
+        Object.keys(this.userVotes).forEach(startupId => {
+            const voteType = this.userVotes[startupId];
+            const upvoteBtn = document.querySelector(`.upvote[data-startup-id="${startupId}"]`);
+            const downvoteBtn = document.querySelector(`.downvote[data-startup-id="${startupId}"]`);
+
+            if (upvoteBtn && downvoteBtn) {
+                // Resetear ambos botones
+                upvoteBtn.classList.remove('active', 'bg-green-500', 'text-white', 'border-green-500');
+                downvoteBtn.classList.remove('active', 'bg-red-500', 'text-white', 'border-red-500');
+
+                // Aplicar estilos base
+                upvoteBtn.classList.add('border', 'border-gray-300', 'hover:bg-gray-100');
+                downvoteBtn.classList.add('border', 'border-gray-300', 'hover:bg-gray-100');
+
+                // Activar el botón correspondiente
+                if (voteType === 'upvote') {
+                    upvoteBtn.classList.add('active', 'bg-green-500', 'text-white', 'border-green-500');
+                    upvoteBtn.classList.remove('border-gray-300', 'hover:bg-gray-100');
+                } else if (voteType === 'downvote') {
+                    downvoteBtn.classList.add('active', 'bg-red-500', 'text-white', 'border-red-500');
+                    downvoteBtn.classList.remove('border-gray-300', 'hover:bg-gray-100');
+                }
+
+                console.log(`Botones actualizados para startup ${startupId}: ${voteType}`);
+            } else {
+                console.log(`Botones no encontrados para startup ${startupId}`);
+            }
+        });
+    }
+
+    async fetchStartups() {
+        const res = await fetch(`${DATA_API}/startups/?skip=0&limit=50`);
+        if (!res.ok) throw new Error('No se pudieron cargar las startups');
+        const items = await res.json();
+
+        const withVotes = await Promise.all(items.map(async (s) => {
+            try {
+                const vc = await fetch(`${DATA_API}/votes/count/${s.startup_id}`);
+                let votes = 0;
+                if (vc.ok) {
+                    const data = await vc.json();
+                    votes = (data.upvotes || 0) - (data.downvotes || 0);
+                }
+                return {
+                    id: s.startup_id,
+                    name: s.name,
+                    description: s.description || '',
+                    email: s.email || '',
+                    website: s.website || '',
+                    social_media: s.social_media || '',
+                    category: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
+                    created_date: s.created_date || new Date().toISOString(),
+                    votes,
+                };
+            } catch (e) {
+                console.error('Error loading votes for startup:', s.startup_id, e);
+                return {
+                    id: s.startup_id,
+                    name: s.name,
+                    description: s.description || '',
+                    email: s.email || '',
+                    website: s.website || '',
+                    social_media: s.social_media || '',
+                    category: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
+                    created_date: s.created_date || new Date().toISOString(),
+                    votes: 0,
+                };
+            }
+        }));
+        return withVotes;
+    }
+
+    renderStartups(startups) {
+        const container = document.getElementById('startups-container');
+        if (!container) {
+            console.error('❌ Contenedor de startups no encontrado');
+            return;
+        }
+
+        container.innerHTML = startups.map(startup => {
+            const userVote = this.userVotes[startup.id];
+            const upvoteClass = userVote === 'upvote' ? 'active bg-green-500 text-white border-green-500' : 'border border-gray-300 hover:bg-gray-100';
+            const downvoteClass = userVote === 'downvote' ? 'active bg-red-500 text-white border-red-500' : 'border border-gray-300 hover:bg-gray-100';
+
+            console.log(`Renderizando startup ${startup.id}, voto del usuario:`, userVote);
+
+            return `
+            <div class="startup-card bg-white neo-brutalist rounded-lg shadow-md transition duration-300 ease-in-out flex mb-8">
+                <!-- Sección de votos -->
+                <div class="flex flex-col items-center justify-start vote-container flex-shrink-0 p-3">
+                    <button class="vote-btn upvote mb-1 rounded p-2 transition-colors ${upvoteClass}"
+                            data-startup-id="${startup.id}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                        </svg>
+                    </button>
+                    <span class="vote-count text-base font-bold my-1" data-startup-id="${startup.id}">${startup.votes}</span>
+                    <button class="vote-btn downvote mt-1 rounded p-2 transition-colors ${downvoteClass}"
+                            data-startup-id="${startup.id}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                <!-- Descripción -->
-                <p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">
-                    ${startup.description}
-                </p>
-
-                <!-- Información de contacto y botón - SIEMPRE VISIBLE -->
-                <div class="flex items-center justify-between pt-3 border-t border-gray-300 flex-shrink-0 bg-white">
-                    <div class="flex items-center space-x-3 text-xs text-gray-600">
-                        ${startup.email ? `<span class="flex items-center whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
-                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="truncate" style="max-width: 100px;">${startup.email}</span>
-                        </span>` : ''}
-                        ${startup.website ? `<span class="flex items-center whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
-                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
-                            </svg>
-                            Sitio web
-                        </span>` : ''}
-                    </div>
-
-                    <div class="flex items-center space-x-3 ml-2">
-                        <span class="text-xs text-gray-700 date-text whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
-                            ${this.formatDate(startup.created_date)}
+                <!-- Contenido principal -->
+                <div class="p-4 flex-grow flex flex-col border-l-2 border-black min-h-0">
+                    <!-- Header con nombre y categoría -->
+                    <div class="flex justify-between items-start mb-3 flex-shrink-0">
+                        <h2 class="text-xl font-bold text-gray-900">${startup.name}</h2>
+                        <span class="category-badge bg-black text-white px-3 py-1 rounded-full text-xs font-bold">
+                            ${startup.category}
                         </span>
-                        <a href="./startup_info.html?id=${startup.id}"
-                           class="read-more text-black bg-yellow-400 py-2 px-3 rounded font-bold text-xs transition-all duration-200 hover:scale-105">
-                            DETALLES »
-                        </a>
+                    </div>
+
+                    <!-- Descripción -->
+                    <p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">
+                        ${startup.description}
+                    </p>
+
+                    <!-- Información de contacto y botón -->
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-300 flex-shrink-0 bg-white">
+                        <div class="flex items-center space-x-3 text-xs text-gray-600">
+                            ${startup.email ? `<span class="flex items-center whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="truncate" style="max-width: 100px;">${startup.email}</span>
+                            </span>` : ''}
+                            ${startup.website ? `<span class="flex items-center whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                </svg>
+                                Sitio web
+                            </span>` : ''}
+                        </div>
+
+                        <div class="flex items-center space-x-3 ml-2">
+                            <span class="text-xs text-gray-700 date-text whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+                                ${this.formatDate(startup.created_date)}
+                            </span>
+                            <a href="./startup_info.html?id=${startup.id}"
+                               class="read-more text-black bg-yellow-400 py-2 px-3 rounded font-bold text-xs transition-all duration-200 hover:scale-105">
+                                DETALLES »
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    `).join('');
-}
+            `;
+        }).join('');
+
+        // Aplicar estilos de votos después de renderizar
+        setTimeout(() => {
+            this.updateVoteButtons();
+        }, 50);
+    }
 
     formatDate(dateString) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };

@@ -37,3 +37,7 @@ class VoteRepository:
         self.db.delete(existing)
         self.db.commit()
         return True
+
+    def get_by_user(self, user_id: int) -> list[Vote]:
+        stmt = select(Vote).where(Vote.user_id == user_id)
+        return self.db.execute(stmt).scalars().all()
