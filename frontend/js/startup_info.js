@@ -6,6 +6,7 @@ export class StartupInfoPage {
         this.startupId = this.getStartupIdFromURL();
         this.currentUser = null;
         this.userVote = null;
+        this.comments = [];
         this.init();
     }
 
@@ -25,11 +26,20 @@ export class StartupInfoPage {
 
     checkAuthStatus() {
         const token = localStorage.getItem('authToken');
-        const user = localStorage.getItem('user');
+        const userData = localStorage.getItem('user');
 
-        if (token && user) {
-            this.currentUser = JSON.parse(user);
-            this.updateUIForAuthenticatedUser();
+        if (token && userData) {
+            try {
+                this.currentUser = JSON.parse(userData);
+                // Asegurar que tenemos user_id (compatibilidad con diferentes formatos)
+                if (this.currentUser && !this.currentUser.user_id && this.currentUser.id) {
+                    this.currentUser.user_id = this.currentUser.id;
+                }
+                this.updateUIForAuthenticatedUser();
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                this.currentUser = null;
+            }
         }
     }
 
@@ -58,111 +68,98 @@ export class StartupInfoPage {
     }
 
     async fetchStartupById(startupId) {
-    const res = await fetch(`${DATA_API}/startups/${startupId}`);
-    if (!res.ok) throw new Error('Startup no encontrada');
-    const s = await res.json();
-    return {
-        startup_id: s.startup_id,
-        name: s.name,
-        description: s.description || '',
-        email: '',
-        website: '',
-        social_media: '',
-        created_date: s.created_date || new Date().toISOString(),
-        owner_user_id: s.owner_user_id,
-        category_id: s.category_id,
-        category_name: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
-        owner_name: s.owner_name || (s.owner_user_id ? `Usuario ${s.owner_user_id}` : 'Usuario')  // NUEVO
-    };
-}
+        const res = await fetch(`${DATA_API}/startups/${startupId}`);
+        if (!res.ok) throw new Error('Startup no encontrada');
+        const s = await res.json();
+        return {
+            startup_id: s.startup_id,
+            name: s.name,
+            description: s.description || '',
+            email: '',
+            website: '',
+            social_media: '',
+            created_date: s.created_date || new Date().toISOString(),
+            owner_user_id: s.owner_user_id,
+            category_id: s.category_id,
+            category_name: s.category_name || (s.category_id ? `Categoría ${s.category_id}` : 'General'),
+            owner_name: s.owner_name || (s.owner_user_id ? `Usuario ${s.owner_user_id}` : 'Usuario')
+        };
+    }
 
     renderStartupInfo(startup) {
-    const container = document.getElementById('startup-info');
-    container.innerHTML = `
-        <div class="flex justify-between items-start mb-6">
-            <h1 class="text-4xl md:text-5xl font-bold">${startup.name}</h1>
-            <span class="category-badge text-black px-3 py-1 border-2 border-black font-bold">${startup.category_name}</span>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-                <h2 class="text-2xl font-bold mb-4">Descripción</h2>
-                <p class="text-gray-700 text-lg leading-relaxed">${startup.description}</p>
+        const container = document.getElementById('startup-info');
+        container.innerHTML = `
+            <div class="flex justify-between items-start mb-6">
+                <h1 class="text-4xl md:text-5xl font-bold">${this.escapeHtml(startup.name)}</h1>
+                <span class="category-badge text-black px-3 py-1 border-2 border-black font-bold">${this.escapeHtml(startup.category_name)}</span>
             </div>
 
-            <div class="contact-info p-6 border-2 border-black">
-                <h3 class="text-xl font-bold mb-4">Información de Contacto</h3>
-                <div class="space-y-3">
-                    ${startup.email ? `<p><strong>Email:</strong> <a href="mailto:${startup.email}" class="text-blue-600 hover:underline">${startup.email}</a></p>` : ''}
-                    ${startup.website ? `<p><strong>Website:</strong> <a href="${startup.website}" target="_blank" class="text-blue-600 hover:underline">${startup.website}</a></p>` : ''}
-                    ${startup.social_media ? `<p><strong>Redes Sociales:</strong> ${startup.social_media}</p>` : ''}
-                    <p><strong>Fundador:</strong> ${startup.owner_name}</p>  <!-- CAMBIADO -->
-                    <p><strong>Fecha de creación:</strong> ${new Date(startup.created_date).toLocaleDateString('es-ES')}</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-bold mb-4">Descripción</h2>
+                    <p class="text-gray-700 text-lg leading-relaxed">${this.escapeHtml(startup.description)}</p>
+                </div>
+
+                <div class="contact-info p-6 border-2 border-black">
+                    <h3 class="text-xl font-bold mb-4">Información de Contacto</h3>
+                    <div class="space-y-3">
+                        ${startup.email ? `<p><strong>Email:</strong> <a href="mailto:${startup.email}" class="text-blue-600 hover:underline">${startup.email}</a></p>` : ''}
+                        ${startup.website ? `<p><strong>Website:</strong> <a href="${startup.website}" target="_blank" class="text-blue-600 hover:underline">${startup.website}</a></p>` : ''}
+                        ${startup.social_media ? `<p><strong>Redes Sociales:</strong> ${this.escapeHtml(startup.social_media)}</p>` : ''}
+                        <p><strong>Fundador:</strong> ${this.escapeHtml(startup.owner_name)}</p>
+                        <p><strong>Fecha de creación:</strong> ${new Date(startup.created_date).toLocaleDateString('es-ES')}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
 
-    this.forceNightModeStyles();
-}
+        this.forceNightModeStyles();
+    }
 
-// Agregar este nuevo método a la clase StartupInfoPage
-forceNightModeStyles() {
-    if (document.body.classList.contains('night-mode-active')) {
-        console.log('Aplicando estilos forzados de modo noche...');
+    forceNightModeStyles() {
+        if (document.body.classList.contains('night-mode-active')) {
+            console.log('Aplicando estilos forzados de modo noche...');
 
-        // Forzar estilos en el badge de categoría
-        const categoryBadge = document.querySelector('.category-badge');
-        if (categoryBadge) {
-            categoryBadge.style.backgroundColor = '#2d3748'; // gray-darker
-            categoryBadge.style.color = '#FFD166'; // yellow-accent
-            categoryBadge.style.borderColor = '#0f3460'; // night-border
-            categoryBadge.style.boxShadow = '4px 4px 0 #0f3460';
-            categoryBadge.classList.remove('bg-yellow-400', 'text-black');
-            categoryBadge.classList.add('night-mode-category');
-        }
+            const categoryBadge = document.querySelector('.category-badge');
+            if (categoryBadge) {
+                categoryBadge.style.backgroundColor = '#2d3748';
+                categoryBadge.style.color = '#FFD166';
+                categoryBadge.style.borderColor = '#0f3460';
+                categoryBadge.style.boxShadow = '4px 4px 0 #0f3460';
+                categoryBadge.classList.remove('bg-yellow-400', 'text-black');
+            }
 
-        // Forzar estilos en el cuadro de contacto
-        const contactInfo = document.querySelector('.contact-info');
-        if (contactInfo) {
-            contactInfo.style.backgroundColor = '#16213e'; // night-card
-            contactInfo.style.color = '#e2e8f0'; // night-text
-            contactInfo.style.borderColor = '#0f3460'; // night-border
-            contactInfo.style.boxShadow = '6px 6px 0 #0f3460';
-            contactInfo.classList.remove('bg-gray-50');
-            contactInfo.classList.add('night-mode-contact');
+            const contactInfo = document.querySelector('.contact-info');
+            if (contactInfo) {
+                contactInfo.style.backgroundColor = '#16213e';
+                contactInfo.style.color = '#e2e8f0';
+                contactInfo.style.borderColor = '#0f3460';
+                contactInfo.style.boxShadow = '6px 6px 0 #0f3460';
+                contactInfo.classList.remove('bg-gray-50');
 
-            // Forzar estilos en los textos dentro del contacto
-            const strongElements = contactInfo.querySelectorAll('strong');
-            strongElements.forEach(strong => {
-                strong.style.color = '#e2e8f0';
-            });
+                const strongElements = contactInfo.querySelectorAll('strong');
+                strongElements.forEach(strong => {
+                    strong.style.color = '#e2e8f0';
+                });
 
-            const links = contactInfo.querySelectorAll('a');
-            links.forEach(link => {
-                link.style.color = '#FFD166'; // yellow-accent
-                link.classList.remove('text-blue-600');
-            });
+                const links = contactInfo.querySelectorAll('a');
+                links.forEach(link => {
+                    link.style.color = '#FFD166';
+                    link.classList.remove('text-blue-600');
+                });
+            }
 
-            const spans = contactInfo.querySelectorAll('span');
-            spans.forEach(span => {
-                span.style.color = '#cbd5e0'; // night-text-secondary
-            });
-        }
-
-        // Forzar estilos en la descripción
-        const description = document.querySelector('.text-gray-700');
-        if (description) {
-            description.style.color = '#cbd5e0'; // night-text-secondary
+            const description = document.querySelector('.text-gray-700');
+            if (description) {
+                description.style.color = '#cbd5e0';
+            }
         }
     }
-}
 
     async loadVotes() {
         try {
             const votes = await this.fetchVotes(this.startupId);
             const userVote = await this.fetchUserVote(this.startupId);
-
             this.updateVoteDisplay(votes, userVote);
         } catch (error) {
             console.error('Error loading votes:', error);
@@ -181,7 +178,17 @@ forceNightModeStyles() {
     }
 
     async fetchUserVote(startupId) {
-        // No hay endpoint específico para el voto del usuario actualmente
+        if (!this.currentUser) return null;
+
+        try {
+            const res = await fetch(`${DATA_API}/votes/user/${startupId}?user_id=${this.currentUser.user_id}`);
+            if (res.ok) {
+                const data = await res.json();
+                return data.vote_type;
+            }
+        } catch (error) {
+            console.error('Error fetching user vote:', error);
+        }
         return null;
     }
 
@@ -191,7 +198,11 @@ forceNightModeStyles() {
         const upvoteBtn = document.getElementById('upvote-btn');
         const downvoteBtn = document.getElementById('downvote-btn');
 
-        voteCount.textContent = votes.total;
+        if (voteCount) voteCount.textContent = votes.total;
+
+        // Resetear estilos
+        upvoteBtn.classList.remove('active', 'bg-green-500', 'text-white');
+        downvoteBtn.classList.remove('active', 'bg-red-500', 'text-white');
 
         if (userVote === 'upvote') {
             upvoteBtn.classList.add('active', 'bg-green-500', 'text-white');
@@ -205,58 +216,220 @@ forceNightModeStyles() {
             downvoteBtn.disabled = true;
         } else {
             voteStatus.textContent = 'Vota esta startup';
+            upvoteBtn.disabled = false;
+            downvoteBtn.disabled = false;
         }
     }
 
     async loadComments() {
         try {
             const comments = await this.fetchComments(this.startupId);
+            this.comments = comments;
             this.renderComments(comments);
         } catch (error) {
             console.error('Error loading comments:', error);
+            this.comments = [];
+            this.renderComments([]);
         }
     }
 
     async fetchComments(startupId) {
-    const res = await fetch(`${DATA_API}/comments/?startup_id=${startupId}&skip=0&limit=50`);
-    if (!res.ok) return [];
-    const items = await res.json();
-    return items.map(c => ({
-        comment_id: c.comment_id,
-        content: c.content,
-        created_date: c.created_date,
-        user_name: c.user_name, // Esto ahora vendrá del backend con el nombre real
-        user_id: c.user_id,
-    }));
-}
+        const res = await fetch(`${DATA_API}/comments/?startup_id=${startupId}&skip=0&limit=50`);
+        if (!res.ok) return [];
+        const items = await res.json();
+        return items.map(c => ({
+            comment_id: c.comment_id,
+            content: c.content,
+            created_date: c.created_date,
+            user_name: c.user_name,
+            user_id: c.user_id,
+        }));
+    }
 
     renderComments(comments) {
         const container = document.getElementById('comments-list');
         const countElement = document.getElementById('comment-count');
 
-        countElement.textContent = comments.length;
+        if (countElement) countElement.textContent = comments.length;
+
+        if (!container) return;
 
         if (comments.length === 0) {
             container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay comentarios todavía. ¡Sé el primero en comentar!</p>';
             return;
         }
 
-        container.innerHTML = comments.map(comment => `
-            <div class="border-b-2 border-black pb-4 mb-4 last:border-b-0 last:mb-0">
-                <div class="flex justify-between items-start mb-2">
-                    <strong class="text-lg">${comment.user_name}</strong>
-                    <span class="text-sm text-gray-600">${new Date(comment.created_date).toLocaleDateString('es-ES')}</span>
-                </div>
-                <p class="text-gray-700">${comment.content}</p>
-                ${this.currentUser && this.currentUser.user_id === comment.user_id ? `
-                    <div class="mt-2">
-                        <button class="text-red-600 text-sm hover:underline" onclick="startupInfoPage.deleteComment(${comment.comment_id})">
-                            Eliminar
-                        </button>
+        container.innerHTML = comments.map(comment => this.createCommentHTML(comment)).join('');
+        this.setupCommentActions();
+    }
+
+    createCommentHTML(comment) {
+        const isOwner = this.currentUser && this.currentUser.user_id === comment.user_id;
+        const formattedDate = new Date(comment.created_date).toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        return `
+            <div class="comment-item neo-brutalist p-4 mb-4" data-comment-id="${comment.comment_id}">
+                <div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
+                    <div class="flex items-center gap-3">
+                        <strong class="text-base md:text-lg">${this.escapeHtml(comment.user_name)}</strong>
+                        ${isOwner ? '<span class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tú</span>' : ''}
                     </div>
+                    <span class="text-xs md:text-sm text-gray-600">${formattedDate}</span>
+                </div>
+                <div class="comment-content">
+                    <p class="text-sm md:text-base mb-3">${this.escapeHtml(comment.content)}</p>
+                </div>
+                ${isOwner ? `
+                <div class="comment-actions flex gap-2 pt-2 border-t border-gray-200">
+                    <button class="edit-comment-btn text-xs bg-yellow-500 text-black px-3 py-1 rounded font-bold hover:bg-yellow-600 transition-colors">
+                        Editar
+                    </button>
+                    <button class="delete-comment-btn text-xs bg-red-600 text-white px-3 py-1 rounded font-bold hover:bg-red-700 transition-colors">
+                        Eliminar
+                    </button>
+                </div>
                 ` : ''}
             </div>
-        `).join('');
+        `;
+    }
+
+    setupCommentActions() {
+        // Configurar botones de editar
+        document.querySelectorAll('.edit-comment-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const commentItem = e.target.closest('.comment-item');
+                const commentId = parseInt(commentItem.dataset.commentId);
+                this.editComment(commentId);
+            });
+        });
+
+        // Configurar botones de eliminar
+        document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const commentItem = e.target.closest('.comment-item');
+                const commentId = parseInt(commentItem.dataset.commentId);
+                this.deleteComment(commentId);
+            });
+        });
+    }
+
+    editComment(commentId) {
+        const comment = this.comments.find(c => c.comment_id === commentId);
+        if (!comment) return;
+
+        const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+        const contentElement = commentItem.querySelector('.comment-content p');
+        const currentContent = contentElement.textContent;
+
+        // Reemplazar con formulario de edición
+        commentItem.querySelector('.comment-content').innerHTML = `
+            <textarea class="edit-comment-textarea w-full p-3 mb-3 border-2 border-black focus:outline-none focus:shadow-[2px_2px_0_#000] text-sm md:text-base" rows="3">${this.escapeHtml(currentContent)}</textarea>
+            <div class="flex gap-2">
+                <button class="save-edit-btn text-xs bg-green-600 text-white px-3 py-1 rounded font-bold hover:bg-green-700 transition-colors">
+                    Guardar
+                </button>
+                <button class="cancel-edit-btn text-xs bg-gray-500 text-white px-3 py-1 rounded font-bold hover:bg-gray-600 transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        `;
+
+        // Ocultar botones de acción temporalmente
+        const actionsElement = commentItem.querySelector('.comment-actions');
+        if (actionsElement) {
+            actionsElement.style.display = 'none';
+        }
+
+        // Configurar eventos de los botones de edición
+        commentItem.querySelector('.save-edit-btn').addEventListener('click', () => {
+            this.saveCommentEdit(commentId);
+        });
+
+        commentItem.querySelector('.cancel-edit-btn').addEventListener('click', () => {
+            this.cancelCommentEdit(commentId, currentContent);
+        });
+    }
+
+    async saveCommentEdit(commentId) {
+        const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+        const textarea = commentItem.querySelector('.edit-comment-textarea');
+        const newContent = textarea.value.trim();
+
+        if (!newContent) {
+            alert('El comentario no puede estar vacío');
+            return;
+        }
+
+        if (!this.currentUser) {
+            alert('Debes iniciar sesión para editar comentarios');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${DATA_API}/comments/${commentId}?user_id=${this.currentUser.user_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: newContent
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Error al actualizar el comentario');
+            }
+
+            await this.loadComments(); // Recargar comentarios
+        } catch (error) {
+            console.error('Error updating comment:', error);
+            alert('Error al actualizar el comentario: ' + error.message);
+        }
+    }
+
+    cancelCommentEdit(commentId, originalContent) {
+        const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+        commentItem.querySelector('.comment-content').innerHTML = `
+            <p class="text-sm md:text-base mb-3">${this.escapeHtml(originalContent)}</p>
+        `;
+
+        // Mostrar botones de acción nuevamente
+        const actionsElement = commentItem.querySelector('.comment-actions');
+        if (actionsElement) {
+            actionsElement.style.display = 'flex';
+        }
+    }
+
+    async deleteComment(commentId) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
+            return;
+        }
+
+        if (!this.currentUser) {
+            alert('Debes iniciar sesión para eliminar comentarios');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${DATA_API}/comments/${commentId}?user_id=${this.currentUser.user_id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Error al eliminar el comentario');
+            }
+
+            await this.loadComments(); // Recargar comentarios
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Error al eliminar el comentario: ' + error.message);
+        }
     }
 
     async loadPartners() {
@@ -290,13 +463,15 @@ forceNightModeStyles() {
         const container = document.getElementById('partners-list');
         const countElement = document.getElementById('partner-count');
 
-        countElement.textContent = partners.length;
+        if (countElement) countElement.textContent = partners.length;
+
+        if (!container) return;
 
         container.innerHTML = partners.map(partner => `
             <div class="flex justify-between items-center border-b-2 border-black pb-4 mb-4 last:border-b-0 last:mb-0">
                 <div>
-                    <strong class="text-lg">${partner.user_name}</strong>
-                    <p class="text-gray-600">${partner.role}</p>
+                    <strong class="text-lg">${this.escapeHtml(partner.user_name)}</strong>
+                    <p class="text-gray-600">${this.escapeHtml(partner.role)}</p>
                     <p class="text-sm text-gray-500">Se unió el ${new Date(partner.partnership_date).toLocaleDateString('es-ES')}</p>
                 </div>
                 ${this.currentUser && this.currentUser.user_id === partner.user_id ? `
@@ -310,11 +485,21 @@ forceNightModeStyles() {
 
     setupEventListeners() {
         // Votación
-        document.getElementById('upvote-btn').addEventListener('click', () => this.handleVote('upvote'));
-        document.getElementById('downvote-btn').addEventListener('click', () => this.handleVote('downvote'));
+        const upvoteBtn = document.getElementById('upvote-btn');
+        const downvoteBtn = document.getElementById('downvote-btn');
+
+        if (upvoteBtn) {
+            upvoteBtn.addEventListener('click', () => this.handleVote('upvote'));
+        }
+        if (downvoteBtn) {
+            downvoteBtn.addEventListener('click', () => this.handleVote('downvote'));
+        }
 
         // Comentarios
-        document.getElementById('comment-form').addEventListener('submit', (e) => this.handleCommentSubmit(e));
+        const commentForm = document.getElementById('comment-form');
+        if (commentForm) {
+            commentForm.addEventListener('submit', (e) => this.handleCommentSubmit(e));
+        }
     }
 
     async handleVote(voteType) {
@@ -335,11 +520,18 @@ forceNightModeStyles() {
 
     async submitVote(voteType) {
         const user = this.currentUser;
-        await fetch(`${DATA_API}/votes/?user_id=${user.id}`, {
+        const response = await fetch(`${DATA_API}/votes/?user_id=${user.user_id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ startup_id: Number(this.startupId), vote_type: voteType })
+            body: JSON.stringify({
+                startup_id: parseInt(this.startupId),
+                vote_type: voteType
+            })
         });
+
+        if (!response.ok) {
+            throw new Error('Error al enviar el voto');
+        }
     }
 
     async handleCommentSubmit(e) {
@@ -351,7 +543,9 @@ forceNightModeStyles() {
             return;
         }
 
-        const content = document.getElementById('comment-content').value.trim();
+        const contentInput = document.getElementById('comment-content');
+        const content = contentInput.value.trim();
+
         if (!content) {
             alert('Por favor escribe un comentario');
             return;
@@ -359,7 +553,7 @@ forceNightModeStyles() {
 
         try {
             await this.submitComment(content);
-            document.getElementById('comment-content').value = '';
+            contentInput.value = '';
             await this.loadComments(); // Recargar comentarios
         } catch (error) {
             console.error('Error submitting comment:', error);
@@ -368,29 +562,19 @@ forceNightModeStyles() {
     }
 
     async submitComment(content) {
-        await fetch(`${DATA_API}/comments/?user_id=${this.currentUser.id}`, {
+        const response = await fetch(`${DATA_API}/comments/?user_id=${this.currentUser.user_id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content, startup_id: Number(this.startupId) })
+            body: JSON.stringify({
+                content: content,
+                startup_id: parseInt(this.startupId)
+            })
         });
-    }
 
-    async deleteComment(commentId) {
-        if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
-            return;
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Error al crear el comentario');
         }
-
-        try {
-            await this.performDeleteComment(commentId);
-            await this.loadComments(); // Recargar comentarios
-        } catch (error) {
-            console.error('Error deleting comment:', error);
-            this.showError('Error al eliminar el comentario');
-        }
-    }
-
-    async performDeleteComment(commentId) {
-        await fetch(`${DATA_API}/comments/${commentId}?user_id=${this.currentUser.id}`, { method: 'DELETE' });
     }
 
     async leavePartnership(userId) {
@@ -414,7 +598,7 @@ forceNightModeStyles() {
     }
 
     showError(message) {
-        // Implementar notificación de error
+        // Implementar notificación de error más elegante
         alert(message);
     }
 
@@ -425,6 +609,7 @@ forceNightModeStyles() {
                 e.preventDefault();
                 document.body.classList.toggle('night-mode-active');
                 localStorage.setItem('nightMode', document.body.classList.contains('night-mode-active'));
+                this.forceNightModeStyles();
             });
 
             const savedNightMode = localStorage.getItem('nightMode') === 'true';
@@ -449,8 +634,19 @@ forceNightModeStyles() {
             });
         }
     }
+
+    escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 }
 
 // Inicializar la página
-const startupInfoPage = new StartupInfoPage();
-window.startupInfoPage = startupInfoPage;
+document.addEventListener('DOMContentLoaded', () => {
+    window.startupInfoPage = new StartupInfoPage();
+});
