@@ -73,8 +73,24 @@ button:hover {
 }
 
 .create-startup-btn:hover {
-  background-color: #000000;
+  background-color: #4d0201;
   color: #FFFFFF;
+  box-shadow: 6px 6px 0 #000000;
+  transform: translate(-2px, -2px);
+}
+
+/* Botón cancelar Crear Startup */
+.cancel-btn{
+  background-color: #f6e05e;
+  color: #000000;
+  border: 2px solid #000000;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+.cancel-btn:hover {
+  background-color: #ceb10b;
+  color: #000000;
   box-shadow: 6px 6px 0 #000000;
   transform: translate(-2px, -2px);
 }
@@ -241,4 +257,3 @@ button:hover {
     height: 20px;
     color: currentColor;
 }
-

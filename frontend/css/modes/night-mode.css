@@ -797,3 +797,20 @@ body.night-mode-active {
 .night-mode-active .border-black {
     border-color: var(--night-border) !important;
 }
+
+/* ======================================================
+   BOTÓN CANCELAR EN FORMULARIO DE STARTUP - MODO NOCHE
+   ====================================================== */
+
+.night-mode-active #startup-form .cancel-btn {
+    background-color: var(--gray-darker) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--primary) !important;
+}
+
+.night-mode-active #startup-form .cancel-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
