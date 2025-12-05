@@ -25,12 +25,12 @@
             <h1 class="text-3xl md:text-5xl mb-4 md:mb-0 text-center md:text-left font-bebas">
                 MIS STARTUPS
             </h1>
-            <a href="startup_form.html" class="bg-[#FF5E5B] text-white border-2 border-black px-6 py-2 font-bold hover:bg-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2">
+            <a href="startup_form.html" class="create-startup-btn px-4 md:px-6 py-2 md:py-3 font-bold transition-all duration-200 text-center w-full sm:w-auto text-sm md:text-base">
                 <i class="fas fa-plus"></i> Crear Nueva
             </a>
         </div>
 
-        <div id="my-startups-grid" class="flex flex-col gap-6 mb-10">
+        <div id="my-startups-grid" class="grid grid-cols-1 gap-4 md:gap-8 max-w-4xl mx-auto mb-10">
             <p class="text-gray-500 text-center font-mono py-8">Cargando tus proyectos...</p>
         </div>
 
@@ -62,8 +62,8 @@
         }
 
         // --- CARGA INICIAL ---
-        loadUserProfile(user.id);   
-        loadUserStartups(user.id);  
+        loadUserProfile(user.id);
+        loadUserStartups(user.id);
 
         // --- LÓGICA 1: PERFIL ---
         async function loadUserProfile(userId) {
@@ -98,9 +98,9 @@
                             <textarea id="profileInfo" class="w-full p-2 border-2 border-black focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono" rows="4">${profile.profileInfo || ''}</textarea>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-center mt-6">
-                        <button type="submit" class="bg-yellow-400 border-2 border-black px-8 py-3 font-bold hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex items-center justify-center gap-2 w-full md:w-auto">
+                        <button type="submit" class="save-btn px-4 md:px-6 py-2 md:py-3 font-bold transition-all duration-200 text-center w-full sm:w-48 text-sm md:text-base">
                              <i class="fas fa-save"></i> GUARDAR CAMBIOS
                         </button>
                     </div>
@@ -130,112 +130,159 @@
             }
         }
 
-        // --- LÓGICA 2: STARTUPS (ESTILO HOME) ---
+        // --- LÓGICA 2: STARTUPS (MISMO FORMATO QUE HOME) ---
         async function loadUserStartups(userId) {
             const container = document.getElementById('my-startups-grid');
             try {
                 const response = await fetch(`${FASTAPI_URL}/startups/my-startups?user_id=${userId}`);
                 if (!response.ok) throw new Error('Error al cargar startups');
                 const startups = await response.json();
-                
-                container.innerHTML = ''; 
+
+                container.innerHTML = '';
 
                 if (startups.length === 0) {
                     container.innerHTML = `
-                        <div class="text-center p-8 border-2 border-dashed border-gray-400 rounded-lg bg-white">
+                        <div class="text-center p-8 border-2 border-dashed border-gray-400 rounded-lg bg-white neo-brutalist">
                             <p class="text-xl font-mono text-gray-500">No tienes startups registradas.</p>
+                            <a href="startup_form.html" class="inline-block bg-yellow-400 text-black border-2 border-black px-6 py-2 font-bold mt-4 hover:bg-black hover:text-white transition-all">
+                                <i class="fas fa-plus mr-2"></i>Crear tu primera startup
+                            </a>
                         </div>`;
                     return;
                 }
 
-                startups.forEach(startup => {
-                    // Datos calculados
-                    const votes = startup.votes || startup.total_votes || startup.upvotes || 0;
-                    // Mapeo simple de categorías (esto idealmente viene de la BD)
+                // Obtener los votos para cada startup
+                const startupsWithVotes = await Promise.all(startups.map(async (startup) => {
+                    try {
+                        const voteResponse = await fetch(`${FASTAPI_URL}/votes/count/${startup.startup_id}`);
+                        if (voteResponse.ok) {
+                            const voteData = await voteResponse.json();
+                            const voteCount = (voteData.upvotes || 0) - (voteData.downvotes || 0);
+                            return { ...startup, voteCount };
+                        }
+                    } catch (error) {
+                        console.error(`Error obteniendo votos para startup ${startup.startup_id}:`, error);
+                    }
+                    return { ...startup, voteCount: 0 };
+                }));
+
+                startupsWithVotes.forEach(startup => {
                     const categoryName = startup.category_name || (startup.category_id === 1 ? "Tecnología" : "General");
-                    
-                    // Elementos de contacto (si existen)
+
+                    // Elementos de contacto
                     const emailHtml = startup.email ? `
-                        <div class="flex items-center text-xs md:text-sm">
-                            <i class="fas fa-envelope w-4 h-4 mr-1"></i>
-                            <span class="truncate">${startup.email}</span>
-                        </div>` : '';
-                    
+                        <span class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            ${startup.email}
+                        </span>` : '';
+
                     const websiteHtml = startup.website ? `
-                        <div class="flex items-center text-xs md:text-sm">
-                            <i class="fas fa-globe w-4 h-4 mr-1"></i>
-                            <span class="truncate">${startup.website}</span>
-                        </div>` : '';
+                        <span class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                            </svg>
+                            ${startup.website}
+                        </span>` : '';
 
                     const card = document.createElement('div');
                     card.className = 'startup-card neo-brutalist bg-white p-4 md:p-6 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black';
-                    
-                    // Aquí replicamos la estructura exacta del HOME (Mobile block / Desktop Flex)
+
+                    // Layout idéntico al home.html - SIN BOTONES DE VOTO
                     card.innerHTML = `
+                        <!-- Layout móvil: contador de votos arriba -->
                         <div class="block md:hidden">
-                            <div class="flex flex-row items-center justify-center space-x-6 mb-4 p-3 border-b-2 border-gray-100">
-                                <i class="fas fa-chevron-up text-gray-400"></i>
-                                <span class="font-bold text-lg">${votes}</span>
-                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            <!-- Sección de votos para móvil (con cartel "VOTOS") -->
+                            <div class="vote-container-mobile flex flex-col items-center mb-4 p-3">
+                                <span class="text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Votos</span>
+                                <span class="vote-count font-bold text-lg bg-gray-100 px-4 py-2 rounded border border-black">
+                                    ${startup.voteCount}
+                                </span>
                             </div>
 
-                            <div>
+                            <!-- Contenido para móvil -->
+                            <div class="mobile-content">
                                 <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-xl font-bold font-bebas tracking-wide break-words">${startup.name}</h3>
-                                    <span class="bg-black text-white text-xs px-2 py-1 font-bold transform -rotate-2">${categoryName}</span>
+                                    <h3 class="text-xl font-bold font-bebas">${startup.name}</h3>
+                                    <span class="category-badge text-xs">${categoryName}</span>
                                 </div>
 
-                                <p class="text-gray-700 text-sm mb-3 line-clamp-3 font-mono">${startup.description}</p>
+                                <p class="text-gray-700 text-sm mb-3 line-clamp-3 font-mono">
+                                    ${startup.description}
+                                </p>
 
-                                <div class="text-gray-600 mb-4 space-y-1">
-                                    ${emailHtml}
-                                    ${websiteHtml}
+                                <div class="contact-info-mobile text-xs text-gray-600 mb-3 space-y-1">
+                                    ${emailHtml ? `<div class="flex items-center">
+                                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="truncate">${startup.email}</span>
+                                    </div>` : ''}
+                                    ${websiteHtml ? `<div class="flex items-center">
+                                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                        </svg>
+                                        <span class="truncate">${startup.website}</span>
+                                    </div>` : ''}
                                 </div>
 
-                                <div class="flex gap-2">
-                                    <button onclick="window.editStartup(${startup.startup_id})" class="flex-1 bg-yellow-300 border-2 border-black py-2 font-bold hover:bg-yellow-400 text-xs flex justify-center items-center gap-2">
-                                        <i class="fas fa-edit"></i> MODIFICAR
-                                    </button>
-                                    <button onclick="window.deleteStartup(${startup.startup_id})" class="flex-1 bg-red-500 text-white border-2 border-black py-2 font-bold hover:bg-red-600 text-xs flex justify-center items-center gap-2">
-                                        <i class="fas fa-trash"></i> ELIMINAR
-                                    </button>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex gap-2">
+                                        <button onclick="window.editStartup(${startup.startup_id})" class="save-btn border-2 border-black py-1 px-3 font-bold text-xs flex justify-center items-center gap-1">
+                                            <i class="fas fa-edit"></i> MODIFICAR
+                                        </button>
+                                        <button onclick="window.deleteStartup(${startup.startup_id})" class="create-startup-btn border-2 border-black py-1 px-3 font-bold hover:create-startup-btn text-xs flex justify-center items-center gap-1">
+                                            <i class="fas fa-trash"></i> ELIMINAR
+                                        </button>
+                                    </div>
+                                    <a href="./startup_info.html?id=${startup.startup_id}" class="read-more px-3 py-1 font-bold text-xs">
+                                        VER DETALLES
+                                    </a>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="hidden md:flex flex-row">
-                            <div class="flex flex-col items-center justify-center p-4 mr-6 border-r-2 border-gray-100 pr-6">
-                                <i class="fas fa-chevron-up text-gray-400 text-xl cursor-not-allowed"></i>
-                                <span class="font-bold text-2xl my-2">${votes}</span>
-                                <i class="fas fa-chevron-down text-gray-400 text-xl cursor-not-allowed"></i>
+                        <!-- Layout escritorio: contador de votos a la izquierda -->
+                        <div class="hidden md:flex flex-col md:flex-row">
+                            <!-- Sección de votos (con cartel "VOTOS") -->
+                            <div class="vote-container-desktop flex flex-col items-center justify-center p-4 mb-4 md:mb-0 md:mr-6">
+                                <span class="text-sm font-bold text-gray-600 mb-1 uppercase tracking-wider">Votos</span>
+                                <span class="vote-count font-bold text-xl bg-gray-100 px-5 py-3 rounded border-2 border-black">
+                                    ${startup.voteCount}
+                                </span>
                             </div>
 
+                            <!-- Contenido de la startup -->
                             <div class="flex-1">
                                 <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-2xl font-bold font-bebas tracking-wider">${startup.name}</h3>
-                                    <span class="bg-black text-white text-xs px-3 py-1 font-bold transform -rotate-2 border border-transparent hover:border-white transition-all cursor-default">
-                                        ${categoryName.toUpperCase()}
-                                    </span>
+                                    <h3 class="text-2xl font-bold font-bebas">${startup.name}</h3>
+                                    <span class="category-badge">${categoryName}</span>
                                 </div>
 
-                                <p class="text-gray-700 mb-4 font-mono text-sm leading-relaxed">
+                                <p class="text-gray-700 mb-4 font-mono text-sm">
                                     ${startup.description}
                                 </p>
 
-                                <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
+                                <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
                                     ${emailHtml}
                                     ${websiteHtml}
                                 </div>
 
-                                <div class="flex justify-end gap-3 pt-2">
-                                    <button onclick="window.editStartup(${startup.startup_id})" 
-                                            class="bg-yellow-300 border-2 border-black px-6 py-2 font-bold hover:bg-yellow-400 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 text-sm">
-                                        <i class="fas fa-edit"></i> MODIFICAR
-                                    </button>
-                                    <button onclick="window.deleteStartup(${startup.startup_id})" 
-                                            class="bg-red-500 text-white border-2 border-black px-6 py-2 font-bold hover:bg-red-600 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 text-sm">
-                                        <i class="fas fa-trash"></i> ELIMINAR
-                                    </button>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex gap-3">
+                                        <button onclick="window.editStartup(${startup.startup_id})"
+                                                class="save-btn border-2 border-black px-4 py-2 font-bold hover:save-btn hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 text-sm">
+                                            <i class="fas fa-edit"></i> MODIFICAR
+                                        </button>
+                                        <button onclick="window.deleteStartup(${startup.startup_id})"
+                                                class="create-startup-btn border-2 border-black px-4 py-2 font-bold hover:create-startup-btn hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 text-sm">
+                                            <i class="fas fa-trash"></i> ELIMINAR
+                                        </button>
+                                    </div>
+                                    <a href="./startup_info.html?id=${startup.startup_id}" class="read-more px-4 py-2 font-bold">
+                                        VER DETALLES
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -250,7 +297,7 @@
 
         // --- HELPERS GLOBALES ---
         window.editStartup = (startupId) => { window.location.href = `startup_form.html?id=${startupId}`; };
-        
+
         window.deleteStartup = async (startupId) => {
             if(!confirm("¿Estás seguro de eliminar esta startup? Esta acción no se puede deshacer.")) return;
             try {

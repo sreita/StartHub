@@ -416,26 +416,6 @@ body.night-mode-active {
     box-shadow: 4px 4px 0 var(--night-border) !important;
 }
 
-/* Botón cancelar */
-.night-mode-active #startup-form a.bg-gray-300 {
-    background-color: var(--gray-darker) !important;
-    color: var(--night-text) !important;
-    border-color: var(--night-border) !important;
-}
-
-.night-mode-active #startup-form a.bg-gray-300:hover {
-    background-color: var(--primary) !important;
-    color: var(--secondary) !important;
-    box-shadow: 4px 4px 0 var(--night-border) !important;
-}
-
-/* Líneas divisorias */
-.night-mode-active #startup-form .border-b-2.border-black {
-    border-color: var(--night-border) !important;
-}
-
-
-
 
 /* ======================================================
    BOTÓN PUBLICAR COMENTARIO - MODO NOCHE
@@ -802,14 +782,14 @@ body.night-mode-active {
    BOTÓN CANCELAR EN FORMULARIO DE STARTUP - MODO NOCHE
    ====================================================== */
 
-.night-mode-active #startup-form .cancel-btn {
+.night-mode-active #startup-form .cancel-btn, .night-mode-active #profile-form .save-btn,.night-mode-active #my-startups-grid  .save-btn {
     background-color: var(--gray-darker) !important;
     color: var(--secondary) !important;
     border-color: var(--night-border) !important;
     box-shadow: 4px 4px 0 var(--primary) !important;
 }
 
-.night-mode-active #startup-form .cancel-btn:hover {
+.night-mode-active #startup-form .cancel-btn:hover, .night-mode-active #profile-form .save-btn:hover {
     background-color: var(--primary) !important;
     color: var(--secondary) !important;
     box-shadow: 6px 6px 0 var(--night-border) !important;

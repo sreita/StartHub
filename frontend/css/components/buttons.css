@@ -80,7 +80,8 @@ button:hover {
 }
 
 /* Botón cancelar Crear Startup */
-.cancel-btn{
+.cancel-btn,
+.save-btn {
   background-color: #f6e05e;
   color: #000000;
   border: 2px solid #000000;
@@ -88,7 +89,8 @@ button:hover {
   box-shadow: 4px 4px 0 #000000;
 }
 
-.cancel-btn:hover {
+.cancel-btn:hover,
+.save-btn:hover {
   background-color: #ceb10b;
   color: #000000;
   box-shadow: 6px 6px 0 #000000;
