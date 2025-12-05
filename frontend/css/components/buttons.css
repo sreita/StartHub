@@ -81,7 +81,9 @@ button:hover {
 
 /* Botón cancelar Crear Startup */
 .cancel-btn,
-.save-btn {
+.save-btn,
+.edit-comment-btn,
+.cancel-edit-btn {
   background-color: #f6e05e;
   color: #000000;
   border: 2px solid #000000;
@@ -90,7 +92,9 @@ button:hover {
 }
 
 .cancel-btn:hover,
-.save-btn:hover {
+.save-btn:hover,
+.edit-comment-btn:hover,
+.cancel-edit-btn:hover {
   background-color: #ceb10b;
   color: #000000;
   box-shadow: 6px 6px 0 #000000;
@@ -258,4 +262,36 @@ button:hover {
     width: 20px;
     height: 20px;
     color: currentColor;
+}
+
+/* Botón delete comment */
+.delete-comment-btn {
+  background-color: #FF5E5B;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+.delete-comment-btn:hover {
+  background-color: #4d0201;
+  color: #FFFFFF;
+  box-shadow: 6px 6px 0 #000000;
+  transform: translate(-2px, -2px);
+}
+
+/* Botón save edit comment */
+.save-edit-btn {
+  background-color: #FF5E5B;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+.save-edit-btn:hover {
+  background-color: #4d0201;
+  color: #FFFFFF;
+  box-shadow: 6px 6px 0 #000000;
+  transform: translate(-2px, -2px);
 }

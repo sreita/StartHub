@@ -60,7 +60,8 @@ body.night-mode-active {
 .night-mode-active .sort-toggle-btn,
 .night-mode-active .create-startup-btn,
 .night-mode-active .search-toggle-btn,
-.night-mode-active .icon-dropdown-btn {
+.night-mode-active .icon-dropdown-btn,
+.night-mode-active .delete-comment-btn {
     background-color: var(--night-card) !important;
     color: var(--secondary) !important;
     border-color: var(--night-border) !important;
@@ -69,7 +70,8 @@ body.night-mode-active {
 .night-mode-active .sort-toggle-btn:hover,
 .night-mode-active .create-startup-btn:hover,
 .night-mode-active .search-toggle-btn:hover,
-.night-mode-active .icon-dropdown-btn:hover {
+.night-mode-active .icon-dropdown-btn:hover,
+.night-mode-active .delete-comment-btn:hover {
     background-color: var(--primary) !important;
     color: var(--secondary) !important;
     box-shadow: 4px 4px 0 var(--night-border) !important;
@@ -789,7 +791,59 @@ body.night-mode-active {
     box-shadow: 4px 4px 0 var(--primary) !important;
 }
 
-.night-mode-active #startup-form .cancel-btn:hover, .night-mode-active #profile-form .save-btn:hover {
+.night-mode-active #startup-form .cancel-btn:hover, .night-mode-active #profile-form .save-btn:hover, .night-mode-active #my-startups-grid  .save-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+
+.night-mode-active  .comment-item  .save-btn {
+    background-color: var(--gray-darker) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--primary) !important;
+}
+
+.night-mode-active  .comment-item  .save-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+.night-mode-active  .comment-item  .cancel-edit-btn {
+    background-color: var(--night-card) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--primary) !important;
+}
+
+night-mode-active  .comment-item  .cancel-edit-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+.night-mode-active  .comment-item  .edit-comment-btn {
+    background-color: var(--gray-darker) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--primary) !important;
+}
+
+.night-mode-active  .comment-item  .edit-comment-btn:hover {
+    background-color: var(--primary) !important;
+    color: var(--secondary) !important;
+    box-shadow: 6px 6px 0 var(--night-border) !important;
+}
+
+.night-mode-active  .comment-item  .save-edit-btn {
+    background-color: var(--gray-darker) !important;
+    color: var(--secondary) !important;
+    border-color: var(--night-border) !important;
+    box-shadow: 4px 4px 0 var(--primary) !important;
+}
+.night-mode-active  .comment-item  .save-edit-btn:hover {
     background-color: var(--primary) !important;
     color: var(--secondary) !important;
     box-shadow: 6px 6px 0 var(--night-border) !important;

@@ -276,7 +276,7 @@ export class StartupInfoPage {
                 <div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
                     <div class="flex items-center gap-3">
                         <strong class="text-base md:text-lg">${this.escapeHtml(comment.user_name)}</strong>
-                        ${isOwner ? '<span class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tú</span>' : ''}
+                        ${isOwner ? '<span class="category-badge text-xs px-2 py-1 rounded">Tú</span>' : ''}
                     </div>
                     <span class="text-xs md:text-sm text-gray-600">${formattedDate}</span>
                 </div>
@@ -285,10 +285,10 @@ export class StartupInfoPage {
                 </div>
                 ${isOwner ? `
                 <div class="comment-actions flex gap-2 pt-2 border-t border-gray-200">
-                    <button class="edit-comment-btn text-xs bg-yellow-500 text-black px-3 py-1 rounded font-bold hover:bg-yellow-600 transition-colors">
+                    <button class="edit-comment-btn text-xs px-1 py-1 rounded font-bold hover:edit-comment-btn transition-colors">
                         Editar
                     </button>
-                    <button class="delete-comment-btn text-xs bg-red-600 text-white px-3 py-1 rounded font-bold hover:bg-red-700 transition-colors">
+                    <button class="delete-comment-btn text-xs bg-red-600 text-white px-3 py-1 rounded font-bold hover:delete-comment-btn transition-colors">
                         Eliminar
                     </button>
                 </div>
@@ -329,10 +329,10 @@ export class StartupInfoPage {
         commentItem.querySelector('.comment-content').innerHTML = `
             <textarea class="edit-comment-textarea w-full p-3 mb-3 border-2 border-black focus:outline-none focus:shadow-[2px_2px_0_#000] text-sm md:text-base" rows="3">${this.escapeHtml(currentContent)}</textarea>
             <div class="flex gap-2">
-                <button class="save-edit-btn text-xs bg-green-600 text-white px-3 py-1 rounded font-bold hover:bg-green-700 transition-colors">
+                <button class="save-edit-btn text-xs px-3 py-1 rounded font-bold hover:save-edit-btn transition-colors">
                     Guardar
                 </button>
-                <button class="cancel-edit-btn text-xs bg-gray-500 text-white px-3 py-1 rounded font-bold hover:bg-gray-600 transition-colors">
+                <button class="cancel-edit-btn text-xs px-3 py-1 rounded font-bold hover:cancel-edit-btn transition-colors">
                     Cancelar
                 </button>
             </div>
