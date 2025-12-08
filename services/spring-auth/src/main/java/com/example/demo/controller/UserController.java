@@ -1,11 +1,19 @@
 package com.example.demo.controller;
 
-import com.example.demo.appuser.AppUser;
-import com.example.demo.appuser.AppUserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.appuser.AppUser;
+import com.example.demo.appuser.AppUserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -13,6 +21,23 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final AppUserService appUserService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileResponse> getCurrentUserProfile(Authentication authentication) {
+        AppUser currentUser = (AppUser) authentication.getPrincipal();
+        UserProfileResponse profile = appUserService.getUserProfile(currentUser.getId());
+        return ResponseEntity.ok(profile);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserProfileResponse> updateCurrentUserProfile(
+            @RequestBody UserUpdateRequest updateRequest,
+            Authentication authentication) {
+        
+        AppUser currentUser = (AppUser) authentication.getPrincipal();
+        UserProfileResponse updatedProfile = appUserService.updateUserProfile(currentUser.getId(), updateRequest);
+        return ResponseEntity.ok(updatedProfile);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable Integer id) {
@@ -47,6 +72,13 @@ public class UserController {
         }
 
         appUserService.deleteUser(id);
+        return ResponseEntity.ok("User account deleted successfully");
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<String> deleteCurrentUser(Authentication authentication) {
+        AppUser currentUser = (AppUser) authentication.getPrincipal();
+        appUserService.deleteUser(currentUser.getId());
         return ResponseEntity.ok("User account deleted successfully");
     }
 }

@@ -20,7 +20,7 @@ The goal is to foster collaboration, visibility, and knowledge exchange within t
 - **Sergio Alejandro Reita Serrano**
 - **David Andres Camelo Suarez**
 
-_Project developed for **Software Engineering II** — Universidad del Norte, 2025._
+_Project developed for **Software Engineering II** — Universidad Nacional de Colombia, 2025._
 
 ---
 
@@ -29,26 +29,26 @@ _Project developed for **Software Engineering II** — Universidad del Norte, 20
 ```
 StartHub/
 ├── services/
-│   ├── fastapi/          # Data backend (comments, votes, startups)
-│   │   ├── app/          # Source code (api/, models/, services/, etc.)
-│   │   ├── alembic/      # Database migrations
+│   ├── fastapi/                        # Data backend (comments, votes, startups)
+│   │   ├── app/                        # Source code (api/, models/, services/, etc.)
+│   │   ├── alembic/                    # Database migrations
 │   │   ├── requirements.txt
-│   │   └── .env          # Local configuration (not tracked)
-│   └── spring-auth/      # JWT authentication service
+│   │   └── .env                        # Local configuration (not tracked)
+│   └── spring-auth/                    # JWT authentication service
 │       ├── src/
 │       ├── pom.xml
-│       └── .env          # Local configuration (not tracked)
-├── frontend/             # Web interface (HTML/JS/CSS)
-│   ├── js/               # auth.js, home.js, startup_info.js, navbar.js
-│   ├── css/              # Styles (base/, components/, layout/, modes/, pages/)
-│   ├── components/       # Reusable HTML components (navbar)
-│   └── *.html            # Pages (login, signup, home, profile, etc.)
-├── scripts/              # Development and testing tools
-│   ├── dev-server.py     # HTTP server for frontend
-│   ├── start_all.sh      # Start all services (FastAPI, Spring, Frontend, MailHog)
-│   ├── stop_all.sh       # Stop all services
-│   ├── *_mailhog.sh      # MailHog management scripts
-│   └── test/             # Test suites
+│       └── .env                        # Local configuration (not tracked)
+├── frontend/                           # Web interface (HTML/JS/CSS)
+│   ├── js/                             # auth.js, home.js, startup_info.js, navbar.js
+│   ├── css/                            # Styles (base/, components/, layout/, modes/, pages/)
+│   ├── components/                     # Reusable HTML components (navbar)
+│   └── *.html                          # Pages (login, signup, home, profile, etc.)
+├── scripts/                            # Development and testing tools
+│   ├── dev-server.py                   # HTTP server for frontend
+│   ├── start_all.sh                    # Start all services (FastAPI, Spring, Frontend, MailHog)
+│   ├── stop_all.sh                     # Stop all services
+│   ├── *_mailhog.sh                    # MailHog management scripts
+│   └── test/                           # Test suites
 │       ├── test_crud_complete.py       # Complete CRUD test suite
 │       ├── test_users_startups.py      # User & Startup tests
 │       ├── test_votes_comments.py      # Vote & Comment tests
@@ -57,37 +57,83 @@ StartHub/
 │       ├── test_backend.sh             # Backend validation (legacy)
 │       ├── test_frontend.sh            # Frontend validation (legacy)
 │       └── test_all_features.sh        # Integration tests (legacy)
-├── docs/                 # Technical documentation
-│   ├── MAILHOG.md        # Email testing setup guide
-│   ├── TESTING_GUIDE.md  # Quick testing reference
-│   ├── INTEGRATION_TESTING.md      # Complete integration test documentation
-│   ├── COMPLETE_MANUAL_TESTING.md  # Detailed testing scenarios
-│   └── TROUBLESHOOTING.md          # Common issues and solutions
-├── Database/             # MySQL schema and seed scripts
-│   ├── schema/           # DDL and views
-│   ├── seeds/            # Sample data
-│   ├── utilities/        # Maintenance scripts (reload_all.sh, truncate_all.sh)
-│   └── verifiers/        # Data validation queries
-├── tools/                # External tools (MailHog - not tracked)
-├── logs/                 # Service logs and PID files (not tracked)
-├── .github/              # GitHub Actions workflows
-│   └── workflows/        # CI/CD pipelines (ci.yml, java-ci.yml, integration-test.yml)
-├── WorkShop_1/           # Workshop 1 materials
-└── WorkShop_2/           # Workshop 2 materials
+├── docs/                               # Technical documentation
+│   ├── MAILHOG.md                      # Email testing setup guide
+│   ├── TESTING_GUIDE.md                # Quick testing reference
+│   ├── INTEGRATION_TESTING.md          # Complete integration test documentation
+│   ├── COMPLETE_MANUAL_TESTING.md      # Detailed testing scenarios
+│   └── TROUBLESHOOTING.md              # Common issues and solutions
+├── Database/                           # MySQL schema and seed scripts
+│   ├── schema/                         # DDL and views
+│   ├── seeds/                          # Sample data
+│   ├── utilities/                      # Maintenance scripts (reload_all.sh, truncate_all.sh)
+│   └── verifiers/                      # Data validation queries
+├── tools/                              # External tools (MailHog - not tracked)
+├── logs/                               # Service logs and PID files (not tracked)
+├── .github/                            # GitHub Actions workflows
+│   └── workflows/                      # CI/CD pipelines (ci.yml, java-ci.yml, integration-test.yml)
+├── WorkShop_1/                         # Workshop 1 materials
+└── WorkShop_2/                         # Workshop 2 materials
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### ⭐ Option 1: Docker (Recommended - Easiest)
+
+**Prerequisites:**
+- **Docker Desktop** (includes Docker Compose) — [Download](https://www.docker.com/products/docker-desktop)
+
+**Installation:**
+
+```bash
+git clone https://github.com/sreita/StartHub.git
+cd StartHub
+
+# Start all services (builds images and containers on first run)
+docker compose -f docker/compose.yaml up -d --build
+
+# Or use the helper script (Windows: run-docker.bat, Unix: ./run-docker.sh)
+./docker/run-docker.sh up -d --build
+```
+
+**Access the Application** (wait ~30-40 seconds for initialization):
+- **Frontend**: http://localhost:3000
+- **FastAPI Docs**: http://localhost:8000/docs
+- **Spring Boot API**: http://localhost:8081/api/v1
+- **MailHog Email UI**: http://localhost:8025
+- **MySQL**: `localhost:3307` (user: `startHub`, password: `startHub123`)
+
+**Useful Docker Commands:**
+```bash
+# View service status
+./docker/run-docker.sh ps
+
+# View logs
+./docker/run-docker.sh logs -f
+
+# Stop services
+./docker/run-docker.sh down
+
+# Full documentation
+cat docker/README.md
+```
+
+For detailed Docker setup, see **[docs/setup/DOCKER_SETUP.md](docs/setup/DOCKER_SETUP.md)**.
+
+---
+
+### 🛠️ Option 2: Local Installation (Advanced)
+
+**Prerequisites:**
 - **Java 21+** (for Spring Boot)
 - **Python 3.12+** with virtualenv
 - **MySQL 8.0+** (local or remote)
 - **Git Bash** (Windows) or compatible shell
 - **MailHog** (optional, for email testing)
 
-### 1. Clone and Setup Environment
+**1. Clone and Setup Environment:**
 
 ```bash
 git clone https://github.com/sreita/StartHub.git
@@ -101,6 +147,7 @@ source .venv/Scripts/activate  # Windows Git Bash
 # Install Python dependencies
 pip install -r services/fastapi/requirements.txt
 ```
+
 
 ### 2. Configure Environment Variables
 
@@ -179,13 +226,13 @@ bash scripts/stop_all.sh
 
 ## 🔌 Ports and Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| Frontend | 3000 | Static web interface |
-| FastAPI | 8000 | Data API (startups, comments, votes) |
-| Spring Boot | 8081 | JWT authentication and user management |
-| MailHog SMTP | 1025 | Email capture for testing |
-| MailHog UI | 8025 | Web interface to view captured emails |
+|   Service    | Port |              Description               |
+|--------------|------|----------------------------------------|
+|  Frontend    | 3000 |          Static web interface          |
+|    FastAPI   | 8000 |  Data API (startups, comments, votes)  |
+| Spring Boot  | 8081 | JWT authentication and user management |
+| MailHog SMTP | 1025 |       Email capture for testing        |
+|  MailHog UI  | 8025 | Web interface to view captured emails  |
 
 ---
 
@@ -300,10 +347,10 @@ bash scripts/test/test_all_features.sh
 ### Manual Testing
 
 See comprehensive guides in `docs/`:
-- [Testing Guide](docs/TESTING_GUIDE.md) - Quick reference with all test commands
-- [Integration Testing](docs/INTEGRATION_TESTING.md) - Complete integration test documentation
-- [Complete Manual Testing](docs/COMPLETE_MANUAL_TESTING.md) - Detailed scenarios
-- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues
+- [Testing Guide](docs/testing/TESTING_GUIDE.md) - Quick reference with all test commands
+- [Integration Testing](docs/testing/INTEGRATION_TESTING.md) - Complete integration test documentation
+- [Complete Manual Testing](docs/testing/COMPLETE_MANUAL_TESTING.md) - Detailed scenarios
+- [Troubleshooting](docs/project/TROUBLESHOOTING.md) - Common issues
 
 ---
 
@@ -317,7 +364,7 @@ StartHub uses MailHog for email testing in development:
 4. **Check MailHog** to see the confirmation email
 5. **Click the confirmation link** to activate the account
 
-See [MailHog Documentation](docs/MAILHOG.md) for detailed instructions.
+See [MailHog Documentation](docs/services/MAILHOG.md) for detailed instructions.
 
 ---
 
@@ -348,6 +395,34 @@ cd Database/verifiers
 mysql -u root -p starthub < verify_data.sql
 mysql -u root -p starthub < verify_views.sql
 ```
+
+---
+
+## 📚 Documentation Hub
+
+All documentation is centralized in the [`docs/`](docs/) directory, organized by topic. See **[docs/INDEX.md](docs/INDEX.md)** for a complete overview.
+
+### Key Guides
+
+|                               Guide                               |                 Purpose                |
+|-------------------------------------------------------------------|----------------------------------------|
+|             **[DOCKER_SETUP.md](docs/setup/DOCKER_SETUP.md)**             | Docker installation and environment setup |
+|   **[DOCKER_ORCHESTRATION.md](docs/setup/DOCKER_ORCHESTRATION.md)**       | Compose services, networking, volumes, workflows |
+|              **[TESTING_GUIDE.md](docs/testing/TESTING_GUIDE.md)**        | Running unit and integration tests |
+|        **[INTEGRATION_TESTING.md](docs/testing/INTEGRATION_TESTING.md)**  | End-to-end testing procedures |
+|  **[COMPLETE_MANUAL_TESTING.md](docs/testing/COMPLETE_MANUAL_TESTING.md)** | Step-by-step manual test cases |
+|             **[MAILHOG.md](docs/services/MAILHOG.md)**                    | Email testing with MailHog |
+|        **[TROUBLESHOOTING.md](docs/project/TROUBLESHOOTING.md)**          | Common issues and solutions |
+|         **[PROJECT_STATUS.md](docs/project/PROJECT_STATUS.md)**           | Current project status and roadmap |
+|           **[CONTRIBUTING.md](docs/project/CONTRIBUTING.md)**             | Contribution guidelines |
+
+### Docker Documentation
+
+The `docker/` directory contains the Compose file and helper scripts; detailed documentation lives in [`docs/setup`](docs/setup):
+
+- **[docs/setup/DOCKER_ORCHESTRATION.md](docs/setup/DOCKER_ORCHESTRATION.md)** — Docker architecture, commands, networking, volumes
+- **[docker/compose.yaml](docker/compose.yaml)**                        — Service orchestration configuration
+- **docker/run-docker.sh** (Unix) / **docker/run-docker.bat** (Windows) — Helper scripts
 
 ---
 
@@ -394,18 +469,6 @@ find . -type d -name ".pytest_cache" -exec rm -rf {} +
 cd services/spring-auth
 ./mvnw.cmd clean
 ```
-
----
-
-## 📚 Documentation
-
-- [MailHog Setup](docs/MAILHOG.md) - Email testing configuration
-- [Testing Guide](docs/TESTING_GUIDE.md) - Quick testing reference
-- [Integration Testing](docs/INTEGRATION_TESTING.md) - Complete integration test documentation
-- [Complete Manual Testing](docs/COMPLETE_MANUAL_TESTING.md) - Detailed test scenarios
-- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
-- [Database README](Database/README.md) - Database schema documentation
-- [FastAPI README](services/fastapi/README.md) - Backend API documentation
 
 ---
 
@@ -515,12 +578,12 @@ This project is educational software developed for Software Engineering II cours
 
 If you encounter issues:
 
-1. Check [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
+1. Check [Troubleshooting Guide](docs/project/TROUBLESHOOTING.md)
 2. Run diagnostic scripts: `bash scripts/test_backend.sh`
 3. Check service logs in `logs/` directory
 4. Verify all prerequisites are installed
 
-For MailHog issues, see [MailHog Documentation](docs/MAILHOG.md).
+For MailHog issues, see [MailHog Documentation](docs/services/MAILHOG.md).
 
 ---
 

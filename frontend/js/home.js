@@ -1,5 +1,5 @@
 // js/home.js
-const DATA_API = 'http://localhost:8000';
+const DATA_API = 'http://localhost:8000/api/v1';
 
 export class HomePage {
     constructor() {

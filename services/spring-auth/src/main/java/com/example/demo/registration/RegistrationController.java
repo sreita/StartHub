@@ -1,5 +1,8 @@
 package com.example.demo.registration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,8 +26,12 @@ public class RegistrationController {
 
 
   @PostMapping
-  public String register(@RequestBody RegistrationRequest request) {
-    return registrationService.register(request);
+  public ResponseEntity<Map<String, String>> register(@RequestBody RegistrationRequest request) {
+    String token = registrationService.register(request);
+    Map<String, String> response = new HashMap<>();
+    response.put("token", token);
+    response.put("message", "User registered. Please confirm your email.");
+    return ResponseEntity.ok(response);
   }
 
     @GetMapping(path = "confirm")

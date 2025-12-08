@@ -2,10 +2,7 @@ package com.example.demo.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,43 +27,37 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        try {
-            // Autenticar al usuario con Spring Security
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.email(), request.password())
-            );
+        // Authenticate user with Spring Security
+        // BadCredentialsException and UsernameNotFoundException exceptions
+        // will be handled by GlobalExceptionHandler
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+        );
 
-            // Si la autenticación es exitosa, obtener los detalles del usuario
-            AppUser appUser = (AppUser) appUserService.loadUserByUsername(request.email());
+        // If authentication is successful, get user details
+        AppUser appUser = (AppUser) appUserService.loadUserByUsername(request.email());
 
-            // Generar el token JWT
-            String token = jwtService.generateToken(appUser);
+        // Generate JWT token
+        String token = jwtService.generateToken(appUser);
 
-            // Crear respuesta del perfil de usuario
-            UserProfileResponse userProfile = new UserProfileResponse(
-                (long) appUser.getId(),
-                appUser.getFirstName(),
-                appUser.getLastName(),
-                appUser.getEmail(),
-                appUser.getRegistrationDate(),
-                appUser.getProfileInfo()
-            );
+        // Create user profile response
+        UserProfileResponse userProfile = new UserProfileResponse(
+            (long) appUser.getId(),
+            appUser.getFirstName(),
+            appUser.getLastName(),
+            appUser.getEmail(),
+            appUser.getRegistrationDate(),
+            appUser.getProfileInfo()
+        );
 
-            // Devolver el token y el perfil de usuario
-            return ResponseEntity.ok(new LoginResponse(token, userProfile));
-        } catch (BadCredentialsException e) {
-            throw new RuntimeException("Credenciales inválidas");
-        } catch (UsernameNotFoundException e) {
-            throw new RuntimeException("Usuario no encontrado");
-        } catch (Exception e) {
-            throw new RuntimeException("Error en la autenticación: " + e.getMessage());
-        }
+        // Return token and user profile
+        return ResponseEntity.ok(new LoginResponse(token, userProfile));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
-        // En JWT stateless, el logout se maneja principalmente del lado del cliente
-        // Podrías implementar una blacklist de tokens si necesitas logout del servidor
+        // In JWT stateless architecture, logout is primarily handled on the client side
+        // You could implement a token blacklist if server-side logout is needed
         return ResponseEntity.ok("Logged out successfully");
     }
 

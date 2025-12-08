@@ -142,3 +142,146 @@ The project uses a microservices architecture orchestrated via Docker Compose.
 
 * Fake SMTP server to capture registration/recovery emails.
 
+---
+
+## 🔗  6. Networking & Service Communication
+
+Services are connected via the `startHub_network` defined in `compose.yaml`:
+
+```
+[Frontend (nginx)]
+         ↓
+[Spring Auth API] ← JWT Validation
+     ↓
+[FastAPI] ← Business Logic
+     ↓
+[MySQL] ← Data Persistence
+
+[MailHog] ← For email notifications
+```
+
+**Docker internal DNS**:
+- `db`: MySQL (host: `db`, port: 3306 internal)
+- `fastapi`: FastAPI (host: `fastapi`, port: 8000 internal)
+- `spring`: Spring Auth (host: `spring`, port: 8081 internal)
+- `mailhog`: MailHog (host: `mailhog`, port: 1025 SMTP)
+
+---
+
+## 💾 7. Volumes & Data Persistence
+
+- **mysql_data**: MySQL data persistence
+  - Host directory: `docker/volumes/mysql/` (created automatically)
+  - Ensures data survives `docker compose down`
+
+---
+
+## 🔐 8. Environment Configuration
+
+The `.env` file must be in the **project root** (not in `docker/`):
+
+```ini
+# .env (in root)
+MYSQL_ROOT_PASSWORD=root123
+MYSQL_DATABASE=startHub
+MYSQL_USER=startHub
+MYSQL_PASSWORD=startHub123
+```
+
+---
+
+## 🛠️ 9. Docker Compose File Structure
+
+The `docker/compose.yaml` file contains:
+
+- **Defined Services**: MySQL, Spring Auth, FastAPI, Frontend, MailHog
+- **Internal Networks**: `startHub_network` for inter-service communication
+- **Environment Variables**: Loaded from `.env` file
+- **Port Mappings**: External ports mapped to internal service ports
+- **Health Checks**: For MySQL to ensure database readiness
+- **Dependencies**: Service startup order enforcement
+- **Volumes**: Data persistence and code mounting
+
+### Quick Commands
+
+#### Start Everything
+```bash
+docker compose -f docker/compose.yaml up -d --build
+```
+
+#### View Status
+```bash
+docker compose -f docker/compose.yaml ps
+```
+
+#### View Logs
+```bash
+docker compose -f docker/compose.yaml logs -f [service]
+```
+
+#### Stop Everything
+```bash
+docker compose -f docker/compose.yaml down
+```
+
+#### Rebuild Images
+```bash
+docker compose -f docker/compose.yaml build --no-cache
+```
+
+---
+
+## 🔄 10. Typical Workflow
+
+```bash
+# 1. Navigate to project root
+cd StartHub/
+
+# 2. Start services (with rebuild)
+docker compose -f docker/compose.yaml up -d --build
+
+# 3. Wait for initialization (~30 seconds)
+sleep 30
+
+# 4. Verify health
+docker compose -f docker/compose.yaml ps
+
+# 5. Access services
+# - Frontend:     http://localhost:3000
+# - API Docs:     http://localhost:8000/docs
+# - Auth Swagger: http://localhost:8081/swagger-ui.html
+# - MailHog:      http://localhost:8025
+
+# 6. Inspect logs if needed
+docker compose -f docker/compose.yaml logs -f
+
+# 7. Stop when done
+docker compose -f docker/compose.yaml down
+```
+
+---
+
+## 🚨 11. Troubleshooting
+
+### Port 3306 Conflict
+**Problem**: Port 3306 already in use by local MySQL
+**Solution**: `compose.yaml` uses port `3307:3306`
+**Verify**: `netstat -ano | findstr :3307` (Windows) or `lsof -i :3307` (Unix)
+
+### Container Won't Start
+**Command**:
+```bash
+docker compose -f docker/compose.yaml logs [service_name]
+```
+**Common Issues**: Volume permissions, missing environment variables, unmet dependencies
+
+### Clean Everything
+```bash
+docker compose -f docker/compose.yaml down -v  # -v removes volumes
+docker system prune -a                          # Cleans unused images
+```
+
+---
+
+**Last Updated**: December 8, 2025
+

@@ -47,10 +47,16 @@ public class AppUserService implements UserDetailsService {
         AppUser appUser = appUserRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
 
-        appUser.setFirstName(updateRequest.firstName());
-        appUser.setLastName(updateRequest.lastName());
-        appUser.setEmail(updateRequest.email());
-        appUser.setProfileInfo(updateRequest.profileInfo());
+        if (updateRequest.firstName() != null && !updateRequest.firstName().isEmpty()) {
+            appUser.setFirstName(updateRequest.firstName());
+        }
+        if (updateRequest.lastName() != null && !updateRequest.lastName().isEmpty()) {
+            appUser.setLastName(updateRequest.lastName());
+        }
+        if (updateRequest.profileInfo() != null && !updateRequest.profileInfo().isEmpty()) {
+            appUser.setProfileInfo(updateRequest.profileInfo());
+        }
+        // Email no se actualiza en este endpoint ya que requiere revalidación
 
         appUserRepository.save(appUser);
 

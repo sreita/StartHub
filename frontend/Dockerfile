@@ -11,8 +11,28 @@ RUN rm -rf ./*
 # 4. Copiamos TUS archivos (HTML, CSS, JS) al servidor
 COPY . .
 
-# 5. Exponemos el puerto 80 (el estándar web)
+# 5. Creamos configuración de Nginx para servir home.html como índice
+RUN echo 'server { \
+    listen 80; \
+    server_name localhost; \
+    root /usr/share/nginx/html; \
+    index home.html; \
+    \
+    # Deshabilitar caché para archivos JS, CSS y HTML \
+    location ~* \.(js|css|html)$ { \
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"; \
+        add_header Pragma "no-cache"; \
+        add_header Expires "0"; \
+        try_files $uri =404; \
+    } \
+    \
+    location / { \
+        try_files $uri $uri/ /home.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
+# 6. Exponemos el puerto 80 (el estándar web)
 EXPOSE 80
 
-# 6. Arrancamos el servidor
+# 7. Arrancamos el servidor
 CMD ["nginx", "-g", "daemon off;"]

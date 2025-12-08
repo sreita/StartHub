@@ -30,9 +30,10 @@ public class PasswordResetToken {
     @JoinColumn(nullable = false, name = "user_id")
     private AppUser appUser;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "expires_at")
     private LocalDateTime expiresAt;
 
+    @Column(name = "confirmed_at")
     private LocalDateTime confirmedAt;
 
     public PasswordResetToken(String token, AppUser appUser, LocalDateTime expiresAt) {

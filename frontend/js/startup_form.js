@@ -1,7 +1,7 @@
 // js/startup_form.js
 export class StartupFormPage {
     constructor() {
-        this.API_BASE_URL = 'http://localhost:8000';
+        this.API_BASE_URL = 'http://localhost:8000/api/v1';
         this.startupId = this.getStartupIdFromURL();
         this.isEditMode = !!this.startupId;
         this.currentUser = null;

@@ -1,6 +1,6 @@
 # StartHub - Project Status
 
-**Last Updated**: November 28, 2025  
+**Last Updated**: December 8, 2025  
 **Version**: 2.0  
 **Status**: ✅ **ALL SERVICES OPERATIONAL**
 
@@ -15,14 +15,14 @@
 - **Server**: Python dev-server.py
 
 **Available Pages**:
-- http://localhost:3000/home.html - Main landing page
-- http://localhost:3000/login.html - User authentication
-- http://localhost:3000/signup.html - New user registration
-- http://localhost:3000/profile.html - User profile management
-- http://localhost:3000/startup_form.html - Create/edit startups
-- http://localhost:3000/startup_info.html - Startup details
+- http://localhost:3000/home.html            - Main landing page
+- http://localhost:3000/login.html           - User authentication
+- http://localhost:3000/signup.html          - New user registration
+- http://localhost:3000/profile.html         - User profile management
+- http://localhost:3000/startup_form.html    - Create/edit startups
+- http://localhost:3000/startup_info.html    - Startup details
 - http://localhost:3000/forgot_password.html - Password recovery
-- http://localhost:3000/reset_password.html - Password reset
+- http://localhost:3000/reset_password.html  - Password reset
 
 ### 2. FastAPI - Data API (Port 8000)
 - **Status**: ✅ OPERATIONAL
@@ -33,21 +33,21 @@
 
 **Main Endpoints**:
 ```
-GET    /startups                 - List all startups
-GET    /startups/{id}            - Get startup details
-POST   /startups?user_id=X       - Create startup
-PUT    /startups/{id}            - Update startup
-DELETE /startups/{id}            - Delete startup
+GET    /startups                         - List all startups
+GET    /startups/{id}                    - Get startup details
+POST   /startups?user_id=X               - Create startup
+PUT    /startups/{id}                    - Update startup
+DELETE /startups/{id}                    - Delete startup
 
-GET    /comments?startup_id=X    - List comments
-POST   /comments?user_id=X       - Create comment
-DELETE /comments/{id}            - Delete comment
+GET    /comments?startup_id=X            - List comments
+POST   /comments?user_id=X               - Create comment
+DELETE /comments/{id}                    - Delete comment
 
-GET    /votes/count/{startup_id} - Get vote counts
-POST   /votes?user_id=X          - Vote on startup
+GET    /votes/count/{startup_id}         - Get vote counts
+POST   /votes?user_id=X                  - Vote on startup
 
-GET    /startups/search          - Search with filters
-GET    /startups/autocomplete    - Name autocomplete
+GET    /startups/search                  - Search with filters
+GET    /startups/autocomplete            - Name autocomplete
 ```
 
 ### 3. Spring Boot Authentication (Port 8081)
@@ -80,9 +80,9 @@ POST   /api/v1/auth/reset-password       - Reset password with token
 ### MySQL Database: `starthub`
 
 **Connection Info**:
-- Host: `localhost`
-- Port: `3306`
-- Database: `starthub`
+- Host:          `localhost`
+- Port:          `3306`
+- Database:      `starthub`
 - Character Set: `utf8mb4_unicode_ci`
 
 **Data Summary**:
@@ -192,11 +192,11 @@ bash scripts/test/test_all_features.sh
 1. **Test Suite Reorganization**:
    - ✅ Moved all test files to `scripts/test/` directory
    - ✅ Created comprehensive Python test suites:
-     - `test_crud_complete.py` - Full CRUD coverage (users, startups, votes, comments)
+     - `test_crud_complete.py`  - Full CRUD coverage (users, startups, votes, comments)
      - `test_users_startups.py` - Specialized user and startup tests
      - `test_votes_comments.py` - Specialized vote and comment tests
-     - `test_search.py` - Complete search functionality tests
-     - `test_manual.py` - Quick smoke test (health checks only)
+     - `test_search.py`         - Complete search functionality tests
+     - `test_manual.py`         - Quick smoke test (health checks only)
    - ❌ Removed `test_confirmation.py` (redundant, covered in other tests)
    - ✅ Organized legacy shell scripts in same directory
 
@@ -263,10 +263,10 @@ bash scripts/start_all.sh
 ```
 
 This starts:
-1. MailHog (ports 1025, 8025)
-2. FastAPI (port 8000)
+1. MailHog     (ports 1025, 8025)
+2. FastAPI     (port 8000)
 3. Spring Boot (port 8081)
-4. Frontend (port 3000)
+4. Frontend    (port 3000)
 
 ### Option 2: Start Services Individually
 
@@ -298,13 +298,13 @@ bash scripts/stop_all.sh
 
 ## 🌐 Quick Links
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| Frontend | http://localhost:3000 | Web interface |
-| FastAPI Docs | http://127.0.0.1:8000/docs | Interactive API documentation |
-| FastAPI Health | http://127.0.0.1:8000/health | API health check |
-| Spring Boot API | http://localhost:8081/api/v1 | Authentication API |
-| MailHog UI | http://localhost:8025 | Email testing interface |
+|     Service     |             URL              |          Description          |
+|-----------------|------------------------------|-------------------------------|
+|    Frontend     |    http://localhost:3000     |         Web interface         |
+|  FastAPI Docs   |  http://127.0.0.1:8000/docs  | Interactive API documentation |
+| FastAPI Health  | http://127.0.0.1:8000/health |       API health check        |
+| Spring Boot API | http://localhost:8081/api/v1 |      Authentication API       |
+|   MailHog UI    |    http://localhost:8025     |    Email testing interface    |
 
 ---
 
@@ -312,15 +312,15 @@ bash scripts/stop_all.sh
 
 ### Environment Files (Not Tracked)
 
-- `services/fastapi/.env` - FastAPI database and app config
-- `services/spring-auth/.env` - Spring Boot database config
-- `logs/*.log` - Service logs
-- `logs/*.pid` - Process IDs
-- `tools/` - External tools (MailHog)
+- `services/fastapi/.env`             - FastAPI database and app config
+- `services/spring-auth/.env`         - Spring Boot database config
+- `logs/*.log`                        - Service logs
+- `logs/*.pid`                        - Process IDs
+- `tools/`                            - External tools (MailHog)
 
 ### Template Files (Tracked)
 
-- `services/fastapi/.env.example` - FastAPI config template
+- `services/fastapi/.env.example`     - FastAPI config template
 - `services/spring-auth/.env.example` - Spring Boot config template
 
 ### Configuration Details
@@ -349,9 +349,9 @@ SERVER_PORT=8081
 All major issues have been resolved:
 - ✅ Spring Security 403 errors - FIXED
 - ✅ Database connection issues - FIXED
-- ✅ CORS errors - FIXED
-- ✅ MailHog integration - COMPLETED
-- ✅ Port conflicts - RESOLVED
+- ✅ CORS errors                - FIXED
+- ✅ MailHog integration        - COMPLETED
+- ✅ Port conflicts             - RESOLVED
 
 ---
 
@@ -408,14 +408,14 @@ All major issues have been resolved:
 
 ## 📚 Documentation
 
-- [Main README](../README.md) - Project overview and quick start
-- [Database README](../Database/README.md) - Database schema and scripts
-- [FastAPI README](../services/fastapi/README.md) - Backend API documentation
-- [MailHog Guide](MAILHOG.md) - Email testing setup
-- [Testing Guide](TESTING_GUIDE.md) - Quick testing reference
-- [Integration Testing](INTEGRATION_TESTING.md) - Complete integration test documentation
+- [Main README](../README.md)                           - Project overview and quick start
+- [Database README](../Database/README.md)              - Database schema and scripts
+- [FastAPI README](../services/fastapi/README.md)       - Backend API documentation
+- [MailHog Guide](MAILHOG.md)                           - Email testing setup
+- [Testing Guide](TESTING_GUIDE.md)                     - Quick testing reference
+- [Integration Testing](INTEGRATION_TESTING.md)         - Complete integration test documentation
 - [Complete Manual Testing](COMPLETE_MANUAL_TESTING.md) - Detailed scenarios
-- [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
+- [Troubleshooting](TROUBLESHOOTING.md)                 - Common issues and solutions
 
 ---
 
@@ -427,7 +427,7 @@ All major issues have been resolved:
 - **Sergio Alejandro Reita Serrano**
 - **David Andres Camelo Suarez**
 
-_Software Engineering II — Universidad del Norte, 2025_
+_Software Engineering II — Universidad Nacional de Colommbia, 2025_
 
 ---
 

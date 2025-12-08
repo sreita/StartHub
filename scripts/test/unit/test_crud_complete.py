@@ -36,36 +36,36 @@ user_email = None
 user_password = None
 
 def test_user_profile_and_update():
-    """Paso A: Verificar perfil y actualizar datos del usuario"""
-    print_section("A. PERFIL Y ACTUALIZACIÓN DE USUARIO")
+    """Step A: Verify profile and update user data"""
+    print_section("A. USER PROFILE AND UPDATE")
     headers = {"Authorization": f"Bearer {jwt_token}"}
     # GET perfil
-    print("\nA.1. OBTENER PERFIL")
+    print("\nA.1. GET PROFILE")
     try:
         resp = requests.get(f"{BASE_URL_AUTH}/users/{user_id}", headers=headers, timeout=10)
         if resp.status_code == 200:
             profile = resp.json()
-            print_success(f"Perfil obtenido: {profile.get('firstName')} {profile.get('lastName')}")
+            print_success(f"Profile obtained: {profile.get('firstName')} {profile.get('lastName')}")
         else:
-            print_error(f"Fallo al obtener perfil: {resp.status_code}")
+            print_error(f"Failed to get profile: {resp.status_code}")
             return False
     except Exception as e:
         print_error(f"Error: {e}")
         return False
     # UPDATE perfil (sin cambiar email para facilitar relogin)
-    print("\nA.2. ACTUALIZAR PERFIL")
+    print("\nA.2. UPDATE PROFILE")
     update_payload = {
         "firstName": "TestUpdated",
         "lastName": "CRUDUpdated",
         "email": user_email,  # mantener igual
-        "profileInfo": "Perfil de prueba actualizado"
+        "profileInfo": "Updated test profile"
     }
     try:
         resp = requests.put(f"{BASE_URL_AUTH}/users/{user_id}", json=update_payload, headers=headers, timeout=10)
         if resp.status_code == 200:
             updated = resp.json()
-            print_success("Perfil actualizado correctamente")
-            print_info(f"Nuevo nombre: {updated.get('firstName')} {updated.get('lastName')}")
+            print_success("Profile updated successfully")
+            print_info(f"New name: {updated.get('firstName')} {updated.get('lastName')}")
             print_info(f"ProfileInfo: {updated.get('profileInfo')}")
         else:
             print_error(f"Fallo actualización perfil: {resp.status_code} - {resp.text}")
@@ -73,35 +73,35 @@ def test_user_profile_and_update():
     except Exception as e:
         print_error(f"Error: {e}")
         return False
-    # Verificación GET posterior
-    print("\nA.3. VERIFICAR ACTUALIZACIÓN")
+    # Verify GET afterwards
+    print("\nA.3. VERIFY UPDATE")
     try:
         resp = requests.get(f"{BASE_URL_AUTH}/users/{user_id}", headers=headers, timeout=10)
         if resp.status_code == 200:
             profile = resp.json()
             if profile.get('firstName') == 'TestUpdated':
-                print_success("Actualización reflejada en perfil")
+                print_success("Update reflected in profile")
             else:
-                print_error("Actualización NO reflejada en perfil")
+                print_error("Update NOT reflected in profile")
         else:
-            print_error(f"Fallo verificación perfil: {resp.status_code}")
+            print_error(f"Profile verification failed: {resp.status_code}")
     except Exception as e:
         print_error(f"Error: {e}")
     return True
 
 def test_user_relogin():
-    """Paso B: Re-login después de actualización para validar vigencia"""
-    print_section("B. RE-LOGIN USUARIO")
-    print("Intentando login nuevamente tras actualización...")
+    """Step B: Re-login after update to validate validity"""
+    print_section("B. USER RE-LOGIN")
+    print("Attempting login again after update...")
     try:
         resp = requests.post(f"{BASE_URL_AUTH}/auth/login", json={"email": user_email, "password": user_password}, timeout=10)
         if resp.status_code == 200:
             data = resp.json()
-            print_success("Re-login exitoso tras actualización")
+            print_success("Successful re-login after update")
             print_info(f"JWT nuevo: {data.get('token')[:40]}...")
             return True
         else:
-            print_error(f"Re-login falló: {resp.status_code}")
+            print_error(f"Re-login failed: {resp.status_code}")
             return False
     except Exception as e:
         print_error(f"Error: {e}")
@@ -109,7 +109,7 @@ def test_user_relogin():
 
 def test_user_delete_and_post_checks():
     """Paso Z: Eliminar usuario y verificar que no se puede acceder ni loguear"""
-    print_section("Z. ELIMINACIÓN DE USUARIO")
+    print_section("Z. USER DELETION")
     headers = {"Authorization": f"Bearer {jwt_token}"}
     print("\nZ.1. ELIMINAR USUARIO")
     try:
@@ -117,29 +117,29 @@ def test_user_delete_and_post_checks():
         if resp.status_code == 200:
             print_success("Usuario eliminado correctamente")
         else:
-            print_error(f"Eliminación falló: {resp.status_code} - {resp.text}")
+            print_error(f"Deletion failed: {resp.status_code} - {resp.text}")
             return False
     except Exception as e:
         print_error(f"Error: {e}")
         return False
     # Intentar obtener perfil
-    print("\nZ.2. VERIFICAR ACCESO PERFIL TRAS ELIMINACIÓN")
+    print("\nZ.2. VERIFY PROFILE ACCESS AFTER DELETION")
     try:
         resp = requests.get(f"{BASE_URL_AUTH}/users/{user_id}", headers=headers, timeout=10)
         if resp.status_code in [404, 500]:
-            print_success(f"Perfil inaccesible tras eliminación (status {resp.status_code})")
+            print_success(f"Profile inaccessible after deletion (status {resp.status_code})")
         else:
             print_error(f"Estado inesperado perfil: {resp.status_code}")
     except Exception as e:
         print_error(f"Error: {e}")
     # Intentar login
-    print("\nZ.3. LOGIN TRAS ELIMINACIÓN (DEBE FALLAR)")
+    print("\nZ.3. LOGIN AFTER DELETION (MUST FAIL)")
     try:
         resp = requests.post(f"{BASE_URL_AUTH}/auth/login", json={"email": user_email, "password": user_password}, timeout=10)
         if resp.status_code != 200:
             print_success(f"Login correctamente rechazado (status {resp.status_code})")
         else:
-            print_error("Login inesperadamente exitoso tras eliminación")
+            print_error("Unexpectedly successful login after deletion")
     except Exception as e:
         print_error(f"Error: {e}")
     return True
@@ -172,7 +172,7 @@ def test_register_and_login():
             token = response.text.strip()
             print_success(f"Registro exitoso - Token: {token[:40]}...")
             
-            # Confirmación automática
+            # Automatic confirmation
             print("Confirmando email...")
             confirm_url = f"{BASE_URL_AUTH}/registration/confirm?token={token}"
             response = requests.get(confirm_url, timeout=10)
@@ -218,7 +218,8 @@ def test_startup_crud():
     startup_data = {
         "name": "TestStartup AI",
         "description": "Una startup de prueba para testing CRUD",
-        "category_id": 1
+        "category_id": 1,
+        "owner_user_id": user_id
     }
     
     try:
@@ -247,7 +248,7 @@ def test_startup_crud():
         if response.status_code == 200:
             startup = response.json()
             print_success(f"Startup encontrada: {startup.get('name')}")
-            print_info(f"Descripción: {startup.get('description')[:50]}...")
+            print_info(f"Description: {startup.get('description')[:50]}...")
         else:
             print_error(f"Lectura falló: {response.status_code}")
             return False
@@ -259,8 +260,9 @@ def test_startup_crud():
     print("\n2.3. ACTUALIZAR STARTUP")
     update_data = {
         "name": "TestStartup AI - UPDATED",
-        "description": "Descripción actualizada para testing",
-        "category_id": 2
+        "description": "Updated description for testing",
+        "category_id": 2,
+        "owner_user_id": user_id
     }
     
     try:
@@ -273,28 +275,28 @@ def test_startup_crud():
         if response.status_code == 200:
             startup = response.json()
             print_success(f"Startup actualizada")
-            print_info(f"Nuevo nombre: {startup.get('name')}")
-            print_info(f"Nueva categoría: {startup.get('category_id')}")
+            print_info(f"New name: {startup.get('name')}")
+            print_info(f"New category: {startup.get('category_id')}")
         else:
-            print_error(f"Actualización falló: {response.status_code} - {response.text}")
+            print_error(f"Update failed: {response.status_code} - {response.text}")
             return False
     except Exception as e:
         print_error(f"Error: {str(e)}")
         return False
     
     # Verificar actualización
-    print("\n2.4. VERIFICAR ACTUALIZACIÓN")
+    print("\n2.4. VERIFY UPDATE")
     try:
         response = requests.get(f"{BASE_URL_API}/startups/{startup_id}", timeout=10)
         if response.status_code == 200:
             startup = response.json()
             if "UPDATED" in startup.get('name', ''):
                 print_success("Actualización verificada correctamente")
-                print_info(f"Nueva categoría: {startup.get('category_id')}")
+                print_info(f"New category: {startup.get('category_id')}")
             else:
-                print_error("La actualización no se reflejó")
+                print_error("The update was not reflected")
         else:
-            print_error(f"Verificación falló: {response.status_code}")
+            print_error(f"Verification failed: {response.status_code}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
@@ -324,7 +326,7 @@ def test_vote_operations():
             vote = response.json()
             print_success(f"Upvote registrado - Vote ID: {vote.get('vote_id')}")
         else:
-            print_error(f"Upvote falló: {response.status_code} - {response.text}")
+            print_error(f"Upvote failed: {response.status_code} - {response.text}")
             return False
     except Exception as e:
         print_error(f"Error: {str(e)}")
@@ -339,7 +341,7 @@ def test_vote_operations():
             print_success(f"Votos obtenidos")
             print_info(f"Upvotes: {vote_count.get('upvotes')}, Downvotes: {vote_count.get('downvotes')}")
         else:
-            print_error(f"Lectura de votos falló: {response.status_code}")
+            print_error(f"Vote reading failed: {response.status_code}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
@@ -364,7 +366,7 @@ def test_vote_operations():
             else:
                 print_info("Respuesta del servidor sobre el voto")
         else:
-            print_error(f"Cambio de voto falló: {response.status_code}")
+            print_error(f"Vote change failed: {response.status_code}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
@@ -375,7 +377,7 @@ def test_vote_operations():
         if response.status_code in [200, 204]:
             print_success("Voto eliminado")
         else:
-            print_error(f"Eliminación de voto falló: {response.status_code}")
+            print_error(f"Vote deletion failed: {response.status_code}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
@@ -409,7 +411,7 @@ def test_comment_operations():
             print_success(f"Comentario creado - ID: {comment_id}")
             print_info(f"Texto: {comment.get('content')[:50]}...")
         else:
-            print_error(f"Creación de comentario falló: {response.status_code} - {response.text}")
+            print_error(f"Comment creation failed: {response.status_code} - {response.text}")
             return False
     except Exception as e:
         print_error(f"Error: {str(e)}")
@@ -425,14 +427,14 @@ def test_comment_operations():
             for c in comments:
                 print_info(f"  - ID {c.get('comment_id')}: {c.get('content')[:40]}...")
         else:
-            print_error(f"Lectura de comentarios falló: {response.status_code}")
+            print_error(f"Comment reading failed: {response.status_code}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
     # UPDATE - Actualizar comentario
     print("\n4.3. ACTUALIZAR COMENTARIO")
     update_comment_data = {
-        "content": "Comentario ACTUALIZADO - Verificando funcionalidad de edición"
+        "content": "UPDATED comment - Verifying edit functionality"
     }
     
     try:
@@ -442,7 +444,7 @@ def test_comment_operations():
             print_success("Comentario actualizado")
             print_info(f"Nuevo texto: {comment.get('content')}")
         else:
-            print_error(f"Actualización de comentario falló: {response.status_code} - {response.text}")
+            print_error(f"Comment update failed: {response.status_code} - {response.text}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
@@ -468,7 +470,7 @@ def test_comment_operations():
             else:
                 print_error("El comentario aún existe")
         else:
-            print_error(f"Verificación falló: {response.status_code}")
+            print_error(f"Verification failed: {response.status_code}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
     
@@ -557,7 +559,7 @@ def test_delete_startup():
             else:
                 print_info(f"Estado: {response.status_code}")
         else:
-            print_error(f"Eliminación falló: {response.status_code} - {response.text}")
+            print_error(f"Deletion failed: {response.status_code} - {response.text}")
     except Exception as e:
         print_error(f"Error: {str(e)}")
 

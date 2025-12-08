@@ -1,5 +1,5 @@
 # ============================================================================
-# StartHub .gitignore
+# StartHub .gitignore - Updated December 8, 2025
 # ============================================================================
 
 # -------------------------
@@ -12,6 +12,10 @@ Thumbs.db
 *.swp
 *.swo
 *~
+.project
+.classpath
+.c9/
+*.sublime-workspace
 
 # -------------------------
 # Python
@@ -33,6 +37,9 @@ htmlcov/
 pip-wheel-metadata/
 *.egg-info/
 .eggs/
+*.egg
+dist/
+build/
 
 # -------------------------
 # Java / Maven / Spring Boot
@@ -47,6 +54,10 @@ target/
 *.ear
 *.iml
 .mvn-temp-check
+.classpath
+.project
+.settings/
+.springBeans
 
 # -------------------------
 # Logs and Runtime Files
@@ -54,6 +65,24 @@ target/
 logs/
 *.log
 *.pid
+hs_err_*.log
+replay_pid*.log
+
+# Specifically ignore JVM crash logs and process files
+logs/jvm-crashes/
+logs/*.log
+logs/*.pid
+logs/fastapi.log
+logs/spring-auth.log
+logs/frontend.log
+logs/mailhog.log
+
+# -------------------------
+# Docker Volumes (Local development)
+# -------------------------
+docker/volumes/
+.mysql_data/
+db_data/
 
 # -------------------------
 # Database Files
@@ -63,9 +92,11 @@ logs/
 *.sqlite3
 *.db-shm
 *.db-wal
+dump.sql
+backup.sql
 
 # -------------------------
-# Tools (MailHog, etc.)
+# Tools (MailHog, etc.) - Not tracked
 # -------------------------
 tools/
 
@@ -80,7 +111,6 @@ tools/
 # Explicitly ignore environment files in all services
 services/fastapi/.env
 services/spring-auth/.env
-backend/.env
 
 # -------------------------
 # Node / Frontend (if added later)
@@ -106,6 +136,15 @@ build/
 *.o
 
 # -------------------------
+# IDE-specific files
+# -------------------------
+*.iws
+*.iml
+*.ipr
+.gradle/
+build/
+
+# -------------------------
 # Temporary Files
 # -------------------------
 tmp/
@@ -113,11 +152,19 @@ temp/
 *.tmp
 *.bak
 *.backup
+*.swp
+.DS_Store
 
 # -------------------------
 # Database-specific
 # -------------------------
-dump.sql
-backup.sql
 *.sql~
 *.bak.mwb
+
+# -------------------------
+# Test-related (if generated)
+# -------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+test-results.xml
