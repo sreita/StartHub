@@ -142,7 +142,7 @@ All documentation files have been consolidated and translated to English for con
 #### Current Structure (After Cleanup)
 
 ```
-StartHub/ (ROOT)
+Final-Project/ (ROOT)
 ├── README.md                   ✅ Project overview (English)
 ├── STRUCTURE.md                ✅ Directory structure
 ├── SETUP_SUMMARY.txt           ✅ Technical summary
@@ -225,7 +225,7 @@ StartHub/ (ROOT)
 
 ### Quick Start
 ```bash
-cd StartHub
+cd StartHub/Final-Project
 bash scripts/docker/start.sh start
 bash scripts/test/run_all_tests.sh
 ```

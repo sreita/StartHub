@@ -4,7 +4,7 @@ Master index for all StartHub project documentation. **Start here** to find guid
 
 ---
 
-## Ì≥ç Core Guides
+## ÔøΩÔøΩÔøΩ Core Guides
 
 ### Getting Started & Setup
 
@@ -78,7 +78,7 @@ Master index for all StartHub project documentation. **Start here** to find guid
 
 ---
 
-## Ì∫Ä Quick Navigation
+## ÔøΩÔøΩÔøΩ Quick Navigation
 
 | I want to...                         | Go to...                                      |
 |--------------------------------------|-----------------------------------------------|
@@ -94,7 +94,7 @@ Master index for all StartHub project documentation. **Start here** to find guid
 
 ---
 
-## Ì≥ã Directory Structure
+## ÔøΩÔøΩÔøΩ Directory Structure
 
 ```
 docs/
@@ -124,7 +124,7 @@ docs/
 
 ---
 
-## ÌæØ By Role
+## ÔøΩÔøΩÔøΩ By Role
 
 ### For Developers
 1. [GETTING_STARTED.md](./setup/GETTING_STARTED.md) - Get the project running
@@ -144,7 +144,7 @@ docs/
 
 ---
 
-## Ì≥û Service Information
+## ÔøΩÔøΩÔøΩ Service Information
 
 ### Internal Service Addresses (within Docker)
 - MySQL: `db:3306`
@@ -161,7 +161,7 @@ docs/
 
 ---
 
-## Ì≥ä Technology Stack
+## ÔøΩÔøΩÔøΩ Technology Stack
 
 | Service | Technology | Port | Purpose |
 |---------|-----------|------|---------|
@@ -193,7 +193,7 @@ docs/
 
 ---
 
-## Ì¥ó Quick Links
+## ÔøΩÔøΩÔøΩ Quick Links
 
 | Link | Purpose |
 |------|---------|
@@ -204,7 +204,7 @@ docs/
 
 ---
 
-## Ì≥ö Documentation Statistics
+## ÔøΩÔøΩÔøΩ Documentation Statistics
 
 - **Total documentation files**: 12
 - **Total lines of documentation**: 3,000+
@@ -214,7 +214,7 @@ docs/
 
 ---
 
-## Ì∫Ä Next Steps
+## ÔøΩÔøΩÔøΩ Next Steps
 
 1. **New to the project?** Start with [GETTING_STARTED.md](./setup/GETTING_STARTED.md)
 2. **Want to contribute?** Read [CONTRIBUTING.md](./project/CONTRIBUTING.md)

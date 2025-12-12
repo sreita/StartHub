@@ -7,7 +7,7 @@ Document showing the complete organization of scripts and tests.
 ## 🏗️ Directory Tree
 
 ```
-StartHub/
+Final-Project/
 │
 ├── README.md                         ⭐ Main project documentation
 │

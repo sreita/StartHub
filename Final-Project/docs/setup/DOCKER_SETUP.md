@@ -39,7 +39,7 @@ sudo usermod -aG docker $USER
 
 Before starting the containers, we need to configure secure credentials.
 
-1. Navigate to the project root directory `StartHub/`.
+1. Navigate to the project root directory `Final-Project/`.
 2. Create a file named `.env` (no name, just the extension).
 3. Paste the following content inside:
 
@@ -235,7 +235,7 @@ docker compose -f docker/compose.yaml build --no-cache
 
 ```bash
 # 1. Navigate to project root
-cd StartHub/
+cd Final-Project/
 
 # 2. Start services (with rebuild)
 docker compose -f docker/compose.yaml up -d --build

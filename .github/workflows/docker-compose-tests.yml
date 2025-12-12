@@ -28,24 +28,24 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Validate Docker Compose configuration
-        run: docker compose -f docker/compose.yaml config > /dev/null
+        run: docker compose -f Final-Project/docker/compose.yaml config > /dev/null
 
       - name: Build core images
         run: |
-          docker compose -f docker/compose.yaml build --progress=plain
+          docker compose -f Final-Project/docker/compose.yaml build --progress=plain
 
       - name: Start services
-        run: docker compose -f docker/compose.yaml up -d --wait
+        run: docker compose -f Final-Project/docker/compose.yaml up -d --wait
 
       - name: Wait for services to be ready
         run: |
           echo "Waiting for services to initialize..."
           sleep 30
-          docker compose -f docker/compose.yaml ps
+          docker compose -f Final-Project/docker/compose.yaml ps
 
       - name: Run health checks
         run: |
-          docker compose -f docker/compose.yaml ps
+          docker compose -f Final-Project/docker/compose.yaml ps
 
       - name: Verify database connection
         run: |
@@ -66,8 +66,8 @@ jobs:
 
       - name: Run integration tests
         run: |
-          if [ -f scripts/test/run_all_tests.sh ]; then
-            bash scripts/test/run_all_tests.sh
+          if [ -f Final-Project/scripts/test/run_all_tests.sh ]; then
+            bash Final-Project/scripts/test/run_all_tests.sh
           else
             echo "Test script not found, skipping integration tests"
           fi
@@ -76,12 +76,12 @@ jobs:
       - name: Collect container logs on failure
         if: failure()
         run: |
-          echo "=== FastAPI Logs ===" && docker compose -f docker/compose.yaml logs fastapi
-          echo "=== Spring Auth Logs ===" && docker compose -f docker/compose.yaml logs spring-auth
-          echo "=== Database Logs ===" && docker compose -f docker/compose.yaml logs db
-          echo "=== Frontend Logs ===" && docker compose -f docker/compose.yaml logs frontend
+          echo "=== FastAPI Logs ===" && docker compose -f Final-Project/docker/compose.yaml logs fastapi
+          echo "=== Spring Auth Logs ===" && docker compose -f Final-Project/docker/compose.yaml logs spring-auth
+          echo "=== Database Logs ===" && docker compose -f Final-Project/docker/compose.yaml logs db
+          echo "=== Frontend Logs ===" && docker compose -f Final-Project/docker/compose.yaml logs frontend
 
       - name: Cleanup
         if: always()
-        run: docker compose -f docker/compose.yaml down -v
+        run: docker compose -f Final-Project/docker/compose.yaml down -v
 

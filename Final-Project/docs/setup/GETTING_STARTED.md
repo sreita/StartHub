@@ -33,7 +33,7 @@ Once started, access:
 ## 📁 Main Folder Structure
 
 ```
-StartHub/
+Final-Project/
 ├── docker/              # Docker Compose files
 ├── scripts/
 │   ├── docker/          # Scripts to run with Docker

@@ -24,11 +24,11 @@ jobs:
 
     - name: Make mvnw executable
       run: chmod +x mvnw
-      working-directory: ./services/spring-auth
+      working-directory: ./Final-Project/services/spring-auth
 
     - name: Run tests with Maven (H2 in-memory)
       run: ./mvnw -B test -Dspring-boot.run.profiles=test
-      working-directory: ./services/spring-auth
+      working-directory: ./Final-Project/services/spring-auth
       env:
         DB_PASSWORD: ""
         DB_USERNAME: sa
@@ -37,19 +37,19 @@ jobs:
 
     - name: Build with Maven
       run: ./mvnw -B package -DskipTests
-      working-directory: ./services/spring-auth
+      working-directory: ./Final-Project/services/spring-auth
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: spring-boot-test-reports
-        path: services/spring-auth/target/surefire-reports/
+        path: Final-Project/services/spring-auth/target/surefire-reports/
         retention-days: 30
     
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: spring-boot-jar
-        path: services/spring-auth/target/*.jar
+        path: Final-Project/services/spring-auth/target/*.jar
         retention-days: 7
