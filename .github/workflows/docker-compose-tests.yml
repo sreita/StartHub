@@ -49,7 +49,7 @@ jobs:
 
       - name: Verify database connection
         run: |
-          docker compose -f docker/compose.yaml exec -T db mysql -u root -proot -e "SELECT VERSION();" || exit 1
+          docker compose -f Final-Project/docker/compose.yaml exec -T db mysql -u root -proot -e "SELECT VERSION();" || exit 1
 
       - name: Verify FastAPI is responding
         run: |
