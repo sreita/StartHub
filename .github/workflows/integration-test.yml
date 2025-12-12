@@ -56,7 +56,7 @@ jobs:
         mysql -h 127.0.0.1 -u root -ptestpassword starthub < Final-Project/Database/schema/schema.sql
         mysql -h 127.0.0.1 -u root -ptestpassword starthub < Final-Project/Database/schema/views.sql
         mysql -h 127.0.0.1 -u root -ptestpassword starthub < Final-Project/Database/seeds/seed_categories.sql
-        mysql -h 127.0.0.1 -u root -ptestpassword starthub < Final-Project/seeds/seed_users.sql
+        mysql -h 127.0.0.1 -u root -ptestpassword starthub < Final-Project/Database/seeds/seed_users.sql
 
     # Verify FastAPI setup
     - name: Verify FastAPI with MySQL
