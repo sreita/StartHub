@@ -561,7 +561,7 @@ services/spring-auth/
 
 ## 📄 License
 
-This project is educational software developed for Software Engineering II course at Universidad del Norte.
+This project is educational software developed for Software Engineering II course at Universidad Nacional de Colombia. Licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for full terms.
 
 ---
 
@@ -578,6 +578,6 @@ For MailHog issues, see [MailHog Documentation](docs/services/MAILHOG.md).
 
 ---
 
-**Last Updated**: November 28, 2025  
+**Last Updated**: December 12, 2025  
 **Version**: 2.0  
 **Status**: ✅ All services operational
