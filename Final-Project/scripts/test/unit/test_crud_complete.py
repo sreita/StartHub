@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 BASE_URL_AUTH = "http://localhost:8081/api/v1"
-BASE_URL_API = "http://localhost:8000"
+BASE_URL_API = "http://localhost:8000/api/v1"
 
 # Colores para output
 class Colors:
@@ -169,10 +169,10 @@ def test_register_and_login():
     try:
         response = requests.post(f"{BASE_URL_AUTH}/registration", json=reg_data, timeout=10)
         if response.status_code == 200:
-            token = response.text.strip()
-            print_success(f"Registro exitoso - Token: {token[:40]}...")
+            token = response.json().get("token")
+            print_success(f"Registro exitoso - Token: {str(token)[:40]}...")
             
-            # Automatic confirmation
+            # Automatic confirmation con el token real
             print("Confirmando email...")
             confirm_url = f"{BASE_URL_AUTH}/registration/confirm?token={token}"
             response = requests.get(confirm_url, timeout=10)
@@ -224,7 +224,7 @@ def test_startup_crud():
     
     try:
         response = requests.post(
-            f"{BASE_URL_API}/startups/?user_id={user_id}", 
+            f"{BASE_URL_API}/startups/", 
             json=startup_data, 
             headers=headers, 
             timeout=10

@@ -8,7 +8,9 @@
 #                                                                              #
 ################################################################################
 
-set -e
+# Permitimos que cualquier suite falle sin detener todo el maestro;
+# cada bloque controla su propio resultado.
+set +e
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -106,7 +108,7 @@ echo ""
 
 # Test de autenticación
 print_test "Test de Autenticación"
-if bash "$SCRIPT_DIR/test_authentication.sh" 2>&1; then
+if bash "$SCRIPT_DIR/integration/test_authentication.sh" 2>&1; then
     RESULTS+=("${GREEN}✓${NC} Autenticación")
     ((TOTAL_PASS++))
 else
@@ -116,7 +118,7 @@ fi
 
 # Test de startups
 print_test "Test de Startups"
-if bash "$SCRIPT_DIR/test_startups.sh" 2>&1; then
+if bash "$SCRIPT_DIR/integration/test_startups.sh" 2>&1; then
     RESULTS+=("${GREEN}✓${NC} Startups")
     ((TOTAL_PASS++))
 else
@@ -126,7 +128,7 @@ fi
 
 # Test de interacciones
 print_test "Test de Interacciones (Votos y Comentarios)"
-if bash "$SCRIPT_DIR/test_interactions.sh" 2>&1; then
+if bash "$SCRIPT_DIR/integration/test_interactions.sh" 2>&1; then
     RESULTS+=("${GREEN}✓${NC} Interacciones")
     ((TOTAL_PASS++))
 else
@@ -136,7 +138,7 @@ fi
 
 # Test completo del sistema
 print_test "Test Completo del Sistema"
-if bash "$SCRIPT_DIR/test_complete_system.sh" 2>&1; then
+if bash "$SCRIPT_DIR/integration/test_complete_system.sh" 2>&1; then
     RESULTS+=("${GREEN}✓${NC} Sistema Completo")
     ((TOTAL_PASS++))
 else

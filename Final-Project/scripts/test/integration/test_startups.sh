@@ -8,7 +8,9 @@
 #                                                                              #
 ################################################################################
 
-set -e
+# Permitimos que cada verificación falle sin detener todo el script;
+# los resultados se contabilizan con test_result.
+set +e
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -76,22 +78,22 @@ print_header
 
 log_section "CATEGORÍAS"
 
-# 1. Obtener categorías
+# 1. Obtener categorías (los objetos exponen category_id)
 CATEGORIES=$(curl -s -X GET http://localhost:8000/api/v1/categories/)
-CATEGORY_ID=$(echo "$CATEGORIES" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+CATEGORY_ID=$(echo "$CATEGORIES" | grep -o '"category_id":[0-9]*' | head -1 | cut -d':' -f2)
 
 [ -n "$CATEGORY_ID" ]
 test_result $? "GET /api/v1/categories/ - Obtener categorías"
 
 log_section "OPERACIONES CRUD DE STARTUPS"
 
-# 2. Crear startup
+# 2. Crear startup (el payload requiere owner_user_id)
 TIMESTAMP=$(date +%s)
-CREATE=$(curl -s -X POST "http://localhost:8000/api/v1/startups/?user_id=1" \
-  -H "Content-Type: application/json" \
-  -d "{\"name\":\"TestStartup_$TIMESTAMP\",\"description\":\"Test description\",\"category_id\":${CATEGORY_ID:-1}}")
+CREATE=$(curl -s -X POST "http://localhost:8000/api/v1/startups/" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"TestStartup_$TIMESTAMP\",\"description\":\"Test description\",\"category_id\":${CATEGORY_ID:-1},\"owner_user_id\":1}")
 
-STARTUP_ID=$(echo "$CREATE" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+STARTUP_ID=$(echo "$CREATE" | grep -o '"startup_id":[0-9]*' | head -1 | cut -d':' -f2)
 [ -n "$STARTUP_ID" ] && [ "$STARTUP_ID" -gt 0 ]
 test_result $? "POST /api/v1/startups/ - Crear startup"
 
@@ -100,7 +102,7 @@ log_section "LECTURA DE STARTUPS"
 # 3. Obtener startup por ID
 if [ -n "$STARTUP_ID" ]; then
     GET=$(curl -s -X GET "http://localhost:8000/api/v1/startups/$STARTUP_ID")
-    echo "$GET" | grep -q "\"id\""
+    echo "$GET" | grep -q "\"startup_id\""
     test_result $? "GET /api/v1/startups/{id} - Obtener startup por ID"
 else
     echo -e "${RED}✗${NC} GET /api/v1/startups/{id} - Obtener startup por ID (sin ID)"
@@ -109,7 +111,7 @@ fi
 
 # 4. Listar startups con paginación
 LIST=$(curl -s -X GET "http://localhost:8000/api/v1/startups/?skip=0&limit=50")
-echo "$LIST" | grep -q "id"
+echo "$LIST" | grep -q "startup_id"
 test_result $? "GET /api/v1/startups/ - Listar startups con paginación"
 
 # 5. Buscar startups
@@ -118,7 +120,7 @@ test_result $? "GET /api/v1/startups/?search= - Buscar startups"
 
 # 6. Obtener total de startups
 TOTAL=$(curl -s -X GET "http://localhost:8000/api/v1/startups/?skip=0&limit=1")
-COUNT=$(echo "$TOTAL" | grep -o '"id"' | wc -l)
+COUNT=$(echo "$TOTAL" | grep -o '"startup_id"' | wc -l)
 test_result $? "GET /api/v1/startups/ - Contar total de startups en BD"
 
 echo ""

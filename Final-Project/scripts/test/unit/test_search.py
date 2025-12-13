@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 BASE_URL_AUTH = "http://localhost:8081/api/v1"
-BASE_URL_API = "http://localhost:8000"
+BASE_URL_API = "http://localhost:8000/api/v1"
 
 # Colores para output
 class Colors:
@@ -54,7 +54,7 @@ def setup_test_data():
     try:
         response = requests.post(f"{BASE_URL_AUTH}/registration", json=reg_data, timeout=10)
         if response.status_code == 200:
-            token = response.text.strip()
+            token = response.json().get("token")
             
             # Confirmar email
             confirm_url = f"{BASE_URL_AUTH}/registration/confirm?token={token}"
@@ -79,17 +79,17 @@ def setup_test_data():
     headers = {"Authorization": f"Bearer {jwt_token}"}
     
     startups_data = [
-        {"name": "AI Vision Platform", "description": "Plataforma de visión artificial con IA", "category_id": 1},
-        {"name": "FinTech Solutions", "description": "Soluciones financieras innovadoras", "category_id": 2},
-        {"name": "EduTech Learning", "description": "Plataforma educativa con IA", "category_id": 3},
-        {"name": "HealthTech AI", "description": "Tecnología de salud con inteligencia artificial", "category_id": 1},
+        {"name": "AI Vision Platform", "description": "Plataforma de visión artificial con IA", "category_id": 1, "owner_user_id": user_id},
+        {"name": "FinTech Solutions", "description": "Soluciones financieras innovadoras", "category_id": 2, "owner_user_id": user_id},
+        {"name": "EduTech Learning", "description": "Plataforma educativa con IA", "category_id": 3, "owner_user_id": user_id},
+        {"name": "HealthTech AI", "description": "Tecnología de salud con inteligencia artificial", "category_id": 1, "owner_user_id": user_id},
     ]
     
     print("\nCreando startups de prueba...")
     for startup_data in startups_data:
         try:
             response = requests.post(
-                f"{BASE_URL_API}/startups/?user_id={user_id}",
+                f"{BASE_URL_API}/startups/",
                 json=startup_data,
                 headers=headers,
                 timeout=10
@@ -110,7 +110,7 @@ def test_search_basic():
     # Buscar por "AI"
     print("\n1.1. BUSCAR STARTUPS CON 'AI'")
     try:
-        response = requests.get(f"{BASE_URL_API}/search?q=AI", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search?q=AI", timeout=10)
         if response.status_code == 200:
             results = response.json()
             total = results.get("total", 0)
@@ -128,7 +128,7 @@ def test_search_basic():
     # Buscar sin término (todas)
     print("\n1.2. LISTAR TODAS LAS STARTUPS")
     try:
-        response = requests.get(f"{BASE_URL_API}/search", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search", timeout=10)
         if response.status_code == 200:
             results = response.json()
             total = results.get("total", 0)
@@ -147,7 +147,7 @@ def test_search_filters():
     # Filtrar por categoría
     print("\n2.1. FILTRAR POR CATEGORÍA")
     try:
-        response = requests.get(f"{BASE_URL_API}/search?categorias=1", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search?categorias=1", timeout=10)
         if response.status_code == 200:
             results = response.json()
             total = results.get("total", 0)
@@ -165,7 +165,7 @@ def test_search_filters():
     # Filtrar por múltiples categorías
     print("\n2.2. FILTRAR POR MÚLTIPLES CATEGORÍAS")
     try:
-        response = requests.get(f"{BASE_URL_API}/search?categorias=1,2", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search?categorias=1,2", timeout=10)
         if response.status_code == 200:
             results = response.json()
             total = results.get("total", 0)
@@ -178,7 +178,7 @@ def test_search_filters():
     # Filtrar por votos mínimos
     print("\n2.3. FILTRAR POR VOTOS MÍNIMOS")
     try:
-        response = requests.get(f"{BASE_URL_API}/search?min_votos=0", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search?min_votos=0", timeout=10)
         if response.status_code == 200:
             results = response.json()
             print_success(f"Filtro por votos exitoso - {results.get('total', 0)} resultados")
@@ -195,15 +195,16 @@ def test_search_sorting():
     
     sort_options = [
         ("relevancia", "RELEVANCIA"),
-        ("votos", "VOTOS"),
-        ("comentarios", "COMENTARIOS"),
-        ("recientes", "RECIENTES")
+        ("votos_asc", "VOTOS_ASC"),
+        ("votos_desc", "VOTOS_DESC"),
+        ("comentarios_asc", "COMENTARIOS_ASC"),
+        ("comentarios_desc", "COMENTARIOS_DESC"),
     ]
     
     for param, name in sort_options:
         print(f"\n3.{sort_options.index((param, name)) + 1}. ORDENAR POR {name}")
         try:
-            response = requests.get(f"{BASE_URL_API}/search?sort_by={param}", timeout=10)
+            response = requests.get(f"{BASE_URL_API}/search-exploration/search?sort_by={param}", timeout=10)
             if response.status_code == 200:
                 results = response.json()
                 print_success(f"Ordenamiento por {name} exitoso")
@@ -220,7 +221,7 @@ def test_search_pagination():
     
     print("\n4.1. OBTENER PRIMERA PÁGINA")
     try:
-        response = requests.get(f"{BASE_URL_API}/search?page=1&limit=2", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search?page=1&limit=2", timeout=10)
         if response.status_code == 200:
             results = response.json()
             page = results.get("page", 0)
@@ -236,7 +237,7 @@ def test_search_pagination():
     
     print("\n4.2. OBTENER SEGUNDA PÁGINA")
     try:
-        response = requests.get(f"{BASE_URL_API}/search?page=2&limit=2", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/search?page=2&limit=2", timeout=10)
         if response.status_code == 200:
             results = response.json()
             print_success(f"Página 2 obtenida")
@@ -253,7 +254,7 @@ def test_autocomplete():
     
     print("\n5.1. AUTOCOMPLETAR 'AI'")
     try:
-        response = requests.get(f"{BASE_URL_API}/autocomplete?q=AI", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/autocomplete?q=AI", timeout=10)
         if response.status_code == 200:
             results = response.json()
             print_success(f"Autocompletado exitoso - {len(results)} sugerencias")
@@ -268,7 +269,7 @@ def test_autocomplete():
     
     print("\n5.2. AUTOCOMPLETAR 'Tech'")
     try:
-        response = requests.get(f"{BASE_URL_API}/autocomplete?q=Tech", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/autocomplete?q=Tech", timeout=10)
         if response.status_code == 200:
             results = response.json()
             print_success(f"Autocompletado exitoso - {len(results)} sugerencias")
@@ -289,7 +290,7 @@ def test_startup_detail():
     
     print(f"\n6.1. OBTENER DETALLE DE STARTUP (ID: {startup_ids[0]})")
     try:
-        response = requests.get(f"{BASE_URL_API}/{startup_ids[0]}", timeout=10)
+        response = requests.get(f"{BASE_URL_API}/search-exploration/{startup_ids[0]}", timeout=10)
         if response.status_code == 200:
             startup = response.json()
             print_success(f"Detalle obtenido: {startup.get('name')}")

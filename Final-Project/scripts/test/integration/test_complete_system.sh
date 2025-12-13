@@ -8,7 +8,9 @@
 #                                                                              #
 ################################################################################
 
-set -e
+# Permitimos que cada verificación falle sin detener todo el script;
+# los resultados se contabilizan con test_result.
+set +e
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -76,24 +78,30 @@ print_header
 
 log_section "1. AUTENTICACIÓN Y GESTIÓN DE USUARIOS"
 
+TEST_EMAIL="testuser_$(date +%s)@test.com"
+TEST_PASSWORD="TestPass123!"
+
 # Registrar usuario
 RESPONSE=$(curl -s -X POST http://localhost:8081/api/v1/registration \
   -H "Content-Type: application/json" \
-  -d '{"firstName":"Test","lastName":"User","email":"testuser_'$(date +%s)'@test.com","password":"TestPass123!"}')
+  -d "{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"${TEST_EMAIL}\",\"password\":\"${TEST_PASSWORD}\"}")
 
-USER_EMAIL=$(echo "$RESPONSE" | grep -o '"email":"[^"]*"' | head -1 | cut -d'"' -f4)
-[ -n "$USER_EMAIL" ]
+REG_TOKEN=$(echo "$RESPONSE" | grep -o '"token":"[^"]*"' | head -1 | cut -d'"' -f4)
+[ -n "$REG_TOKEN" ]
 test_result $? "Registrar usuario"
 
-# Confirmación de email (simular token)
-CONFIRM_TOKEN="test_token_$(date +%s)"
-curl -s -X GET "http://localhost:8081/api/v1/registration/confirm?token=$CONFIRM_TOKEN" > /dev/null 2>&1
-test_result 0 "Acceso a endpoint de confirmación"
+# Confirmación de email usando token real
+if [ -n "$REG_TOKEN" ]; then
+    curl -s -X GET "http://localhost:8081/api/v1/registration/confirm?token=${REG_TOKEN}" > /dev/null 2>&1
+    test_result $? "Confirmar email"
+else
+    test_result 1 "Confirmar email"
+fi
 
-# Login
+# Login con el usuario creado
 LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@starthub.com","password":"Admin123!"}')
+  -d "{\"email\":\"${TEST_EMAIL}\",\"password\":\"${TEST_PASSWORD}\"}")
 
 JWT_TOKEN=$(echo "$LOGIN_RESPONSE" | grep -o '"token":"[^"]*"' | head -1 | cut -d'"' -f4)
 [ -n "$JWT_TOKEN" ]
@@ -119,28 +127,28 @@ log_section "2. GESTIÓN DE STARTUPS"
 
 # Obtener categorías
 CATEGORIES=$(curl -s -X GET http://localhost:8000/api/v1/categories/)
-CATEGORY_ID=$(echo "$CATEGORIES" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+CATEGORY_ID=$(echo "$CATEGORIES" | grep -o '"category_id":[0-9]*' | head -1 | cut -d':' -f2)
 test_result $? "Obtener categorías"
 
 # Crear startup
-CREATE_STARTUP=$(curl -s -X POST "http://localhost:8000/api/v1/startups/?user_id=1" \
+CREATE_STARTUP=$(curl -s -X POST "http://localhost:8000/api/v1/startups/" \
   -H "Content-Type: application/json" \
-  -d "{\"name\":\"TestStartup_$(date +%s)\",\"description\":\"Test description\",\"category_id\":$CATEGORY_ID}")
+  -d "{\"name\":\"TestStartup_$(date +%s)\",\"description\":\"Test description\",\"category_id\":${CATEGORY_ID:-1},\"owner_user_id\":1}")
 
-STARTUP_ID=$(echo "$CREATE_STARTUP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+STARTUP_ID=$(echo "$CREATE_STARTUP" | grep -o '"startup_id":[0-9]*' | head -1 | cut -d':' -f2)
 [ -n "$STARTUP_ID" ] && [ "$STARTUP_ID" -gt 0 ]
 test_result $? "Crear nueva startup"
 
 # Obtener startup por ID
 if [ -n "$STARTUP_ID" ]; then
-    GET_STARTUP=$(curl -s -X GET "http://localhost:8000/api/v1/startups/$STARTUP_ID")
-    echo "$GET_STARTUP" | grep -q "\"id\""
-    test_result $? "Obtener startup por ID"
+  GET_STARTUP=$(curl -s -X GET "http://localhost:8000/api/v1/startups/$STARTUP_ID")
+  echo "$GET_STARTUP" | grep -q "\"startup_id\""
+  test_result $? "Obtener startup por ID"
 fi
 
 # Listar startups
 LIST_STARTUPS=$(curl -s -X GET "http://localhost:8000/api/v1/startups/?skip=0&limit=50")
-echo "$LIST_STARTUPS" | grep -q "id"
+echo "$LIST_STARTUPS" | grep -q "startup_id"
 test_result $? "Listar startups con paginación"
 
 # Buscar startups
@@ -151,11 +159,11 @@ log_section "3. VOTOS"
 
 if [ -n "$STARTUP_ID" ]; then
     # Crear voto (upvote)
-    VOTE=$(curl -s -X POST "http://localhost:8000/api/v1/votes/?user_id=1&startup_id=$STARTUP_ID&is_upvote=true" \
+    VOTE=$(curl -s -X POST "http://localhost:8000/api/v1/votes/?user_id=1" \
       -H "Content-Type: application/json" \
-      -d '{}')
+      -d "{\"startup_id\":$STARTUP_ID,\"vote_type\":\"upvote\"}")
     
-    echo "$VOTE" | grep -q "id\|success"
+    echo "$VOTE" | grep -q "vote_id\|success"
     test_result $? "Crear voto (upvote)"
     
     # Obtener contador de votos
@@ -172,30 +180,30 @@ log_section "4. COMENTARIOS"
 
 if [ -n "$STARTUP_ID" ]; then
     # Crear comentario
-    COMMENT=$(curl -s -X POST "http://localhost:8000/api/v1/comments/?user_id=1&startup_id=$STARTUP_ID" \
+    COMMENT=$(curl -s -X POST "http://localhost:8000/api/v1/comments/?user_id=1" \
       -H "Content-Type: application/json" \
-      -d '{"text":"Test comment from automated test"}')
+      -d "{\"content\":\"Test comment from automated test\",\"startup_id\":$STARTUP_ID}")
     
-    COMMENT_ID=$(echo "$COMMENT" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+    COMMENT_ID=$(echo "$COMMENT" | grep -o '"comment_id":[0-9]*' | head -1 | cut -d':' -f2)
     [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" -gt 0 ]
     test_result $? "Crear comentario"
     
     # Obtener comentarios de la startup
     GET_COMMENTS=$(curl -s -X GET "http://localhost:8000/api/v1/comments/?startup_id=$STARTUP_ID")
-    echo "$GET_COMMENTS" | grep -q "text\|comment"
+    echo "$GET_COMMENTS" | grep -q "content\|comment"
     test_result $? "Obtener comentarios de startup"
     
     # Actualizar comentario
     if [ -n "$COMMENT_ID" ]; then
-        UPDATE_COMMENT=$(curl -s -X PUT "http://localhost:8000/api/v1/comments/$COMMENT_ID" \
+        UPDATE_COMMENT=$(curl -s -X PUT "http://localhost:8000/api/v1/comments/$COMMENT_ID?user_id=1" \
           -H "Content-Type: application/json" \
-          -d '{"text":"Updated test comment"}')
+          -d "{\"content\":\"Updated test comment\"}")
         
-        echo "$UPDATE_COMMENT" | grep -q "Updated\|success\|id"
+        echo "$UPDATE_COMMENT" | grep -q "comment_id"
         test_result $? "Actualizar comentario"
         
         # Eliminar comentario
-        DELETE=$(curl -s -w "\n%{http_code}" -X DELETE "http://localhost:8000/api/v1/comments/$COMMENT_ID")
+        DELETE=$(curl -s -w "\n%{http_code}" -X DELETE "http://localhost:8000/api/v1/comments/$COMMENT_ID?user_id=1")
         HTTP_CODE=$(echo "$DELETE" | tail -1)
         [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "204" ]
         test_result $? "Eliminar comentario"
@@ -207,7 +215,7 @@ log_section "5. RECUPERACIÓN DE CONTRASEÑA"
 # Solicitar recuperación
 RECOVER=$(curl -s -X POST http://localhost:8081/api/v1/auth/recover-password \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@starthub.com"}')
+  -d "{\"email\":\"${TEST_EMAIL}\"}")
 
 test_result $? "Solicitar recuperación de contraseña"
 

@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 BASE_URL_AUTH = "http://localhost:8081/api/v1"
-BASE_URL_API = "http://localhost:8000"
+BASE_URL_API = "http://localhost:8000/api/v1"
 
 # Colores para output
 class Colors:
@@ -55,7 +55,7 @@ def setup_test_user():
     try:
         response = requests.post(f"{BASE_URL_AUTH}/registration", json=reg_data, timeout=10)
         if response.status_code == 200:
-            token = response.text.strip()
+            token = response.json().get("token")
             
             # Confirmación
             confirm_url = f"{BASE_URL_AUTH}/registration/confirm?token={token}"
@@ -81,13 +81,14 @@ def setup_test_user():
     startup_data = {
         "name": "Test Startup Votes & Comments",
         "description": "Startup para probar votos y comentarios",
-        "category_id": 1
+        "category_id": 1,
+        "owner_user_id": user_id
     }
     
     print("Creando startup de prueba...")
     try:
         response = requests.post(
-            f"{BASE_URL_API}/startups/?user_id={user_id}",
+            f"{BASE_URL_API}/startups/",
             json=startup_data,
             headers=headers,
             timeout=10

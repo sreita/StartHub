@@ -109,23 +109,16 @@ This creates:
 - All tables and relationships
 - Sample data (users, startups, comments, votes)
 
-### 5. Setup MailHog (Optional)
+### 5. Start Development Environment
 
 ```bash
-bash scripts/setup_mailhog.sh
-```
-
-MailHog provides email testing without sending real emails.
-
-### 6. Start Development Environment
-
-```bash
-bash scripts/start_all.sh
+bash scripts/docker/start.sh start
 ```
 
 Verify services are running:
 - Frontend: http://localhost:3000
-- FastAPI: http://127.0.0.1:8000/docs
+- FastAPI API Base: http://127.0.0.1:8000/api/v1
+- FastAPI Docs: http://127.0.0.1:8000/docs
 - Spring Boot: http://localhost:8081/api/v1
 - MailHog: http://localhost:8025
 
@@ -289,8 +282,8 @@ public String authenticate(String email, String password) { }
 
 ```javascript
 // Use const/let, not var
-const API_URL = 'http://127.0.0.1:8000';  // ✅ Good
-var API_URL = 'http://127.0.0.1:8000';    // ❌ Bad
+const API_URL = 'http://127.0.0.1:8000/api/v1';  // ✅ Good
+var API_URL = 'http://127.0.0.1:8000/api/v1';    // ❌ Bad
 
 // Arrow functions
 const fetchStartups = async () => {
@@ -339,7 +332,7 @@ LIMIT 10;
 Run all tests:
 ```bash
 # Stop services
-bash scripts/stop_all.sh
+bash scripts/docker/start.sh stop
 
 # Clean state
 cd Database/utilities && bash truncate_all.sh
@@ -349,20 +342,13 @@ bash reload_all.sh
 
 # Start services
 cd ../..
-bash scripts/start_all.sh
+bash scripts/docker/start.sh start
 
 # Wait for services to start
 sleep 10
 
-# Run shell script tests
-bash scripts/test/test_backend.sh
-bash scripts/test/test_frontend.sh
-bash scripts/test/test_all_features.sh
-
-# Run Python test suites
-source .venv/Scripts/activate
-python scripts/test/test_crud_complete.py
-python scripts/test/test_search.py
+# Run consolidated tests
+bash scripts/test/run_all_tests.sh
 ```
 
 ### Writing Tests

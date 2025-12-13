@@ -105,7 +105,7 @@ This document consolidates all differences between the local StartHub project an
 
 #### Root Directory Reorganization
 - Created `STRUCTURE.md` - Complete project structure map
-- Created `SETUP_SUMMARY.txt` - Technical configuration summary
+- Created `SETUP_SUMMARY.md` - Technical configuration summary
 - Translated `README.md` to English (primary reference)
 - Created `INDEX.md` - Documentation index (English)
 
@@ -128,7 +128,7 @@ This document consolidates all differences between the local StartHub project an
 #### Translation Status
 - ✅ `README.md` - English
 - ✅ `STRUCTURE.md` - English
-- ✅ `SETUP_SUMMARY.txt` - English
+- ✅ `SETUP_SUMMARY.md` - English
 - ✅ All documentation in `docs/` - English
 - ✅ All documentation - 100% English
 
@@ -145,7 +145,7 @@ All documentation files have been consolidated and translated to English for con
 Final-Project/ (ROOT)
 ├── README.md                   ✅ Project overview (English)
 ├── STRUCTURE.md                ✅ Directory structure
-├── SETUP_SUMMARY.txt           ✅ Technical summary
+├── SETUP_SUMMARY.md           ✅ Technical summary
 ├── CHANGELOG.md                ✅ This file - all local changes
 ├── docker/                     ✅ Docker Compose configuration
 ├── Database/                   ✅ Schema, seeds, migrations
@@ -162,7 +162,7 @@ Final-Project/ (ROOT)
 │   ├── setup/
 │   │   ├── DOCKER_SETUP.md
 │   │   ├── GETTING_STARTED.md
-│   │   └── SETUP_SUMMARY.txt
+│   │   └── SETUP_SUMMARY.md
 │   ├── scripts/
 │   │   └── DOCKER.md
 │   └── testing/

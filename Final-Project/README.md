@@ -28,50 +28,20 @@ _Project developed for **Software Engineering II** — Universidad Nacional de C
 
 ```
 Final-Project/
+├── docker/                   # Docker Compose and helper wrappers (run-docker.sh/.bat)
 ├── services/
-│   ├── fastapi/                        # Data backend (comments, votes, startups)
-│   │   ├── app/                        # Source code (api/, models/, services/, etc.)
-│   │   ├── alembic/                    # Database migrations
-│   │   ├── requirements.txt
-│   │   └── .env                        # Local configuration (not tracked)
-│   └── spring-auth/                    # JWT authentication service
-│       ├── src/
-│       ├── pom.xml
-│       └── .env                        # Local configuration (not tracked)
-├── frontend/                           # Web interface (HTML/JS/CSS)
-│   ├── js/                             # auth.js, home.js, startup_info.js, navbar.js
-│   ├── css/                            # Styles (base/, components/, layout/, modes/, pages/)
-│   ├── components/                     # Reusable HTML components (navbar)
-│   └── *.html                          # Pages (login, signup, home, profile, etc.)
-├── scripts/                            # Development and testing tools
-│   ├── dev-server.py                   # HTTP server for frontend
-│   ├── start_all.sh                    # Start all services (FastAPI, Spring, Frontend, MailHog)
-│   ├── stop_all.sh                     # Stop all services
-│   ├── *_mailhog.sh                    # MailHog management scripts
-│   └── test/                           # Test suites
-│       ├── test_crud_complete.py       # Complete CRUD test suite
-│       ├── test_users_startups.py      # User & Startup tests
-│       ├── test_votes_comments.py      # Vote & Comment tests
-│       ├── test_search.py              # Search & Filter tests
-│       ├── test_manual.py              # Quick smoke test
-│       ├── test_backend.sh             # Backend validation (legacy)
-│       ├── test_frontend.sh            # Frontend validation (legacy)
-│       └── test_all_features.sh        # Integration tests (legacy)
-├── docs/                               # Technical documentation
-│   ├── MAILHOG.md                      # Email testing setup guide
-│   ├── TESTING_GUIDE.md                # Quick testing reference
-│   ├── INTEGRATION_TESTING.md          # Complete integration test documentation
-│   ├── COMPLETE_MANUAL_TESTING.md      # Detailed testing scenarios
-│   └── TROUBLESHOOTING.md              # Common issues and solutions
-├── Database/                           # MySQL schema and seed scripts
-│   ├── schema/                         # DDL and views
-│   ├── seeds/                          # Sample data
-│   ├── utilities/                      # Maintenance scripts (reload_all.sh, truncate_all.sh)
-│   └── verifiers/                      # Data validation queries
-├── tools/                              # External tools (MailHog - not tracked)
-├── logs/                               # Service logs and PID files (not tracked)
-└──.github/                            # GitHub Actions workflows
-    └── workflows/                      # CI/CD pipelines (ci.yml, java-ci.yml, integration-test.yml)
+│   ├── fastapi/              # Data backend (FastAPI, SQLAlchemy, MySQL)
+│   └── spring-auth/          # Authentication (Spring Boot, JWT)
+├── frontend/                 # Web interface (HTML/JS/CSS)
+├── scripts/
+│   ├── docker/               # Docker orchestration (start.sh, dev.sh, helpers.sh)
+│   └── test/                 # Test suites (run_all_tests.sh, unit/, integration/, e2e/)
+├── docs/                     # Technical docs (INDEX.md, setup/, testing/, project/, ...)
+├── Database/                 # Schema, seeds, utilities, verifiers
+├── tools/                    # External tools (MailHog - not tracked)
+├── logs/                     # Service logs (ignored)
+└── .github/                  # GitHub Actions workflows
+  └── workflows/            # CI/CD pipelines
 ```
 
 ---
@@ -101,7 +71,7 @@ docker compose -f docker/compose.yaml up -d --build
 - **FastAPI Docs**: http://localhost:8000/docs
 - **Spring Boot API**: http://localhost:8081/api/v1
 - **MailHog Email UI**: http://localhost:8025
-- **MySQL**: `localhost:3307` (user: `startHub`, password: `startHub123`)
+- **MySQL**: `localhost:3307` (user: `root`, password: `root`, database: `starthub_db`)
 
 **Useful Docker Commands:**
 ```bash
@@ -200,7 +170,7 @@ MailHog provides a fake SMTP server for testing email functionality without send
 ### 5. Start All Services
 
 ```bash
-bash scripts/start_all.sh
+bash scripts/docker/start.sh start
 ```
 
 This starts:
@@ -212,12 +182,13 @@ This starts:
 **Access the Application**:
 - **Frontend**: http://localhost:3000
 - **FastAPI Docs** (Swagger): http://127.0.0.1:8000/docs
+- **FastAPI Base**: http://127.0.0.1:8000/api/v1
 - **Spring Boot API**: http://localhost:8081/api/v1
 - **MailHog UI**: http://localhost:8025
 
 **Stop All Services**:
 ```bash
-bash scripts/stop_all.sh
+bash scripts/docker/start.sh stop
 ```
 
 ---
@@ -240,7 +211,7 @@ Base URL: `http://localhost:8081/api/v1`
 
 ### Endpoints
 
-- `POST /registration` - Register new user
+- `POST /api/v1/registration` - Register new user
   ```bash
   curl -X POST http://localhost:8081/api/v1/registration \
     -H "Content-Type: application/json" \
@@ -252,48 +223,48 @@ Base URL: `http://localhost:8081/api/v1`
     }'
   ```
 
-- `GET /registration/confirm?token=...` - Confirm email address
-- `POST /auth/login` - Login (returns JWT token)
+- `GET /api/v1/registration/confirm?token=...` - Confirm email address
+- `POST /api/v1/auth/login` - Login (returns JWT token)
   ```bash
   curl -X POST http://localhost:8081/api/v1/auth/login \
     -H "Content-Type: application/json" \
     -d '{"email": "john.doe@example.com", "password": "SecurePass123!"}'
   ```
 
-- `POST /auth/logout` - Logout
-- `POST /auth/recover-password` - Request password reset
-- `POST /auth/reset-password` - Reset password with token
+- `POST /api/v1/auth/logout` - Logout
+- `POST /api/v1/auth/recover-password` - Request password reset
+- `POST /api/v1/auth/reset-password` - Reset password with token
 
 ---
 
 ## 📊 Data API (FastAPI - Port 8000)
 
-Base URL: `http://127.0.0.1:8000`
+Base URL: `http://127.0.0.1:8000/api/v1`
 
 Interactive documentation: http://127.0.0.1:8000/docs
 
 ### Startup Endpoints
 
-- `GET /startups` - List all startups
-- `GET /startups/{id}` - Get startup details
-- `POST /startups?user_id={id}` - Create new startup
-- `PUT /startups/{id}?user_id={id}` - Update startup
-- `DELETE /startups/{id}?user_id={id}` - Delete startup
-- `GET /startups/my-startups?user_id={id}` - Get user's startups
-- `GET /startups/search?q=...&categorias=...&sort_by=...` - Search and filter startups
+- `GET /api/v1/startups` - List all startups
+- `GET /api/v1/startups/{id}` - Get startup details
+- `POST /api/v1/startups` - Create new startup (requires auth; body includes `owner_user_id`)
+- `PUT /api/v1/startups/{id}` - Update startup (requires auth)
+- `DELETE /api/v1/startups/{id}` - Delete startup (requires auth)
+- `GET /api/v1/startups/my-startups` - Get user's startups (requires auth)
+- `GET /api/v1/search-exploration/search?q=...&categorias=...&sort_by=...` - Search and filter startups
 
 ### Comment Endpoints
 
-- `GET /comments?startup_id={id}` - List comments for a startup
-- `POST /comments?user_id={id}` - Create comment
-- `PUT /comments/{id}?user_id={id}` - Update comment
-- `DELETE /comments/{id}?user_id={id}` - Delete comment
+- `GET /api/v1/comments?startup_id={id}` - List comments for a startup (optional filter)
+- `POST /api/v1/comments?user_id={id}` - Create comment for a startup (requires auth)
+- `PUT /api/v1/comments/{id}?user_id={id}` - Update a comment (requires auth + ownership)
+- `DELETE /api/v1/comments/{id}?user_id={id}` - Delete a comment (requires auth + ownership)
 
 ### Vote Endpoints
 
-- `GET /votes/count/{startup_id}` - Get vote counts (upvotes/downvotes)
-- `POST /votes?user_id={id}` - Vote on startup (upvote/downvote)
-- `DELETE /votes?user_id={id}&startup_id={id}` - Remove vote
+- `GET /api/v1/votes/count/{startup_id}` - Get vote counts (upvotes/downvotes)
+- `POST /api/v1/votes?user_id={id}` - Upsert vote on a startup (`vote_type`: `upvote` or `downvote`; requires auth)
+- `DELETE /api/v1/votes?user_id={id}&startup_id={id}` - Remove vote (requires auth)
 
 ### Health Check
 
@@ -304,21 +275,28 @@ Interactive documentation: http://127.0.0.1:8000/docs
 
 ## 🧪 Testing
 
-### Comprehensive Python Test Suites
+### Comprehensive Test Suites
 
-StartHub includes complete test coverage in `scripts/test/`:
+Run the curated test suites from `scripts/test/`:
 
 ```bash
-# Complete CRUD test suite (recommended)
-python scripts/test/test_crud_complete.py
+# All tests
+bash scripts/test/run_all_tests.sh
 
-# Specific feature tests
-python scripts/test/test_users_startups.py    # User & Startup operations
-python scripts/test/test_votes_comments.py    # Votes & Comments
-python scripts/test/test_search.py            # Search & Filters
+# Integration suites
+bash scripts/test/integration/test_complete_system.sh
+bash scripts/test/integration/test_authentication.sh
+bash scripts/test/integration/test_startups.sh
+bash scripts/test/integration/test_interactions.sh
+
+# Unit suites
+python scripts/test/unit/test_crud_complete.py
+python scripts/test/unit/test_users_startups.py
+python scripts/test/unit/test_votes_comments.py
+python scripts/test/unit/test_search.py
 
 # Quick smoke test
-python scripts/test/test_manual.py
+python scripts/test/unit/test_manual.py
 ```
 
 **Test Coverage**:
@@ -329,25 +307,10 @@ python scripts/test/test_manual.py
 - ✅ Search (Keyword, Categories, Filters, Sorting, Pagination, Autocomplete)
 - ✅ User deletion and post-deletion verification
 
-### Legacy Shell Script Tests
-
-```bash
-# Backend service validation
-bash scripts/test/test_backend.sh
-
-# Frontend resources validation
-bash scripts/test/test_frontend.sh
-
-# Integration test suite
-bash scripts/test/test_all_features.sh
-```
-
 ### Manual Testing
 
 See comprehensive guides in `docs/`:
 - [Testing Guide](docs/testing/TESTING_GUIDE.md) - Quick reference with all test commands
-- [Integration Testing](docs/testing/INTEGRATION_TESTING.md) - Complete integration test documentation
-- [Complete Manual Testing](docs/testing/COMPLETE_MANUAL_TESTING.md) - Detailed scenarios
 - [Troubleshooting](docs/project/TROUBLESHOOTING.md) - Common issues
 
 ---
@@ -356,7 +319,7 @@ See comprehensive guides in `docs/`:
 
 StartHub uses MailHog for email testing in development:
 
-1. **Start MailHog**: `bash scripts/start_mailhog.sh`
+1. **Start services (includes MailHog)**: `bash scripts/docker/start.sh start`
 2. **Open Web UI**: http://localhost:8025
 3. **Register a user** on the application
 4. **Check MailHog** to see the confirmation email
@@ -554,21 +517,20 @@ services/spring-auth/
 
 ### Development Workflow
 
-1. Make sure all services are stopped: `bash scripts/stop_all.sh`
+1. Make sure all services are stopped: `bash scripts/docker/start.sh stop`
 2. Create your `.env` files from `.env.example` templates
 3. Setup the database: `bash Database/utilities/reload_all.sh`
-4. Start all services: `bash scripts/start_all.sh`
+4. Start all services: `bash scripts/docker/start.sh start`
 5. Run tests before committing:
-   ```bash
-   bash scripts/test_backend.sh
-   bash scripts/test_frontend.sh
-   ```
+  ```bash
+  bash scripts/test/run_all_tests.sh
+  ```
 
 ---
 
 ## 📄 License
 
-This project is educational software developed for Software Engineering II course at Universidad del Norte.
+This project is educational software developed for Software Engineering II course at Universidad Nacional de Colombia. Licensed under the GNU General Public License v3.0. See [LICENSE](../LICENSE) for full terms.
 
 ---
 
@@ -577,14 +539,15 @@ This project is educational software developed for Software Engineering II cours
 If you encounter issues:
 
 1. Check [Troubleshooting Guide](docs/project/TROUBLESHOOTING.md)
-2. Run diagnostic scripts: `bash scripts/test_backend.sh`
-3. Check service logs in `logs/` directory
-4. Verify all prerequisites are installed
+2. Verify services: `bash scripts/docker/start.sh status`
+3. Check logs: `bash scripts/docker/start.sh logs <service>`
+4. Run the full test suite: `bash scripts/test/run_all_tests.sh`
+5. Verify all prerequisites are installed
 
 For MailHog issues, see [MailHog Documentation](docs/services/MAILHOG.md).
 
 ---
 
-**Last Updated**: November 28, 2025  
+**Last Updated**: December 12, 2025  
 **Version**: 2.0  
 **Status**: ✅ All services operational

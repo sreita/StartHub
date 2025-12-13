@@ -24,8 +24,8 @@ Once started, access:
 | Service | URL | Description |
 |---------|-----|-------------|
 | **Frontend** | http://localhost:3000 | Web application |
-| **Spring Boot** | http://localhost:8081 | Authentication API |
-| **FastAPI** | http://localhost:8000 | Startups API |
+| **Spring Boot** | http://localhost:8081/api/v1 | Authentication API |
+| **FastAPI** | http://localhost:8000/api/v1 | Data API |
 | **MailHog** | http://localhost:8025 | Email testing |
 
 ---

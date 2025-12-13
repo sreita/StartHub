@@ -8,7 +8,9 @@
 #                                                                              #
 ################################################################################
 
-set -e
+# Permitimos que cada verificación falle sin detener todo el script;
+# los resultados se contabilizan con test_result.
+set +e
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -78,7 +80,7 @@ log_section "CONFIGURACIÓN: OBTENER STARTUP DE PRUEBA"
 
 # Obtener una startup de prueba
 STARTUP=$(curl -s -X GET "http://localhost:8000/api/v1/startups/?skip=0&limit=1")
-STARTUP_ID=$(echo "$STARTUP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+STARTUP_ID=$(echo "$STARTUP" | grep -o '"startup_id":[0-9]*' | head -1 | cut -d':' -f2)
 
 if [ -z "$STARTUP_ID" ]; then
     echo -e "${RED}No hay startups disponibles. Crear una primero.${NC}"
@@ -90,11 +92,11 @@ echo -e "Usando startup ID: ${YELLOW}$STARTUP_ID${NC}"
 log_section "VOTOS"
 
 # 1. Crear voto (upvote)
-VOTE=$(curl -s -X POST "http://localhost:8000/api/v1/votes/?user_id=1&startup_id=$STARTUP_ID&is_upvote=true" \
-  -H "Content-Type: application/json" \
-  -d '{}')
+VOTE=$(curl -s -X POST "http://localhost:8000/api/v1/votes/?user_id=1" \
+    -H "Content-Type: application/json" \
+    -d "{\"startup_id\":$STARTUP_ID,\"vote_type\":\"upvote\"}")
 
-echo "$VOTE" | grep -q "id\|success" || test_result $? "POST /api/v1/votes/ - Crear voto (upvote)"
+echo "$VOTE" | grep -q "vote_id\|success"
 test_result $? "POST /api/v1/votes/ - Crear voto (upvote)"
 
 # 2. Obtener contador de votos
@@ -109,27 +111,27 @@ test_result $? "GET /api/v1/votes/user/{id} - Obtener votos del usuario"
 log_section "COMENTARIOS"
 
 # 4. Crear comentario
-COMMENT=$(curl -s -X POST "http://localhost:8000/api/v1/comments/?user_id=1&startup_id=$STARTUP_ID" \
-  -H "Content-Type: application/json" \
-  -d '{"text":"Test comment from automated test"}')
+COMMENT=$(curl -s -X POST "http://localhost:8000/api/v1/comments/?user_id=1" \
+    -H "Content-Type: application/json" \
+    -d "{\"content\":\"Test comment from automated test\",\"startup_id\":$STARTUP_ID}")
 
-COMMENT_ID=$(echo "$COMMENT" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+COMMENT_ID=$(echo "$COMMENT" | grep -o '"comment_id":[0-9]*' | head -1 | cut -d':' -f2)
 [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" -gt 0 ]
 test_result $? "POST /api/v1/comments/ - Crear comentario"
 
 # 5. Obtener comentarios de la startup
 COMMENTS=$(curl -s -X GET "http://localhost:8000/api/v1/comments/?startup_id=$STARTUP_ID")
-echo "$COMMENTS" | grep -q "text\|comment"
+echo "$COMMENTS" | grep -q "content\|comment"
 test_result $? "GET /api/v1/comments/ - Obtener comentarios de startup"
 
 # 6. Actualizar comentario
 if [ -n "$COMMENT_ID" ]; then
-    UPDATE_COMMENT=$(curl -s -X PUT "http://localhost:8000/api/v1/comments/$COMMENT_ID" \
-      -H "Content-Type: application/json" \
-      -d '{"text":"Updated test comment"}')
+        UPDATE_COMMENT=$(curl -s -X PUT "http://localhost:8000/api/v1/comments/$COMMENT_ID?user_id=1" \
+            -H "Content-Type: application/json" \
+            -d "{\"content\":\"Updated test comment\"}")
     
-    echo "$UPDATE_COMMENT" | grep -q "Updated\|success\|id"
-    test_result $? "PUT /api/v1/comments/{id} - Actualizar comentario"
+        echo "$UPDATE_COMMENT" | grep -q "comment_id"
+        test_result $? "PUT /api/v1/comments/{id} - Actualizar comentario"
 else
     echo -e "${RED}✗${NC} PUT /api/v1/comments/{id} - Actualizar comentario (sin ID)"
     ((TESTS_FAILED++))
@@ -137,7 +139,7 @@ fi
 
 # 7. Eliminar comentario
 if [ -n "$COMMENT_ID" ]; then
-    DELETE=$(curl -s -w "\n%{http_code}" -X DELETE "http://localhost:8000/api/v1/comments/$COMMENT_ID")
+    DELETE=$(curl -s -w "\n%{http_code}" -X DELETE "http://localhost:8000/api/v1/comments/$COMMENT_ID?user_id=1")
     HTTP_CODE=$(echo "$DELETE" | tail -1)
     [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "204" ]
     test_result $? "DELETE /api/v1/comments/{id} - Eliminar comentario"

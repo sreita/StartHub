@@ -8,7 +8,9 @@
 #                                                                              #
 ################################################################################
 
-set -e
+# Permitimos que cada verificación falle sin detener todo el script;
+# los resultados se contabilizan con test_result.
+set +e
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -78,21 +80,34 @@ log_section "ENDPOINTS DE AUTENTICACIÓN"
 
 # 1. Registro
 TIMESTAMP=$(date +%s)
+TEST_EMAIL="testuser_${TIMESTAMP}@test.com"
+TEST_PASSWORD="TestPass123!"
 REGISTER=$(curl -s -X POST http://localhost:8081/api/v1/registration \
   -H "Content-Type: application/json" \
-  -d "{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"testuser_$TIMESTAMP@test.com\",\"password\":\"TestPass123!\"}")
+  -d "{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"${TEST_EMAIL}\",\"password\":\"${TEST_PASSWORD}\"}")
 
 echo "$REGISTER" | grep -q "email"
 test_result $? "POST /api/v1/registration - Registrar usuario"
 
+# Extraer token de confirmación devuelto por el registro
+REG_TOKEN=$(echo "$REGISTER" | grep -o '"token":"[^"]*"' | head -1 | cut -d'"' -f4)
+if [ -z "$REG_TOKEN" ]; then
+  echo -e "${RED}✗${NC} No se pudo obtener token de confirmación"
+  ((TESTS_FAILED++))
+fi
+
 # 2. Confirmación de email
-curl -s -X GET "http://localhost:8081/api/v1/registration/confirm?token=test_token" > /dev/null
-test_result $? "GET /api/v1/registration/confirm - Confirmar email"
+if [ -n "$REG_TOKEN" ]; then
+  curl -s -X GET "http://localhost:8081/api/v1/registration/confirm?token=${REG_TOKEN}" > /dev/null
+  test_result $? "GET /api/v1/registration/confirm - Confirmar email"
+else
+  test_result 1 "GET /api/v1/registration/confirm - Confirmar email"
+fi
 
 # 3. Login
 LOGIN=$(curl -s -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@starthub.com","password":"Admin123!"}')
+  -d "{\"email\":\"${TEST_EMAIL}\",\"password\":\"${TEST_PASSWORD}\"}")
 
 JWT_TOKEN=$(echo "$LOGIN" | grep -o '"token":"[^"]*"' | head -1 | cut -d'"' -f4)
 [ -n "$JWT_TOKEN" ]

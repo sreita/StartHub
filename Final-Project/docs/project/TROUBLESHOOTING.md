@@ -8,7 +8,7 @@ Common issues and solutions for the StartHub platform.
 
 ### Services Won't Start
 
-**Symptom**: `bash scripts/start_all.sh` fails or services don't respond.
+**Symptom**: `bash scripts/docker/start.sh start` fails or services don't respond.
 
 **Diagnostic Steps**:
 ```bash
@@ -27,7 +27,7 @@ tail -n 50 logs/spring.log
 **Solutions**:
 1. Stop all services first:
    ```bash
-   bash scripts/stop_all.sh
+   bash scripts/docker/start.sh stop
    ```
 
 2. Kill any stuck processes:
@@ -41,7 +41,7 @@ tail -n 50 logs/spring.log
 
 3. Restart services:
    ```bash
-   bash scripts/start_all.sh
+   bash scripts/docker/start.sh start
    ```
 
 ---
@@ -303,8 +303,9 @@ http://localhost:3000/home.html
 
 3. **Use correct URLs**:
    - Frontend: `http://localhost:3000`
-   - FastAPI: `http://127.0.0.1:8000`
-   - Spring Boot: `http://localhost:8081`
+   - FastAPI API Base: `http://127.0.0.1:8000/api/v1`
+   - FastAPI Docs: `http://127.0.0.1:8000/docs`
+   - Spring Boot: `http://localhost:8081/api/v1`
 
 ---
 
@@ -315,7 +316,7 @@ http://localhost:3000/home.html
 **Diagnostic Steps**:
 ```bash
 # Test FastAPI directly
-curl http://127.0.0.1:8000/startups
+curl http://127.0.0.1:8000/api/v1/startups
 
 # Check database has data
 mysql -u root -p starthub -e "SELECT COUNT(*) FROM Startup;"
@@ -334,7 +335,7 @@ mysql -u root -p starthub -e "SELECT COUNT(*) FROM Startup;"
 3. **Verify API URLs in JavaScript**:
    ```javascript
    // frontend/js/home.js
-   const API_BASE_URL = 'http://127.0.0.1:8000';
+   const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
    ```
 
 ---
@@ -431,14 +432,13 @@ mysql -u root -p starthub -e "SELECT COUNT(*) FROM Startup;"
 
 **Solution**: Start services first:
 ```bash
-bash scripts/start_all.sh
+bash scripts/docker/start.sh start
 
 # Wait 10 seconds for services to start
 sleep 10
 
 # Run tests
-bash scripts/test_backend.sh
-bash scripts/test_frontend.sh
+bash scripts/test/run_all_tests.sh
 ```
 
 ---
@@ -591,7 +591,7 @@ git commit -m "Remove .env files from tracking"
 
 1. **Stop all services**:
    ```bash
-   bash scripts/stop_all.sh
+   bash scripts/docker/start.sh stop
    ```
 
 2. **Clean everything**:
@@ -621,7 +621,7 @@ git commit -m "Remove .env files from tracking"
 
 6. **Restart everything**:
    ```bash
-   bash scripts/start_all.sh
+   bash scripts/docker/start.sh start
    ```
 
 ---
@@ -639,15 +639,11 @@ If none of these solutions work:
 
 2. **Run diagnostic scripts**:
    ```bash
-   # Shell script tests
-   bash scripts/test/test_backend.sh
-   bash scripts/test/test_frontend.sh
-   bash scripts/test/test_all_features.sh
-   
-   # Python test suites
-   source .venv/Scripts/activate
-   python scripts/test/test_crud_complete.py
-   python scripts/test/test_manual.py  # Quick smoke test
+   # Full test suite
+   bash scripts/test/run_all_tests.sh
+
+   # Quick smoke test
+   python scripts/test/unit/test_manual.py
    ```
 
 3. **Check documentation**:

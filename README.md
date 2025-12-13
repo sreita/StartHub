@@ -43,11 +43,9 @@ Final-Project/
 │   ├── css/                            # Styles (base/, components/, layout/, modes/, pages/)
 │   ├── components/                     # Reusable HTML components (navbar)
 │   └── *.html                          # Pages (login, signup, home, profile, etc.)
-├── scripts/                            # Development and testing tools
-│   ├── dev-server.py                   # HTTP server for frontend
-│   ├── start_all.sh                    # Start all services (FastAPI, Spring, Frontend, MailHog)
-│   ├── stop_all.sh                     # Stop all services
-│   ├── *_mailhog.sh                    # MailHog management scripts
+├── scripts/                            # Development, Docker, and testing tools
+│   ├── docker/                         # Docker orchestrators (start.sh, dev.sh, helpers.sh)
+│   ├── dev-server.py                   # HTTP server for frontend (legacy)
 │   └── test/                           # Test suites
 │       ├── test_crud_complete.py       # Complete CRUD test suite
 │       ├── test_users_startups.py      # User & Startup tests
@@ -200,7 +198,7 @@ MailHog provides a fake SMTP server for testing email functionality without send
 ### 5. Start All Services
 
 ```bash
-bash scripts/start_all.sh
+bash scripts/docker/start.sh start
 ```
 
 This starts:
@@ -212,12 +210,13 @@ This starts:
 **Access the Application**:
 - **Frontend**: http://localhost:3000
 - **FastAPI Docs** (Swagger): http://127.0.0.1:8000/docs
+- **FastAPI Base**: http://127.0.0.1:8000/api/v1
 - **Spring Boot API**: http://localhost:8081/api/v1
 - **MailHog UI**: http://localhost:8025
 
 **Stop All Services**:
 ```bash
-bash scripts/stop_all.sh
+bash scripts/docker/start.sh stop
 ```
 
 ---
@@ -268,32 +267,32 @@ Base URL: `http://localhost:8081/api/v1`
 
 ## 📊 Data API (FastAPI - Port 8000)
 
-Base URL: `http://127.0.0.1:8000`
+Base URL: `http://127.0.0.1:8000/api/v1`
 
 Interactive documentation: http://127.0.0.1:8000/docs
 
 ### Startup Endpoints
 
-- `GET /startups` - List all startups
-- `GET /startups/{id}` - Get startup details
-- `POST /startups?user_id={id}` - Create new startup
-- `PUT /startups/{id}?user_id={id}` - Update startup
-- `DELETE /startups/{id}?user_id={id}` - Delete startup
-- `GET /startups/my-startups?user_id={id}` - Get user's startups
-- `GET /startups/search?q=...&categorias=...&sort_by=...` - Search and filter startups
+- `GET /api/v1/startups` - List all startups
+- `GET /api/v1/startups/{id}` - Get startup details
+- `POST /api/v1/startups` - Create new startup (requires auth; body includes `owner_user_id`)
+- `PUT /api/v1/startups/{id}?user_id={id}` - Update startup
+- `DELETE /api/v1/startups/{id}?user_id={id}` - Delete startup
+- `GET /api/v1/startups/my-startups` - Get user's startups
+- `GET /api/v1/search-exploration/search?q=...&categorias=...&sort_by=...` - Search and filter startups
 
 ### Comment Endpoints
 
-- `GET /comments?startup_id={id}` - List comments for a startup
-- `POST /comments?user_id={id}` - Create comment
-- `PUT /comments/{id}?user_id={id}` - Update comment
-- `DELETE /comments/{id}?user_id={id}` - Delete comment
+- `GET /api/v1/comments?startup_id={id}` - List comments for a startup
+- `POST /api/v1/comments?user_id={id}` - Create comment
+- `PUT /api/v1/comments/{id}?user_id={id}` - Update comment
+- `DELETE /api/v1/comments/{id}?user_id={id}` - Delete comment
 
 ### Vote Endpoints
 
-- `GET /votes/count/{startup_id}` - Get vote counts (upvotes/downvotes)
-- `POST /votes?user_id={id}` - Vote on startup (upvote/downvote)
-- `DELETE /votes?user_id={id}&startup_id={id}` - Remove vote
+- `GET /api/v1/votes/count/{startup_id}` - Get vote counts (upvotes/downvotes)
+- `POST /api/v1/votes?user_id={id}` - Vote on startup (upvote/downvote)
+- `DELETE /api/v1/votes?user_id={id}&startup_id={id}` - Remove vote
 
 ### Health Check
 
@@ -304,21 +303,28 @@ Interactive documentation: http://127.0.0.1:8000/docs
 
 ## 🧪 Testing
 
-### Comprehensive Python Test Suites
+### Comprehensive Test Suites
 
-StartHub includes complete test coverage in `scripts/test/`:
+Run the curated test suites from `scripts/test/`:
 
 ```bash
-# Complete CRUD test suite (recommended)
-python scripts/test/test_crud_complete.py
+# All tests
+bash scripts/test/run_all_tests.sh
 
-# Specific feature tests
-python scripts/test/test_users_startups.py    # User & Startup operations
-python scripts/test/test_votes_comments.py    # Votes & Comments
-python scripts/test/test_search.py            # Search & Filters
+# Integration suites
+bash scripts/test/integration/test_complete_system.sh
+bash scripts/test/integration/test_authentication.sh
+bash scripts/test/integration/test_startups.sh
+bash scripts/test/integration/test_interactions.sh
+
+# Unit suites
+python scripts/test/unit/test_crud_complete.py
+python scripts/test/unit/test_users_startups.py
+python scripts/test/unit/test_votes_comments.py
+python scripts/test/unit/test_search.py
 
 # Quick smoke test
-python scripts/test/test_manual.py
+python scripts/test/unit/test_manual.py
 ```
 
 **Test Coverage**:
@@ -329,25 +335,10 @@ python scripts/test/test_manual.py
 - ✅ Search (Keyword, Categories, Filters, Sorting, Pagination, Autocomplete)
 - ✅ User deletion and post-deletion verification
 
-### Legacy Shell Script Tests
-
-```bash
-# Backend service validation
-bash scripts/test/test_backend.sh
-
-# Frontend resources validation
-bash scripts/test/test_frontend.sh
-
-# Integration test suite
-bash scripts/test/test_all_features.sh
-```
-
 ### Manual Testing
 
 See comprehensive guides in `docs/`:
 - [Testing Guide](docs/testing/TESTING_GUIDE.md) - Quick reference with all test commands
-- [Integration Testing](docs/testing/INTEGRATION_TESTING.md) - Complete integration test documentation
-- [Complete Manual Testing](docs/testing/COMPLETE_MANUAL_TESTING.md) - Detailed scenarios
 - [Troubleshooting](docs/project/TROUBLESHOOTING.md) - Common issues
 
 ---
@@ -356,7 +347,7 @@ See comprehensive guides in `docs/`:
 
 StartHub uses MailHog for email testing in development:
 
-1. **Start MailHog**: `bash scripts/start_mailhog.sh`
+1. **Start services (includes MailHog)**: `bash scripts/docker/start.sh start`
 2. **Open Web UI**: http://localhost:8025
 3. **Register a user** on the application
 4. **Check MailHog** to see the confirmation email
@@ -554,15 +545,17 @@ services/spring-auth/
 
 ### Development Workflow
 
-1. Make sure all services are stopped: `bash scripts/stop_all.sh`
+1. Make sure all services are stopped: `bash scripts/docker/start.sh stop`
 2. Create your `.env` files from `.env.example` templates
 3. Setup the database: `bash Database/utilities/reload_all.sh`
-4. Start all services: `bash scripts/start_all.sh`
+4. Start all services: `bash scripts/docker/start.sh start`
 5. Run tests before committing:
-   ```bash
-   bash scripts/test_backend.sh
-   bash scripts/test_frontend.sh
-   ```
+  ```bash
+  python scripts/test/unit/test_crud_complete.py
+  python scripts/test/unit/test_users_startups.py
+  python scripts/test/unit/test_votes_comments.py
+  python scripts/test/unit/test_search.py
+  ```
 
 ---
 

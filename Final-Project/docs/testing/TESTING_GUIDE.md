@@ -6,7 +6,7 @@ Complete testing guide with automated test suites and manual testing procedures.
 
 - Start all services: `bash scripts/docker/start.sh start`
 - Stop all services: `bash scripts/docker/start.sh stop`
-- Smoke test (health checks): `python scripts/test/test_manual.py`
+- Smoke test (health checks): `python scripts/test/unit/test_manual.py`
 
 ---
 

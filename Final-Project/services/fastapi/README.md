@@ -4,68 +4,71 @@ Python (FastAPI) backend service implementing data management for startups, comm
 
 ---
 
-## 📋 Overview
+## 📡 API Endpoints
 
-This service provides a RESTful API for all data operations in StartHub. It connects to a MySQL database and exposes endpoints for:
+Base path for data API: `/api/v1`
 
-- **Startups**: CRUD operations, search, and filtering
-- **Comments**: Create, read, update, delete comments on startups
-- **Votes**: Upvote/downvote startups
-- **Categories**: List available categories
-- **Search**: Advanced search with filters and sorting
+### Startup Endpoints
 
----
+```bash
+# List all startups
+GET /api/v1/startups
 
-## 🏗️ Project Structure
+# Get startup by ID
+GET /api/v1/startups/{startup_id}
 
+# Get user's startups
+GET /api/v1/startups/my-startups?user_id={user_id}
+
+# Create startup (body includes owner_user_id)
+POST /api/v1/startups
+Content-Type: application/json
+{
+  "name": "My Startup",
+  "description": "Description here",
+  "category_id": 1,
+  "funding_goal": 50000.0,
+  "website": "https://example.com",
+  "owner_user_id": 1
+}
+
+# Update startup
+PUT /api/v1/startups/{startup_id}?user_id={user_id}
+Content-Type: application/json
+{
+  "name": "Updated Name",
+  "description": "Updated description"
+}
+
+# Delete startup
+DELETE /api/v1/startups/{startup_id}?user_id={user_id}
+
+# List categories
+GET /api/v1/startups/categories/list
 ```
-services/fastapi/
-├── app/
-│   ├── main.py                  # Application entry point
-│   ├── core/
-│   │   └── config.py            # Environment configuration
-│   ├── db/
-│   │   ├── base.py              # SQLAlchemy base
-│   │   └── session.py           # Database session management
-│   ├── models/                  # SQLAlchemy ORM models
-│   │   ├── __init__.py
-│   │   ├── comment.py
-│   │   ├── vote.py
-│   │   ├── startup.py
-│   │   ├── user.py
-│   │   └── search.py
-│   ├── schemas/                 # Pydantic request/response schemas
-│   │   ├── comment.py
-│   │   ├── vote.py
-│   │   └── startup.py
-│   ├── repositories/            # Data access layer
-│   │   ├── comment_repository.py
-│   │   ├── vote_repository.py
-│   │   └── startup_repository.py
-│   ├── services/                # Business logic
-│   │   ├── comment_service.py
-│   │   ├── vote_service.py
-│   │   └── search_service.py
-│   └── api/                     # API routes
-│       ├── router.py
-│       └── routes/
-│           ├── comments.py
-│           ├── votes.py
-│           ├── startups.py
-│           ├── search.py
-│           └── dev.py
-├── alembic/                     # Database migrations
-│   ├── env.py
-│   └── versions/
-│       └── 20251118_000001_init_comments_votes.py
-├── tests/                       # Unit tests
-│   ├── conftest.py
-│   ├── test_comments_votes.py
-│   └── test_errors_comments_votes.py
-├── alembic.ini                  # Alembic configuration
-├── requirements.txt             # Python dependencies
-├── .env                         # Local configuration (not tracked)
-└── .env.example                 # Environment template
+
+### Comment Endpoints
+
+```bash
+GET /api/v1/comments?startup_id={startup_id}&skip=0&limit=50
+POST /api/v1/comments?user_id={user_id}
+PUT /api/v1/comments/{comment_id}?user_id={user_id}
+DELETE /api/v1/comments/{comment_id}?user_id={user_id}
+```
+
+### Vote Endpoints
+
+```bash
+GET /api/v1/votes/count/{startup_id}
+POST /api/v1/votes?user_id={user_id}
+DELETE /api/v1/votes?user_id={user_id}&startup_id={startup_id}
+```
+
+### Search Endpoints
+
+```bash
+GET /api/v1/search-exploration/search?q=tech&categorias=1&sort_by=votos_desc
+GET /api/v1/search-exploration/autocomplete?q=fin
 ```
 
 ---
@@ -183,113 +186,6 @@ curl http://127.0.0.1:8000/health/db
 # {"ok": true, "result": 1}
 ```
 
----
-
-## 📡 API Endpoints
-
-### Startup Endpoints
-
-```bash
-# List all startups
-GET /startups
-
-# Get startup by ID
-GET /startups/{startup_id}
-
-# Get user's startups
-GET /startups/my-startups?user_id={user_id}
-
-# Create startup
-POST /startups?user_id={user_id}
-Content-Type: application/json
-{
-  "name": "My Startup",
-  "description": "Description here",
-  "category_id": 1,
-  "funding_goal": 50000.0,
-  "website": "https://example.com",
-  "email": "contact@example.com"
-}
-
-# Update startup
-PUT /startups/{startup_id}?user_id={user_id}
-Content-Type: application/json
-{
-  "name": "Updated Name",
-  "description": "Updated description"
-}
-
-# Delete startup
-DELETE /startups/{startup_id}?user_id={user_id}
-```
-
-### Comment Endpoints
-
-```bash
-# List comments for a startup
-GET /comments?startup_id={startup_id}&skip=0&limit=50
-
-# Create comment
-POST /comments?user_id={user_id}
-Content-Type: application/json
-{
-  "startup_id": 1,
-  "content": "Great idea!"
-}
-
-# Update comment
-PUT /comments/{comment_id}?user_id={user_id}
-Content-Type: application/json
-{
-  "content": "Updated comment text"
-}
-
-# Delete comment
-DELETE /comments/{comment_id}?user_id={user_id}
-```
-
-### Vote Endpoints
-
-```bash
-# Get vote counts for a startup
-GET /votes/count/{startup_id}
-# Returns: {"upvotes": 5, "downvotes": 2}
-
-# Vote on startup (upsert - creates or updates)
-POST /votes?user_id={user_id}
-Content-Type: application/json
-{
-  "startup_id": 1,
-  "vote_type": "upvote"  # or "downvote"
-}
-
-# Delete vote
-DELETE /votes?user_id={user_id}&startup_id={startup_id}
-```
-
-### Search Endpoints
-
-```bash
-# Search with query
-GET /startups/search?q=tech
-
-# Filter by categories
-GET /startups/search?categorias=1,2
-
-# Filter by minimum votes/comments
-GET /startups/search?min_votos=5&min_comentarios=2
-
-# Sort results
-GET /startups/search?sort_by=votos_desc
-# Options: votos_asc, votos_desc, comentarios_asc, comentarios_desc
-
-# Autocomplete suggestions
-GET /startups/autocomplete?q=fin
-# Returns: ["Finance Startup", "Fintech App"]
-
-# Combined search
-GET /startups/search?q=tech&categorias=1&min_votos=2&sort_by=votos_desc
-```
 
 ---
 
@@ -380,7 +276,7 @@ python -m alembic -c alembic.ini stamp head
 ### Create Startup Example
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/startups/?user_id=1" \
+curl -X POST "http://127.0.0.1:8000/api/v1/startups" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "EcoTech Solutions",
@@ -388,14 +284,15 @@ curl -X POST "http://127.0.0.1:8000/startups/?user_id=1" \
     "category_id": 5,
     "funding_goal": 100000.0,
     "website": "https://ecotech.example.com",
-    "email": "info@ecotech.example.com"
+    "email": "info@ecotech.example.com",
+    "owner_user_id": 1
   }'
 ```
 
 ### Update Startup Example
 
 ```bash
-curl -X PUT "http://127.0.0.1:8000/startups/1?user_id=1" \
+curl -X PUT "http://127.0.0.1:8000/api/v1/startups/1?user_id=1" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "EcoTech Solutions - Updated",
@@ -406,7 +303,7 @@ curl -X PUT "http://127.0.0.1:8000/startups/1?user_id=1" \
 ### Add Comment Example
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/comments/?user_id=3" \
+curl -X POST "http://127.0.0.1:8000/api/v1/comments/?user_id=3" \
   -H "Content-Type: application/json" \
   -d '{
     "startup_id": 1,
@@ -417,7 +314,7 @@ curl -X POST "http://127.0.0.1:8000/comments/?user_id=3" \
 ### Vote Example
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/votes/?user_id=2" \
+curl -X POST "http://127.0.0.1:8000/api/v1/votes/?user_id=2" \
   -H "Content-Type: application/json" \
   -d '{
     "startup_id": 1,
@@ -429,7 +326,7 @@ curl -X POST "http://127.0.0.1:8000/votes/?user_id=2" \
 
 ```bash
 # Search for technology startups with good engagement
-curl "http://127.0.0.1:8000/startups/search?categorias=1&min_votos=2&sort_by=votos_desc"
+curl "http://127.0.0.1:8000/api/v1/search-exploration/search?categorias=1&min_votos=2&sort_by=votos_desc"
 ```
 
 ---

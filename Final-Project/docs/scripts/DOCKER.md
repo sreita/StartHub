@@ -9,41 +9,41 @@ This directory contains scripts to manage the StartHub project with Docker.
 
 **Commands:**
 ```bash
-# Start everything
-bash start.sh start
+# Start everything (from repo root)
+bash scripts/docker/start.sh start
 
 # Stop everything
-bash start.sh stop
+bash scripts/docker/start.sh stop
 
 # Restart everything
-bash start.sh restart
+bash scripts/docker/start.sh restart
 
 # Check status
-bash start.sh status
+bash scripts/docker/start.sh status
 
 # View logs (all or specific service)
-bash start.sh logs
-bash start.sh logs spring    # Spring Boot service logs
+bash scripts/docker/start.sh logs
+bash scripts/docker/start.sh logs spring    # Spring Boot service logs
 
 # Build images without cache
-bash start.sh build
+bash scripts/docker/start.sh build
 
 # Full rebuild
-bash start.sh rebuild
+bash scripts/docker/start.sh rebuild
 
 # Clean volumes
-bash start.sh clean
+bash scripts/docker/start.sh clean
 
 # Run tests
-bash start.sh test
+bash scripts/docker/start.sh test
 
 # Open shell in container
-bash start.sh shell spring
-bash start.sh shell fastapi
-bash start.sh shell db
+bash scripts/docker/start.sh shell spring
+bash scripts/docker/start.sh shell fastapi
+bash scripts/docker/start.sh shell db
 
 # View help menu
-bash start.sh help
+bash scripts/docker/start.sh help
 ```
 
 ### 2. `dev.sh` - Development Mode
@@ -82,31 +82,31 @@ bash dev.sh
 
 ### Development (without logs)
 ```bash
-bash start.sh start
-bash start.sh status
+bash scripts/docker/start.sh start
+bash scripts/docker/start.sh status
 ```
 
 ### View live logs
 ```bash
-bash start.sh logs          # All services
-bash start.sh logs spring   # Spring Boot only
-bash start.sh logs fastapi  # FastAPI only
-bash start.sh logs db       # MySQL only
+bash scripts/docker/start.sh logs          # All services
+bash scripts/docker/start.sh logs spring   # Spring Boot only
+bash scripts/docker/start.sh logs fastapi  # FastAPI only
+bash scripts/docker/start.sh logs db       # MySQL only
 ```
 
 ### Run tests
 ```bash
-bash start.sh test
+bash scripts/docker/start.sh test
 ```
 
 ### Make changes and rebuild
 ```bash
 # After Java/Python changes
-bash start.sh rebuild
+bash scripts/docker/start.sh rebuild
 
 # Or without cache
-bash start.sh build
-bash start.sh restart
+bash scripts/docker/start.sh build
+bash scripts/docker/start.sh restart
 ```
 
 ---

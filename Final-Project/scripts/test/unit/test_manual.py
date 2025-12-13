@@ -8,26 +8,35 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "http://localhost:8081/api/v1"
-FASTAPI_URL = "http://localhost:8000"
+AUTH_API_URL = "http://localhost:8081/api/v1"
+FASTAPI_BASE_URL = "http://localhost:8000"
 
 print("=" * 70)
 print("           STARTHUB - SMOKE TEST (HEALTH CHECKS)")
 print("=" * 70)
 
 # Test 1: FastAPI Health Check
-print("\n1️⃣  FASTAPI HEALTH CHECK")
+print("\n1️⃣  FASTAPI HEALTH CHECKS")
 print("-" * 70)
 
 try:
-    response = requests.get(f"{FASTAPI_URL}/health", timeout=5)
-    print(f"Status Code: {response.status_code}")
-    
+    response = requests.get(f"{FASTAPI_BASE_URL}/health", timeout=5)
+    print(f"/health -> Status Code: {response.status_code}")
     if response.status_code == 200:
-        print("✅ FastAPI is running!")
-        print(f"Response: {response.json()}")
+        print("✅ FastAPI app reachable")
     else:
-        print(f"⚠️  FastAPI response: {response.status_code}")
+        print(f"⚠️  FastAPI /health returned {response.status_code}")
+except Exception as e:
+    print(f"❌ FastAPI error: {e}")
+
+# Test 1b: FastAPI DB Health Check
+try:
+    response = requests.get(f"{FASTAPI_BASE_URL}/health/db", timeout=5)
+    print(f"/health/db -> Status Code: {response.status_code}")
+    if response.status_code == 200:
+        print("✅ Database reachable")
+    else:
+        print(f"⚠️  FastAPI /health/db returned {response.status_code}")
 except Exception as e:
     print(f"❌ FastAPI error: {e}")
 
@@ -35,7 +44,7 @@ print("\n" + "=" * 70)
 print("                   SMOKE TEST COMPLETE!")
 print("=" * 70)
 print("\nNote: For comprehensive tests, run:")
-print("  - test_users_startups.py")
-print("  - test_votes_comments.py")
-print("  - test_search.py")
-print("  - test_crud_complete.py")
+print("  - scripts/test/unit/test_users_startups.py")
+print("  - scripts/test/unit/test_votes_comments.py")
+print("  - scripts/test/unit/test_search.py")
+print("  - scripts/test/unit/test_crud_complete.py")

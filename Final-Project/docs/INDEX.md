@@ -105,7 +105,7 @@ docs/
 ├── setup/                        - Installation & configuration
 │   ├── GETTING_STARTED.md       - Quick start guide (5 minutes)
 │   ├── DOCKER_SETUP.md          - Complete Docker guide (145 lines)
-│   └── SETUP_SUMMARY.txt        - Configuration summary
+│   └── SETUP_SUMMARY.md         - Configuration summary
 │
 ├── scripts/                      - Script documentation
 │   └── DOCKER.md                - Docker scripts reference (183 lines)

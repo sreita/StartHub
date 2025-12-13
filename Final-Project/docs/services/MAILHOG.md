@@ -4,27 +4,15 @@ MailHog is a fake SMTP server that captures all outgoing emails for testing purp
 
 ## 🚀 Quick Start
 
-### 1. Install MailHog
+### 1. Start MailHog (via Docker orchestration)
 
 ```bash
-bash scripts/setup_mailhog.sh
+bash scripts/docker/start.sh start
 ```
 
-This will download MailHog to the `tools/mailhog/` directory.
+This will start all services (MailHog, FastAPI, Spring, frontend). MailHog runs on ports 1025/8025.
 
-### 2. Start MailHog
-
-```bash
-bash scripts/start_mailhog.sh
-```
-
-Or start all services (including MailHog):
-
-```bash
-bash scripts/start_all.sh
-```
-
-### 3. Access MailHog Web UI
+### 2. Access MailHog Web UI
 
 Open your browser and go to: **http://localhost:8025**
 
@@ -61,31 +49,21 @@ Then visit http://localhost:8025 to see the confirmation email.
 
 ## 🛠️ Management Commands
 
-### Start MailHog
+### Start/Stop MailHog
+
+MailHog is managed by the Docker orchestrator:
 
 ```bash
-bash scripts/start_mailhog.sh
-```
+# Start everything (includes MailHog)
+bash scripts/docker/start.sh start
 
-### Stop MailHog
-
-```bash
-bash scripts/stop_mailhog.sh
-```
-
-Or stop all services:
-
-```bash
-bash scripts/stop_all.sh
+# Stop everything
+bash scripts/docker/start.sh stop
 ```
 
 ### Check if MailHog is Running
 
-```bash
-netstat -ano | grep 1025
-```
-
-Or visit http://localhost:8025 in your browser.
+Visit http://localhost:8025 in your browser.
 
 ## 📊 API Access
 

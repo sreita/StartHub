@@ -26,28 +26,28 @@
 
 ### 2. FastAPI - Data API (Port 8000)
 - **Status**: ✅ OPERATIONAL
-- **URL**: http://127.0.0.1:8000
+- **Base URL**: http://127.0.0.1:8000/api/v1
 - **Documentation**: http://127.0.0.1:8000/docs (Swagger UI)
 - **Health Check**: http://127.0.0.1:8000/health
 - **Technology**: Python 3.12, FastAPI, SQLAlchemy, MySQL
 
 **Main Endpoints**:
 ```
-GET    /startups                         - List all startups
-GET    /startups/{id}                    - Get startup details
-POST   /startups?user_id=X               - Create startup
-PUT    /startups/{id}                    - Update startup
-DELETE /startups/{id}                    - Delete startup
+GET    /api/v1/startups                         - List all startups
+GET    /api/v1/startups/{id}                    - Get startup details
+POST   /api/v1/startups                         - Create startup (body includes owner_user_id)
+PUT    /api/v1/startups/{id}?user_id=X          - Update startup
+DELETE /api/v1/startups/{id}?user_id=X          - Delete startup
 
-GET    /comments?startup_id=X            - List comments
-POST   /comments?user_id=X               - Create comment
-DELETE /comments/{id}                    - Delete comment
+GET    /api/v1/comments?startup_id=X            - List comments
+POST   /api/v1/comments?user_id=X               - Create comment
+DELETE /api/v1/comments/{id}?user_id=X          - Delete comment
 
-GET    /votes/count/{startup_id}         - Get vote counts
-POST   /votes?user_id=X                  - Vote on startup
+GET    /api/v1/votes/count/{startup_id}         - Get vote counts
+POST   /api/v1/votes?user_id=X                  - Vote on startup
 
-GET    /startups/search                  - Search with filters
-GET    /startups/autocomplete            - Name autocomplete
+GET    /api/v1/search-exploration/search        - Search with filters
+GET    /api/v1/search-exploration/autocomplete  - Name autocomplete
 ```
 
 ### 3. Spring Boot Authentication (Port 8081)
@@ -233,9 +233,8 @@ bash scripts/test/test_all_features.sh
    - ✅ Legacy shell scripts maintained for backward compatibility
 
 7. **MailHog Integration**:
-   - ✅ Complete setup scripts (`setup_mailhog.sh`, `start_mailhog.sh`, `stop_mailhog.sh`)
-   - ✅ Integrated into `start_all.sh` and `stop_all.sh`
-   - ✅ Documentation in `docs/MAILHOG.md`
+   - ✅ Managed via Docker orchestration (`scripts/docker/start.sh`)
+   - ✅ Documentation in `docs/services/MAILHOG.md`
 
 8. **Spring Security Fixes**:
    - ✅ Fixed 403 errors on public endpoints
@@ -256,10 +255,10 @@ bash scripts/test/test_all_features.sh
 
 ## 🚀 How to Start the Project
 
-### Option 1: Start All Services (Recommended)
+### Start All Services (Recommended)
 
 ```bash
-bash scripts/start_all.sh
+bash scripts/docker/start.sh start
 ```
 
 This starts:
@@ -268,30 +267,10 @@ This starts:
 3. Spring Boot (port 8081)
 4. Frontend    (port 3000)
 
-### Option 2: Start Services Individually
+### Stop Services
 
 ```bash
-# Terminal 1 - MailHog
-bash scripts/start_mailhog.sh
-
-# Terminal 2 - FastAPI
-cd services/fastapi
-source ../../.venv/Scripts/activate
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-
-# Terminal 3 - Spring Boot
-cd services/spring-auth
-./mvnw.cmd spring-boot:run
-
-# Terminal 4 - Frontend
-cd scripts
-python dev-server.py
-```
-
-### Stop All Services
-
-```bash
-bash scripts/stop_all.sh
+bash scripts/docker/start.sh stop
 ```
 
 ---
@@ -301,9 +280,10 @@ bash scripts/stop_all.sh
 |     Service     |             URL              |          Description          |
 |-----------------|------------------------------|-------------------------------|
 |    Frontend     |    http://localhost:3000     |         Web interface         |
-|  FastAPI Docs   |  http://127.0.0.1:8000/docs  | Interactive API documentation |
-| FastAPI Health  | http://127.0.0.1:8000/health |       API health check        |
-| Spring Boot API | http://localhost:8081/api/v1 |      Authentication API       |
+|  FastAPI Docs   |  http://127.0.0.1:8000/docs       | Interactive API documentation |
+| FastAPI API     |  http://127.0.0.1:8000/api/v1     | Data API base path            |
+| FastAPI Health  | http://127.0.0.1:8000/health      | API health check              |
+| Spring Boot API | http://localhost:8081/api/v1      | Authentication API            |
 |   MailHog UI    |    http://localhost:8025     |    Email testing interface    |
 
 ---
